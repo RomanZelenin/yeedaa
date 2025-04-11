@@ -30,7 +30,7 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { Link, Outlet, useLocation, useNavigate, useParams } from 'react-router';
 
 import { logos, menuItems, person } from './ConfigApp';
 import MainPageContent from './MainPageContent';
@@ -40,7 +40,6 @@ export default function StartPage() {
     const logo = breakpoint == 'base' || breakpoint == 'sm' ? logos.compact : logos.normal;
 
     const location = useLocation();
-
     return (
         <>
             <Hide above='lg'>
@@ -62,8 +61,7 @@ export default function StartPage() {
                             templateColumns={['repeat(4, 1fr)', null, 'repeat(12, 1fr)']}
                             gap={['12px', null, '16px']}
                         >
-                            {location.pathname == '/' ? <MainPageContent /> : <></>}
-                            <Outlet />
+                            {location.pathname == '/' ? <MainPageContent /> : <Outlet />}
                         </Grid>
                     </GridItem>
                     <GridItem area='footer'>
@@ -76,7 +74,7 @@ export default function StartPage() {
                 <Grid
                     templateAreas={[
                         `"header header header"
-                    "nav main aside"`,
+                         "nav main aside"`,
                     ]}
                     gridTemplateRows={['80px 1fr']}
                     gridTemplateColumns={['256px 1fr 208px']}
@@ -89,8 +87,7 @@ export default function StartPage() {
                     </GridItem>
                     <GridItem p={0} area='main' mr='73px' ml='24px' py='32px'>
                         <Grid templateColumns={['repeat(12, 1fr)']} gap={['24px']}>
-                            {location.pathname == '/' ? <MainPageContent /> : <></>}
-                            <Outlet />
+                            {location.pathname == '/' ? <MainPageContent /> : <Outlet />}
                         </Grid>
                     </GridItem>
                     <GridItem area='aside'>
@@ -110,31 +107,37 @@ function Header({
     person: { avatar?: string; firstName: string; lastName: string; nickname: string };
 }) {
     const location = useLocation();
+    const { category } = useParams();
 
     const breadcrumbItems = useMemo(() => {
-        const fullPathItems = location.pathname
+        const fullPath = [{ title: 'Главная', path: '/' }];
+        const path: string | undefined = location.pathname
             .split('/')
-            .filter((it) => it.trim().length > 0)
-            .map((it, idx) => {
-                let title = '';
-                switch (it) {
-                    case 'most_popular':
-                        title = 'Самое сочное';
-                        break;
-                    case 'vegan-cuisine':
-                        title = 'Веганская кухня';
+            .filter((it) => it.trim().length > 0)[0];
+
+        switch (path) {
+            case 'most_popular':
+                fullPath.push({ title: 'Самое сочное', path: '/most_popular' });
+                break;
+            case 'vegan-cuisine':
+                fullPath.push({ title: 'Веганская кухня', path: '/vegan-cuisine' });
+                if (typeof category !== 'undefined') {
+                    fullPath.push({ title: category, path: `#` });
                 }
-                return (
-                    <BreadcrumbItem key={idx}>
-                        <BreadcrumbLink href={`/${it}`}>{title}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                );
-            });
-        fullPathItems.unshift(
-            <BreadcrumbItem key={-1}>
-                <BreadcrumbLink href='/'>Главная</BreadcrumbLink>
-            </BreadcrumbItem>,
-        );
+                break;
+        }
+
+        const fullPathItems = fullPath.map((it, idx) => (
+            <BreadcrumbItem key={idx}>
+                <BreadcrumbLink
+                    href={it.path}
+                    color={idx != fullPath.length - 1 ? 'rgba(0, 0, 0, 0.64)' : 'black'}
+                >
+                    {it.title}
+                </BreadcrumbLink>
+            </BreadcrumbItem>
+        ));
+
         return fullPathItems;
     }, [location]);
 
@@ -165,7 +168,6 @@ function Header({
                         flex={1}
                         fontSize='16px'
                         lineHeight='150%'
-                        color='#2d3748'
                         fontWeight='400'
                     >
                         {breadcrumbItems}
@@ -309,7 +311,7 @@ function MenuPanel({
                     },
                 }}
             >
-                {menuItems.map((it, idx) => (
+                {menuItems.map((menu, idx) => (
                     <AccordionItem key={idx} style={{ borderWidth: 0 }}>
                         {({ isExpanded }) => (
                             <>
@@ -324,19 +326,19 @@ function MenuPanel({
                                             lineHeight: '24px',
                                         }}
                                         data-test-id={
-                                            it.title === 'Веганская кухня' ? 'vegan-cuisine' : ''
+                                            menu.title === 'Веганская кухня' ? 'vegan-cuisine' : ''
                                         }
                                         onClick={() => {
                                             setSelectedItem(idx);
                                             setSelectedSubmenuIdx(
                                                 selectedItem != idx ? -1 : selectedSubmenuIdx,
                                             );
-                                            if (selectedItem != idx) navigate(it.path ?? '#');
+                                            if (selectedItem != idx) navigate(menu.path ?? '/');
                                         }}
                                     >
-                                        <Image src={it.icon} boxSize='24px' />
+                                        <Image src={menu.icon} boxSize='24px' />
                                         <Text flex='1' textAlign='left' fontSize='16px'>
-                                            {it.title}
+                                            {menu.title}
                                         </Text>
 
                                         <Image
@@ -350,7 +352,7 @@ function MenuPanel({
                                 </h2>
                                 <AccordionPanel>
                                     <UnorderedList styleType='none' m={0}>
-                                        {it.submenu?.map((subItem, idx) => (
+                                        {menu.submenu?.map((subItem, idx) => (
                                             <ListItem mb='12px'>
                                                 <ChakraLink
                                                     my='6px'
@@ -359,7 +361,7 @@ function MenuPanel({
                                                         setSelectedSubmenuIdx(idx);
                                                     }}
                                                     as={Link}
-                                                    to={subItem.path ?? `#${subItem.title}`}
+                                                    to={subItem?.path ?? `/`}
                                                     borderLeft={
                                                         typeof selectedSubmenuIdx === 'number' &&
                                                         selectedSubmenuIdx === idx

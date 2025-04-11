@@ -71,7 +71,7 @@ createRoot(document.getElementById('root')!).render(
                         <Route path='/' element={<StartPage />}>
                             <Route path='most_popular' element={<MostPopularPageContent />} />
                             <Route
-                                path='vegan-cuisine'
+                                path='vegan-cuisine/:category?'
                                 element={<VegetarianKitchenPageContent />}
                             />
                         </Route>
