@@ -443,7 +443,7 @@ function AsidePanel({
 
 function FooterMenu({ avatar }: { avatar: string }) {
     const menuItems = [
-        { icon: './src/assets/icons/selected-home.svg', title: 'Главная', selected: true },
+        { icon: './src/assets/icons/home.svg', title: 'Главная', selected: true },
         { icon: './src/assets/icons/search.svg', title: 'Поиск', selected: false },
         { icon: './src/assets/icons/write.svg', title: 'Записать', selected: false },
         { icon: avatar, title: 'Мой профиль', selected: false },
@@ -469,9 +469,20 @@ function FooterMenu({ avatar }: { avatar: string }) {
                     fontWeight={it.selected ? '500' : '400'}
                     lineHeight='133%'
                     color={it.selected ? 'black' : 'rgba(0, 0, 0, 0.64)'}
+                    background={
+                        it.selected
+                            ? 'radial-gradient(62.5% 62.5% at 48.89% 37.5%, rgba(196, 255, 97, 0.7) 0%, rgba(255, 255, 255, 0) 100%) #FFFFD3'
+                            : 'none'
+                    }
                 >
                     <VStack spacing={0}>
-                        <Avatar src={it.icon} boxSize='40px' />
+                        <Box bgColor={it.selected ? 'black' : 'none'} borderRadius='100%'>
+                            <Image
+                                src={it.icon}
+                                filter={it.selected ? 'invert(100%)' : 'none'}
+                                boxSize='40px'
+                            />
+                        </Box>
                         <Box>{it.title}</Box>
                     </VStack>
                 </Box>
