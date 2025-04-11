@@ -60,21 +60,25 @@ function SectionNewRecipes() {
                 spacing={['12px', null, null, null, '24px']}
                 align='stretch'
                 overflowX='auto'
+                sx={{
+                    '&::-webkit-scrollbar': {
+                        width: '0px',
+                        height: '0px',
+                    },
+                }}
                 padding='1pt'
             >
-                {recepies.map((it, idx) => (
-                    <Box key={idx}>
-                        <NewRecepieCard
-                            badgeText={it.category}
-                            cover={it.cover}
-                            badgeIcon={it.badgeIcon}
-                            title={it.title}
-                            description={it.description}
-                            bookmarksCount={it.bookmarksCount}
-                            likesCount={it.likesCount}
-                            personsCount={it.personsCount}
-                        />
-                    </Box>
+                {recepies.map((it) => (
+                    <NewRecepieCard
+                        badgeText={it.category}
+                        cover={it.cover}
+                        badgeIcon={it.badgeIcon}
+                        title={it.title}
+                        description={it.description}
+                        bookmarksCount={it.bookmarksCount}
+                        likesCount={it.likesCount}
+                        personsCount={it.personsCount}
+                    />
                 ))}
             </HStack>
         </Box>
@@ -220,6 +224,7 @@ function SectionCookingBlogs() {
                     alignSelf='start'
                     fontSize={['24px', null, null, '30px', '36px']}
                     fontWeight='500'
+                    lineHeight='32px'
                     flex={1}
                 >
                     Кулинарные блоги
@@ -256,7 +261,7 @@ function SectionCookingBlogs() {
                     flex={1}
                     px='16px'
                     py='8px'
-                    rightIcon={<Image src='./src/assets/icons/BsArrowRight.svg' />}
+                    rightIcon={<Image src='./src/assets/icons/BsArrowRight.svg' boxSize='16px' />}
                 >
                     Все авторы
                 </Button>
@@ -292,7 +297,11 @@ function LastSection({
                 rowGap={['12px']}
             >
                 <GridItem colSpan={[1, null, null, 1, 2]}>
-                    <Text fontSize={['24px', null, null, '36px', '48px']} fontWeight='500'>
+                    <Text
+                        fontSize={['24px', null, null, '36px', '48px']}
+                        fontWeight='500'
+                        lineHeight={['32px', null, null, '40px', '48px']}
+                    >
                         {title}
                     </Text>
                 </GridItem>

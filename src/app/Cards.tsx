@@ -7,10 +7,10 @@ import {
     CardBody,
     CardFooter,
     CardHeader,
+    Center,
     Flex,
     Heading,
     HStack,
-    IconButton,
     Image,
     Spacer,
     Stack,
@@ -42,7 +42,7 @@ function MostPopularCard({
     personsCount?: number;
 }) {
     return (
-        <Card direction='row' overflow='clip' minW='340px' minH='244px' flex={1}>
+        <Card direction='row' overflow='clip' minW='340px' h='244px' flex={1}>
             <Box>
                 <Image src={cover} />
                 {typeof recommendation === 'string' ? (
@@ -357,6 +357,7 @@ function MostPopularCardCompact({
                 pos='absolute'
                 top='6px'
                 left='6px'
+                alignItems='center'
             >
                 <Image src={badgeIcon} />
                 <Text color='black' fontSize='10pt' fontWeight='400' textTransform='initial'>
@@ -377,12 +378,15 @@ function MostPopularCardCompact({
                     </Heading>
                 </CardBody>
                 <CardFooter p={0} justifyContent='right' columnGap='12px' alignItems='center'>
-                    <IconButton
-                        variant='outline'
+                    <Center
+                        as='button'
                         boxSize='24px'
-                        aria-label=''
-                        icon={<Image src='./src/assets/icons/bookmark.svg' />}
-                    />
+                        border=' 1px solid rgba(0, 0, 0, 0.48);'
+                        borderRadius='6px'
+                    >
+                        <Image src='./src/assets/icons/bookmark.svg' />
+                    </Center>
+
                     <Button
                         bgColor='black'
                         color='white'
@@ -409,12 +413,18 @@ function BlogCard({
 }) {
     return (
         <>
-            <Card p='16px' rowGap='8px'>
+            <Card p='16px' rowGap='16px' borderRadius='8px'>
                 <CardHeader p={0}>
-                    <Flex alignItems='center' columnGap='12px'>
-                        <Avatar src={person.avatar} />
-                        <Box>
-                            <Text fontSize='18px' fontWeight={500} noOfLines={1}>
+                    <Flex alignItems='center' columnGap={['8px', null, '12px']}>
+                        <Avatar src={person.avatar} boxSize={['32px', null, null, '48px']} />
+                        <Box minW={0}>
+                            <Text
+                                fontSize='16px'
+                                fontWeight={500}
+                                lineHeight='24px'
+                                isTruncated
+                                textOverflow='ellipsis'
+                            >
                                 {`${person.firstName} ${person.lastName}`}
                             </Text>
                             <Text
@@ -429,7 +439,9 @@ function BlogCard({
                     </Flex>
                 </CardHeader>
                 <CardBody p={0}>
-                    <Text noOfLines={3} /* textAlign={'justify'} */>{comment}</Text>
+                    <Text fontSize='14px' lineHeight='20px' fontWeight={400} noOfLines={3}>
+                        {comment}
+                    </Text>
                 </CardBody>
             </Card>
         </>
@@ -457,7 +469,7 @@ function VegeterianKitchenCard({
         <>
             <Card p='12px' borderRadius='8px' border='1px solid rgba(0, 0, 0, 0.08)'>
                 <CardHeader p={0} mb='8px'>
-                    <Text noOfLines={1} fontSize='16px' fontWeight={500}>
+                    <Text isTruncated textOverflow='ellipsis' fontSize='16px' fontWeight={500}>
                         {title}
                     </Text>
                 </CardHeader>
@@ -523,7 +535,8 @@ function VegeterianKitchenCompactCard({ icon, title }: { icon: string; title: st
                         <Text
                             fontSize={['16px', null, null, null, '20px']}
                             fontWeight={500}
-                            noOfLines={1}
+                            isTruncated
+                            textOverflow='ellipsis'
                             flex={1}
                         >
                             {title}

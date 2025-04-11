@@ -3,7 +3,6 @@ import './App.css';
 import {
     Accordion,
     AccordionButton,
-    AccordionIcon,
     AccordionItem,
     AccordionPanel,
     Avatar,
@@ -31,8 +30,7 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
-import { Link } from 'react-router';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 
 import { logos, menuItems, person } from './ConfigApp';
 import MainPageContent from './MainPageContent';
@@ -269,8 +267,13 @@ function MenuPanel({
         submenu?: { title: string; path?: string }[];
     }[];
 }) {
-    const [selectedItem, setSelectedItem] = useState<number | undefined>();
+    const location = useLocation();
+    const [selectedItem, setSelectedItem] = useState(() =>
+        menuItems.findIndex((it) => it.path === location.pathname),
+    );
+    const [selectedSubmenuIdx, setSelectedSubmenuIdx] = useState(-1);
     const navigate = useNavigate();
+
     return (
         <Flex
             direction='column'
@@ -282,79 +285,115 @@ function MenuPanel({
             boxShadow='0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.2)'
         >
             <Accordion
+                index={selectedItem}
                 flex={1}
                 variant='custom'
                 paddingStart='10px'
                 paddingEnd='16px'
-                allowToggle
                 overflowY='auto'
                 mb='12px'
+                sx={{
+                    '&::-webkit-scrollbar': {
+                        width: '8px',
+                        borderRadius: '8px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        background: '#cecece',
+                        borderRadius: '10px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                        background: 'darkgray',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: '#f5f5f5',
+                    },
+                }}
             >
                 {menuItems.map((it, idx) => (
-                    <AccordionItem
-                        key={idx}
-                        style={{ borderWidth: 0 }}
-                        onClick={() => setSelectedItem(undefined)}
-                    >
-                        <h2>
-                            <AccordionButton
-                                _expanded={{
-                                    bg: '#EAFFC7',
-                                    fontWeight: 700,
-                                    lineHeight: '24px',
-                                }}
-                                data-test-id={it.title === 'Веганская кухня' ? 'vegan-cuisine' : ''}
-                                onClick={() => navigate(it.path ?? '#')}
-                            >
-                                <HStack flex={1}>
-                                    <Image src={it.icon} boxSize='24px' />
-                                    <Text flex='1' textAlign='left' fontSize='16px'>
-                                        {it.title}
-                                    </Text>
-                                </HStack>
-                                <AccordionIcon />
-                            </AccordionButton>
-                        </h2>
-                        <AccordionPanel>
-                            <UnorderedList styleType='none'>
-                                {it.submenu?.map((subItem, idx) => (
-                                    <ListItem px='11px' mb='12px'>
-                                        <ChakraLink
-                                            display='flex'
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setSelectedItem(idx);
-                                            }}
-                                            as={Link}
-                                            to={subItem.path ?? `#${subItem.title}`}
-                                        >
-                                            <Box
-                                                width={
-                                                    typeof selectedItem === 'number' &&
-                                                    selectedItem === idx
-                                                        ? '8px'
-                                                        : '1px'
-                                                }
-                                                bgColor='#C4FF61'
-                                                mr='11px'
-                                            ></Box>
-                                            <Text
-                                                fontSize='16px'
-                                                lineHeight='24px'
-                                                fontWeight={
-                                                    typeof selectedItem === 'number' &&
-                                                    selectedItem === idx
-                                                        ? 700
-                                                        : 400
-                                                }
-                                            >
-                                                {subItem.title}
-                                            </Text>
-                                        </ChakraLink>
-                                    </ListItem>
-                                ))}
-                            </UnorderedList>
-                        </AccordionPanel>
+                    <AccordionItem key={idx} style={{ borderWidth: 0 }}>
+                        {({ isExpanded }) => (
+                            <>
+                                <h2>
+                                    <AccordionButton
+                                        px='8px'
+                                        py='12px'
+                                        gap='8px'
+                                        _expanded={{
+                                            bg: '#EAFFC7',
+                                            fontWeight: 700,
+                                            lineHeight: '24px',
+                                        }}
+                                        data-test-id={
+                                            it.title === 'Веганская кухня' ? 'vegan-cuisine' : ''
+                                        }
+                                        onClick={() => {
+                                            setSelectedItem(idx);
+                                            setSelectedSubmenuIdx(
+                                                selectedItem != idx ? -1 : selectedSubmenuIdx,
+                                            );
+                                            if (selectedItem != idx) navigate(it.path ?? '#');
+                                        }}
+                                    >
+                                        <Image src={it.icon} boxSize='24px' />
+                                        <Text flex='1' textAlign='left' fontSize='16px'>
+                                            {it.title}
+                                        </Text>
+
+                                        <Image
+                                            src={
+                                                !isExpanded
+                                                    ? './src/assets/icons/down.svg'
+                                                    : './src/assets/icons/up.svg'
+                                            }
+                                        />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel>
+                                    <UnorderedList styleType='none' m={0}>
+                                        {it.submenu?.map((subItem, idx) => (
+                                            <ListItem mb='12px'>
+                                                <ChakraLink
+                                                    my='6px'
+                                                    display='flex'
+                                                    onClick={() => {
+                                                        setSelectedSubmenuIdx(idx);
+                                                    }}
+                                                    as={Link}
+                                                    to={subItem.path ?? `#${subItem.title}`}
+                                                    borderLeft={
+                                                        typeof selectedSubmenuIdx === 'number' &&
+                                                        selectedSubmenuIdx === idx
+                                                            ? '8px solid #C4FF61'
+                                                            : '1px solid #C4FF61'
+                                                    }
+                                                    marginLeft={
+                                                        typeof selectedSubmenuIdx === 'number' &&
+                                                        selectedSubmenuIdx === idx
+                                                            ? '-8px'
+                                                            : '-1px'
+                                                    }
+                                                >
+                                                    <Text
+                                                        ml='11px'
+                                                        fontSize='16px'
+                                                        lineHeight='24px'
+                                                        fontWeight={
+                                                            typeof selectedSubmenuIdx ===
+                                                                'number' &&
+                                                            selectedSubmenuIdx === idx
+                                                                ? 700
+                                                                : 400
+                                                        }
+                                                    >
+                                                        {subItem.title}
+                                                    </Text>
+                                                </ChakraLink>
+                                            </ListItem>
+                                        ))}
+                                    </UnorderedList>
+                                </AccordionPanel>
+                            </>
+                        )}
                     </AccordionItem>
                 ))}
             </Accordion>
@@ -393,7 +432,7 @@ function AsidePanel({
                 personsCount={personsCount}
                 likesCount={likesCount}
             />
-            <LinkBox>
+            <LinkBox zIndex={1}>
                 <LinkOverlay href='#'>
                     <Image src='./src/assets/icons/write-recepie.svg' />
                 </LinkOverlay>
@@ -404,7 +443,7 @@ function AsidePanel({
 
 function FooterMenu({ avatar }: { avatar: string }) {
     const menuItems = [
-        { icon: './src/assets/icons/home.svg', title: 'Главная', selected: true },
+        { icon: './src/assets/icons/selected-home.svg', title: 'Главная', selected: true },
         { icon: './src/assets/icons/search.svg', title: 'Поиск', selected: false },
         { icon: './src/assets/icons/write.svg', title: 'Записать', selected: false },
         { icon: avatar, title: 'Мой профиль', selected: false },

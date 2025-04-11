@@ -1,9 +1,9 @@
 import {
     Box,
+    Center,
     Flex,
     GridItem,
     HStack,
-    IconButton,
     Image,
     Input,
     InputGroup,
@@ -41,20 +41,21 @@ function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string
                 columnGap='8px'
                 width={['100%', null, null, '31em']}
                 mt={['16px', null, null, '32px']}
+                justify='center'
             >
-                <IconButton
-                    border='1px solid rgba(0, 0, 0, 0.48)'
-                    aria-label='Filter items'
-                    variant='outline'
+                <Center
+                    as='button'
                     boxSize={['32px', null, null, '48px']}
                     p={['0px', null, null, '12px']}
-                    icon={
-                        <Image
-                            src='./src/assets/icons/filter.svg' /* boxSize={[null, null, null, '18px']} */
-                        />
-                    }
-                />
-                <InputGroup>
+                    border=' 1px solid rgba(0, 0, 0, 0.48);'
+                    borderRadius='6px'
+                >
+                    <Image
+                        boxSize={['14px', null, null, '24px']}
+                        src='./src/assets/icons/filter.svg'
+                    />
+                </Center>
+                <InputGroup w={['100%', null, '60%', '100%']}>
                     <Input
                         borderRadius='4px'
                         border='1px solid rgba(0, 0, 0, 0.48)'
@@ -106,8 +107,8 @@ export default function ContentContainer({
                 colSpan={[4, null, 8]}
                 /*  mt={['16px', null, null, '32px']} */
                 display={['block', null, null, null]}
-                colStart={[1, null, 3]}
-                colEnd={[null, null, 11]}
+                colStart={[1, null, 1, 2, 4]}
+                colEnd={[null, null, 13, 12, 10]}
             >
                 <HeaderContainer title={title} subtitle={subtitle} />
             </GridItem>
