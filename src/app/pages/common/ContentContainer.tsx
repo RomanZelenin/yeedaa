@@ -46,7 +46,6 @@ function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string
                 <Center
                     as='button'
                     boxSize={['32px', null, null, '48px']}
-                    p={['0px', null, null, '12px']}
                     border=' 1px solid rgba(0, 0, 0, 0.48);'
                     borderRadius='6px'
                 >
@@ -55,7 +54,7 @@ function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string
                         src='./src/assets/icons/filter.svg'
                     />
                 </Center>
-                <InputGroup w={['100%', null, '60%', '100%']}>
+                <InputGroup flex={[1, null, 0.7, 1]}>
                     <Input
                         borderRadius='4px'
                         border='1px solid rgba(0, 0, 0, 0.48)'
@@ -63,8 +62,8 @@ function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string
                         placeholder='Название или ингредиент...'
                         h='100%'
                     />
-                    <InputRightElement h='100%'>
-                        <Image src='./src/assets/icons/search.svg' boxSize={['32px']} />
+                    <InputRightElement boxSize={['32px', null, null, '48px']}>
+                        <Image src='./src/assets/icons/search.svg' />
                     </InputRightElement>
                 </InputGroup>
             </Flex>
@@ -105,7 +104,6 @@ export default function ContentContainer({
             <GridItem
                 px={[null, null, '30px']}
                 colSpan={[4, null, 8]}
-                /*  mt={['16px', null, null, '32px']} */
                 display={['block', null, null, null]}
                 colStart={[1, null, 1, 2, 4]}
                 colEnd={[null, null, 13, 12, 10]}

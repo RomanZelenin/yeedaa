@@ -1,13 +1,14 @@
 import { Box, Button, GridItem, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
+import BlogCard from '~/components/BlogCard';
+import NewRecepieCard from '~/components/NewRecepieCard';
 import {
-    BlogCard,
-    NewRecepieCard,
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
-} from './Cards';
-import { MostPopularContent } from './MostPopularPageContent';
+} from '~/components/VegeterianKitchenCard';
+
+import { MostPopularContent } from '../MostPopular';
 
 function SectionNewRecipes() {
     const recepies = [
@@ -158,7 +159,7 @@ function SectionMostPopular() {
                     as={Link}
                     to='/most_popular'
                     display={['none', null, null, 'inline-flex']}
-                    bgColor='#C4FF61'
+                    bgColor='lime.300'
                     fontSize='16px'
                     color='black'
                     variant='ghost'
@@ -175,7 +176,7 @@ function SectionMostPopular() {
                 display={['flex', null, null, 'none']}
                 as={Link}
                 to='/most_popular'
-                bgColor='#C4FF61'
+                bgColor='lime.300'
                 alignSelf='center'
                 fontSize='16px'
                 color='black'
@@ -227,7 +228,7 @@ function SectionCookingBlogs() {
     ];
 
     return (
-        <VStack bgColor='#C4FF61' borderRadius='16px' p='12px' spacing='12px' align='stretch'>
+        <VStack bgColor='lime.300' borderRadius='16px' p='12px' spacing='12px' align='stretch'>
             <HStack>
                 <Text
                     alignSelf='start'

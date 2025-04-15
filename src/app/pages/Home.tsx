@@ -1,14 +1,14 @@
 import { Box, Divider } from '@chakra-ui/react';
 
-import ContentContainer from './PageContentContainer';
+import ContentContainer from './common/ContentContainer';
 import {
     LastSection,
     SectionCookingBlogs,
     SectionMostPopular,
     SectionNewRecipes,
-} from './Sections';
+} from './common/Sections';
 
-export default function MainPageContent() {
+export default function Home() {
     const cards = [
         {
             badgeText: 'Вторые блюда',

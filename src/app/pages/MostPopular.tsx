@@ -1,11 +1,12 @@
 import { Box, Button, Divider, SimpleGrid, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
-import { MostPopularCard, MostPopularCardCompact } from './Cards';
-import ContentContainer from './PageContentContainer';
-import { LastSection } from './Sections';
+import { MostPopularCard, MostPopularCardCompact } from '~/components/MostPopularCard';
 
-export default function MostPopularPageContent() {
+import ContentContainer from './common/ContentContainer';
+import { LastSection } from './common/Sections';
+
+export default function MostPopular() {
     const cards = [
         {
             badgeText: 'Вторые блюда',
@@ -133,7 +134,7 @@ export default function MostPopularPageContent() {
                         display={['inline-flex']}
                         as={Link}
                         to='/#'
-                        bgColor='#C4FF61'
+                        bgColor='lime.300'
                         alignSelf='center'
                         fontSize='16px'
                         color='black'
