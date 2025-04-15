@@ -1,12 +1,12 @@
 import { Box, Button, Divider, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
-import { menuItems } from './ConfigApp';
-import { MostPopularContent } from './MostPopularPageContent';
-import PageWithTabs from './PageWithTabs';
-import { LastSection } from './Sections';
+import { menuItems } from '../ConfigApp';
+import PageWithTabs from './common/PageWithTabs';
+import { LastSection } from './common/Sections';
+import { MostPopularContent } from './MostPopular';
 
-export default function VegetarianKitchenPageContent() {
+export default function VegetarianKitchen() {
     const mostPopularCards = [
         {
             bookmarksCount: 258,
@@ -139,7 +139,7 @@ export default function VegetarianKitchenPageContent() {
                                     display={['inline-flex']}
                                     as={Link}
                                     to='/#'
-                                    bgColor='#C4FF61'
+                                    bgColor='lime.300'
                                     alignSelf='center'
                                     fontSize='16px'
                                     color='black'

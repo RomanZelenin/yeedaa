@@ -1,7 +1,7 @@
 import { HStack, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
 import { JSX } from '@emotion/react/jsx-runtime';
 
-import ContentContainer from './PageContentContainer';
+import ContentContainer from './ContentContainer';
 
 export default function PageWithTabs({
     title,

@@ -33,9 +33,9 @@ import { useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate, useParams } from 'react-router';
 
 import { logos, menuItems, person } from './ConfigApp';
-import MainPageContent from './MainPageContent';
+import Home from './pages/Home';
 
-export default function StartPage() {
+export default function Index() {
     const breakpoint = useBreakpoint();
     const logo = breakpoint == 'base' || breakpoint == 'sm' ? logos.compact : logos.normal;
 
@@ -61,7 +61,7 @@ export default function StartPage() {
                             templateColumns={['repeat(4, 1fr)', null, 'repeat(12, 1fr)']}
                             gap={['12px', null, '16px']}
                         >
-                            {location.pathname == '/' ? <MainPageContent /> : <Outlet />}
+                            {location.pathname == '/' ? <Home /> : <Outlet />}
                         </Grid>
                     </GridItem>
                     <GridItem area='footer'>
@@ -87,7 +87,7 @@ export default function StartPage() {
                     </GridItem>
                     <GridItem p={0} area='main' mr='73px' ml='24px' py='32px'>
                         <Grid templateColumns={['repeat(12, 1fr)']} gap={['24px']}>
-                            {location.pathname == '/' ? <MainPageContent /> : <Outlet />}
+                            {location.pathname == '/' ? <Home /> : <Outlet />}
                         </Grid>
                     </GridItem>
                     <GridItem area='aside'>
@@ -139,13 +139,13 @@ function Header({
         ));
 
         return fullPathItems;
-    }, [location]);
+    }, [location, category]);
 
     return (
         <>
             <Flex
                 position='fixed'
-                bg='#ffffd3'
+                bg='lime.50'
                 h={['64px', null, '80px']}
                 w='100%'
                 alignItems='center'
@@ -215,7 +215,7 @@ function ProfileNotificationButton({ src, count }: { src: string; count: number 
                 fontSize={['16px']}
                 lineHeight={['24px']}
                 fontWeight='600'
-                color='#2db100'
+                color='lime.600'
             >
                 {count}
             </Box>
@@ -252,7 +252,7 @@ function ActivityIndicatorButton({ src, count }: { src: string; count: number })
     return (
         <Flex px='8px' alignItems='center' columnGap={['6px']}>
             <Image src={src} boxSize={['12px']} />
-            <Text fontSize={['12px']} lineHeight={['16px']} fontWeight='600' color='#2db100'>
+            <Text fontSize={['12px']} lineHeight={['16px']} fontWeight='600' color='lime.600'>
                 {count}
             </Text>
         </Flex>
@@ -363,16 +363,13 @@ function MenuPanel({
                                                     as={Link}
                                                     to={subItem?.path ?? `/`}
                                                     borderLeft={
-                                                        typeof selectedSubmenuIdx === 'number' &&
                                                         selectedSubmenuIdx === idx
-                                                            ? '8px solid #C4FF61'
-                                                            : '1px solid #C4FF61'
+                                                            ? '8px solid '
+                                                            : '1px solid '
                                                     }
+                                                    borderLeftColor='lime.300'
                                                     marginLeft={
-                                                        typeof selectedSubmenuIdx === 'number' &&
-                                                        selectedSubmenuIdx === idx
-                                                            ? '-8px'
-                                                            : '-1px'
+                                                        selectedSubmenuIdx === idx ? '-8px' : '-1px'
                                                     }
                                                 >
                                                     <Text
@@ -380,11 +377,7 @@ function MenuPanel({
                                                         fontSize='16px'
                                                         lineHeight='24px'
                                                         fontWeight={
-                                                            typeof selectedSubmenuIdx ===
-                                                                'number' &&
-                                                            selectedSubmenuIdx === idx
-                                                                ? 700
-                                                                : 400
+                                                            selectedSubmenuIdx === idx ? 700 : 400
                                                         }
                                                     >
                                                         {subItem.title}
@@ -434,9 +427,31 @@ function AsidePanel({
                 personsCount={personsCount}
                 likesCount={likesCount}
             />
-            <LinkBox zIndex={1}>
+            <LinkBox>
                 <LinkOverlay href='#'>
-                    <Image src='./src/assets/icons/write-recepie.svg' />
+                    <Box
+                        as='button'
+                        boxSize='208px'
+                        bgGradient='radial(50% 50% at 50% 50%, lime.150 0%, rgba(255, 255, 255, 0) 100%) lime.50'
+                    >
+                        <VStack spacing='12px'>
+                            <Box bgColor='black' borderRadius='100%'>
+                                <Image
+                                    src='src/assets/icons/write.svg'
+                                    filter='invert(100%)'
+                                    boxSize='48px'
+                                />
+                            </Box>
+                            <Text
+                                fontSize='12px'
+                                lineHeight='16px'
+                                fontWeight='400'
+                                color='rgba(0, 0, 0, 0.64)'
+                            >
+                                Записать рецепт
+                            </Text>
+                        </VStack>
+                    </Box>
                 </LinkOverlay>
             </LinkBox>
         </VStack>
@@ -453,9 +468,8 @@ function FooterMenu({ avatar }: { avatar: string }) {
 
     return (
         <Flex
-            zIndex={1}
             position='fixed'
-            bg='#ffffd3'
+            bg='lime.50'
             h={['84px', null, '96px']}
             bottom={0}
             w='100%'
@@ -471,9 +485,9 @@ function FooterMenu({ avatar }: { avatar: string }) {
                     fontWeight={it.selected ? '500' : '400'}
                     lineHeight='133%'
                     color={it.selected ? 'black' : 'rgba(0, 0, 0, 0.64)'}
-                    background={
+                    bgGradient={
                         it.selected
-                            ? 'radial-gradient(62.5% 62.5% at 48.89% 37.5%, rgba(196, 255, 97, 0.7) 0%, rgba(255, 255, 255, 0) 100%) #FFFFD3'
+                            ? 'radial(62.5% 62.5% at 48.89% 37.5%, lime.150 0%, rgba(255, 255, 255, 0) 100%) lime.50'
                             : 'none'
                     }
                 >
