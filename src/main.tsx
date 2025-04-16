@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import { store } from '~/store/configure-store.ts';
 
 import Index from './app/Index';
+import Home from './app/pages/Home';
 import MostPopular from './app/pages/MostPopular';
 import VegetarianKitchen from './app/pages/VegetarianKitchen';
 import theme from './theme';
@@ -19,7 +20,8 @@ createRoot(document.getElementById('root')!).render(
             <Provider store={store}>
                 <BrowserRouter>
                     <Routes>
-                        <Route path='/' element={<Index />}>
+                        <Route element={<Index />}>
+                            <Route index element={<Home />} />
                             <Route path='most_popular' element={<MostPopular />} />
                             <Route
                                 path='vegan-cuisine/:category?'

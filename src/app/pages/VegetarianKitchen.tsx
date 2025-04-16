@@ -1,9 +1,9 @@
-import { Box, Button, Divider, VStack } from '@chakra-ui/react';
+import { Button, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
 import { menuItems } from '../ConfigApp';
-import PageWithTabs from './common/PageWithTabs';
-import { LastSection } from './common/Sections';
+import ContainerWithTabs from './common/Containers/ContainerWithTabs';
+import LastSection from './common/Sections/LastSection';
 import { MostPopularContent } from './MostPopular';
 
 export default function VegetarianKitchen() {
@@ -15,9 +15,9 @@ export default function VegetarianKitchen() {
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
             badgeText: 'Вторые блюда',
-            coverBig: './src/assets/chiken_pasta.png',
-            coverMini: './src/assets/chiken_pasta_mini.png',
-            badgeIcon: './src/assets/icons/pan.svg',
+            coverBig: '/src/assets/images/chiken_pasta.png',
+            coverMini: '/src/assets/images/chiken_pasta_mini.png',
+            badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
             bookmarksCount: 124,
@@ -26,9 +26,9 @@ export default function VegetarianKitchen() {
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
             badgeText: 'Национальные',
-            coverBig: './src/assets/tom-yam-kimchi.png',
-            coverMini: './src/assets/tom-yam-kimchi-mini.png',
-            badgeIcon: './src/assets/icons/international-food-96 1.svg',
+            coverBig: '/src/assets/images/tom-yam-kimchi.png',
+            coverMini: '/src/assets/images/tom-yam-kimchi-mini.png',
+            badgeIcon: '/src/assets/icons/international-food-96 1.svg',
         },
         {
             bookmarksCount: 1,
@@ -37,9 +37,9 @@ export default function VegetarianKitchen() {
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
             badgeText: 'Вторые блюда',
-            coverBig: './src/assets/italian_ham.png',
-            coverMini: './src/assets/italian_ham_mini.png',
-            badgeIcon: './src/assets/icons/pan.svg',
+            coverBig: '/src/assets/images/italian_ham.png',
+            coverMini: '/src/assets/images/italian_ham_mini.png',
+            badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
             bookmarksCount: 85,
@@ -48,9 +48,9 @@ export default function VegetarianKitchen() {
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
             badgeText: 'Вторые блюда',
-            coverBig: './src/assets/spagetti-big.png',
-            coverMini: './src/assets/spagetti.png',
-            badgeIcon: './src/assets/icons/pan.svg',
+            coverBig: '/src/assets/images/spagetti-big.png',
+            coverMini: '/src/assets/images/spagetti.png',
+            badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
             bookmarksCount: 120,
@@ -59,9 +59,9 @@ export default function VegetarianKitchen() {
             description:
                 'Картошка, тушенная с болгарским перцем, фасолью, морковью и луком, -  вариант сытного блюда на каждый день. Фасоль в данном случае заменяет  мясо, делая рагу сытным и питательным. Чтобы сократить время  приготовления, возьмём консервированную фасоль. Блюдо хоть и простое, но в полной мере наполнено ароматами и имеет выразительный вкус за счёт  добавления томатной пасты.',
             badgeText: 'Вторые блюда',
-            coverBig: './src/assets/potatoes-with-bell-pepper.png',
-            coverMini: './src/assets/potatoes-with-bell-pepper-mini.png',
-            badgeIcon: './src/assets/icons/pan.svg',
+            coverBig: '/src/assets/images/potatoes-with-bell-pepper.png',
+            coverMini: '/src/assets/images/potatoes-with-bell-pepper-mini.png',
+            badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
             bookmarksCount: 85,
@@ -70,9 +70,9 @@ export default function VegetarianKitchen() {
             description:
                 'Картошка, тушенная с болгарским перцем, фасолью, морковью и луком, -  вариант сытного блюда на каждый день. Фасоль в данном случае заменяет  мясо, делая рагу сытным и питательным. Чтобы сократить время  приготовления, возьмём консервированную фасоль. Блюдо хоть и простое, но в полной мере наполнено ароматами и имеет выразительный вкус за счёт  добавления томатной пасты.',
             badgeText: 'Детские блюда',
-            coverBig: './src/assets/potatoes-with-mushrooms.png',
-            coverMini: './src/assets/potatoes-with-mushrooms-mini.png',
-            badgeIcon: './src/assets/icons/child-tasty-96 1.svg',
+            coverBig: '/src/assets/images/potatoes-with-mushrooms.png',
+            coverMini: '/src/assets/images/potatoes-with-mushrooms-mini.png',
+            badgeIcon: '/src/assets/icons/child-tasty-96 1.svg',
         },
         {
             bookmarksCount: 85,
@@ -81,9 +81,9 @@ export default function VegetarianKitchen() {
             description:
                 'Большое, сытное блюдо для ценителей блюд без мяса! Такая лазанья  готовится с овощным соусом и соусом бешамель, а вместо листов для  лазаньи используется тонкий лаваш.',
             badgeText: 'Блюда на гриле',
-            coverBig: './src/assets/vegetable-lasagna.png',
-            coverMini: './src/assets/vegetable-lasagna-mini.png',
-            badgeIcon: './src/assets/icons/посудомоечная-машина-96 1.svg',
+            coverBig: '/src/assets/images/vegetable-lasagna.png',
+            coverMini: '/src/assets/images/vegetable-lasagna-mini.png',
+            badgeIcon: '/src/assets/icons/посудомоечная-машина-96 1.svg',
         },
         {
             bookmarksCount: 85,
@@ -92,22 +92,22 @@ export default function VegetarianKitchen() {
             description:
                 'Тефтели из булгура и чечевицы – яркие и питательные, отлично подходят  для постного и вегетарианского меню. Тефтели получаются нежными, а также сочными и ароматными благодаря использованию томатного соуса и душистых пряностей.',
             badgeText: 'Вторые блюда',
-            coverBig: './src/assets/meatballs.png',
-            coverMini: './src/assets/meatballs-mini.png',
-            badgeIcon: './src/assets/icons/pan.svg',
+            coverBig: '/src/assets/images/meatballs.png',
+            coverMini: '/src/assets/images/meatballs-mini.png',
+            badgeIcon: '/src/assets/icons/pan.svg',
         },
     ];
 
     const compactCards = [
-        { icon: './src/assets/icons/pan.svg', title: 'Стейк для вегетарианцев' },
-        { icon: './src/assets/icons/pan.svg', title: 'Котлеты из гречки и фасоли' },
-        { icon: './src/assets/icons/pot.svg', title: 'Сырный суп с лапшой и брокколи' },
+        { icon: '/src/assets/icons/pan.svg', title: 'Стейк для вегетарианцев' },
+        { icon: '/src/assets/icons/pan.svg', title: 'Котлеты из гречки и фасоли' },
+        { icon: '/src/assets/icons/pot.svg', title: 'Сырный суп с лапшой и брокколи' },
     ];
 
     const cards = [
         {
             badgeText: 'Вторые блюда',
-            badgeIcon: './src/assets/icons/pan.svg',
+            badgeIcon: '/src/assets/icons/pan.svg',
             title: 'Хачапури по-аджарски',
             description:
                 'Давно ходил вокруг рецепта хачапури по-аджарски, не решался. Сегодня  попробовал - я в полном восторге! Тесто замечательное, интересный  процесс приготовления, а вкус - не передать, просто сказка!',
@@ -116,7 +116,7 @@ export default function VegetarianKitchen() {
         },
         {
             badgeText: 'Вторые блюда',
-            badgeIcon: './src/assets/icons/pan.svg',
+            badgeIcon: '/src/assets/icons/pan.svg',
             title: 'Жареные сосиски в тесте',
             description:
                 'Сосиски, жареные в тесте, - звучит уже аппетитно! Тончайшая румяная  корочка, воздушное дрожжевое тесто, сочная сосиска... Мало кто может  устоять перед такими вот пирожочками, особенно домашнего приготовления.  Да, жареные в тесте сосиски',
@@ -151,15 +151,12 @@ export default function VegetarianKitchen() {
                                     Загрузить ещё
                                 </Button>
                             </VStack>
-                            <Box>
-                                <Divider mb={[0, null, null, '24px']} />
-                                <LastSection
-                                    title='Десерты, выпечка'
-                                    description='Без них невозможно представить себе ни современную, ни традиционную кулинарию. Пироги и печенья, блины, пончики, вареники и, конечно, хлеб — рецепты изделий из теста многообразны и невероятно популярны.'
-                                    cards={cards}
-                                    compactCards={compactCards}
-                                />
-                            </Box>
+                            <LastSection
+                                title='Десерты, выпечка'
+                                description='Без них невозможно представить себе ни современную, ни традиционную кулинарию. Пироги и печенья, блины, пончики, вареники и, конечно, хлеб — рецепты изделий из теста многообразны и невероятно популярны.'
+                                cards={cards}
+                                compactCards={compactCards}
+                            />
                         </>
                     ),
                 };
@@ -168,7 +165,7 @@ export default function VegetarianKitchen() {
         });
 
     return (
-        <PageWithTabs
+        <ContainerWithTabs
             title='Веганская кухня'
             subtitle='Интересны не только убеждённым вегетарианцам, но и тем, кто хочет  попробовать вегетарианскую диету и готовить вкусные  вегетарианские блюда.'
             tabData={tabData!}

@@ -23,8 +23,8 @@ function NewRecepieCard({
 }) {
     return (
         <Card
-            minW={['158px', null, null, '279px', '322px']}
-            maxW={['158px', null, null, '279px', '322px']}
+            minW={{ base: '158px', lg: '279px', xl: '322px' }}
+            maxW={{ base: '158px', lg: '279px', xl: '322px' }}
             border='1px solid rgba(0, 0, 0, 0.08);'
             borderRadius='8px'
             overflow='clip'
@@ -35,7 +35,7 @@ function NewRecepieCard({
                 <Badge
                     borderRadius='4px'
                     bgColor=' lime.150'
-                    display={['inline-flex', null, null, 'none']}
+                    display={{ base: 'inline-flex', lg: 'none' }}
                     pos='absolute'
                     top='6px'
                     left='6px'
@@ -48,38 +48,56 @@ function NewRecepieCard({
                     </Text>
                 </Badge>
                 <VStack
-                    mx={['8px', null, null, '12px', '24px']}
-                    my={['8px', null, null, '12px', ' 16px']}
+                    mx={{ base: '8px', lg: '12px', xl: '24px' }}
+                    my={{ base: '8px', lg: '12px', xl: '16px' }}
                     spacing='8px'
                     align='stretch'
                     flex={1}
                 >
                     <Text
-                        fontSize={['12pt']}
+                        display={{ base: 'none', lg: 'block' }}
+                        fontSize={{ base: '12pt', lg: '18px', xl: '20px' }}
                         fontWeight='500'
                         lineHeight='150%'
-                        noOfLines={[2, null, null, 1, 1]}
+                        isTruncated
                         flex={1}
                     >
                         {title}
                     </Text>
-                    <Box display={['none', null, null, 'inline-block']} mb='16px'>
-                        <Text fontSize={['11pt']} lineHeight='20px' fontWeight='400' noOfLines={3}>
+
+                    <Text
+                        display={{ lg: 'none' }}
+                        fontSize={{ base: '12pt', lg: '18px' }}
+                        fontWeight='500'
+                        lineHeight='150%'
+                        noOfLines={2}
+                        flex={1}
+                    >
+                        {title}
+                    </Text>
+
+                    <Box display={{ base: 'none', lg: 'inline-block' }} mb='16px'>
+                        <Text
+                            fontSize={{ lg: '14px' }}
+                            lineHeight='20px'
+                            fontWeight='400'
+                            noOfLines={3}
+                        >
                             {description}
                         </Text>
                     </Box>
-                    <Box display={['flex', null, null, 'none']}>
+                    <Box display={{ base: 'flex', lg: 'none' }}>
                         <ThreeButtons
                             bookmarksCount={bookmarksCount}
                             likesCount={likesCount}
                             personsCount={personsCount}
                         />
                     </Box>
-                    <HStack display={['none', null, null, 'flex']} justify='space-between' flex={1}>
+                    <HStack display={{ base: 'none', lg: 'flex' }} justify='space-between' flex={1}>
                         <Badge
                             borderRadius='4px'
                             bgColor=' lime.150'
-                            display={['inline-flex']}
+                            display='inline-flex'
                             top='6px'
                             left='6px'
                         >

@@ -6,7 +6,7 @@ const menuItems: {
 }[] = [
     {
         title: 'Салаты',
-        icon: './src/assets/icons/eggplant.svg',
+        icon: '/src/assets/icons/eggplant.svg',
         submenu: [
             { title: 'Мясные салаты' },
             { title: 'Рыбные салаты' },
@@ -16,7 +16,7 @@ const menuItems: {
     },
     {
         title: 'Закуски',
-        icon: 'src/assets/icons/snacks.svg',
+        icon: '/src/assets/icons/snacks.svg',
         submenu: [
             { title: 'Мясные закуски' },
             { title: 'Рыбные закуски' },
@@ -28,7 +28,7 @@ const menuItems: {
     },
     {
         title: 'Первые блюда',
-        icon: './src/assets/icons/pot.svg',
+        icon: '/src/assets/icons/pot.svg',
         submenu: [
             { title: 'Мясные супы' },
             { title: 'Овощные супы' },
@@ -39,7 +39,7 @@ const menuItems: {
     },
     {
         title: 'Вторые блюда',
-        icon: './src/assets/icons/pan.svg',
+        icon: '/src/assets/icons/pan.svg',
         submenu: [
             { title: 'Мясные' },
             { title: 'Рыбные' },
@@ -57,7 +57,7 @@ const menuItems: {
     },
     {
         title: 'Десерты, выпечка',
-        icon: './src/assets/icons/хлеб-и-скалка-96 1.svg',
+        icon: '/src/assets/icons/хлеб-и-скалка-96 1.svg',
         submenu: [
             { title: 'Блины и оладьи' },
             { title: 'Пироги и пончики' },
@@ -76,7 +76,7 @@ const menuItems: {
     },
     {
         title: 'Блюда на гриле',
-        icon: './src/assets/icons/посудомоечная-машина-96 1.svg',
+        icon: '/src/assets/icons/посудомоечная-машина-96 1.svg',
         submenu: [
             { title: 'Говядина' },
             { title: 'Свинина' },
@@ -88,7 +88,7 @@ const menuItems: {
     },
     {
         title: 'Веганская кухня',
-        icon: './src/assets/icons/лавровый-лист-96 1.svg',
+        icon: '/src/assets/icons/лавровый-лист-96 1.svg',
         path: '/vegan-cuisine',
         submenu: [
             { title: 'Закуски', path: '/vegan-cuisine/Закуски' },
@@ -103,7 +103,7 @@ const menuItems: {
     },
     {
         title: 'Детские блюда',
-        icon: 'src/assets/icons/child-tasty-96 1.svg',
+        icon: '/src/assets/icons/child-tasty-96 1.svg',
         submenu: [
             { title: 'Первые блюда' },
             { title: 'Вторые блюда' },
@@ -117,7 +117,7 @@ const menuItems: {
     },
     {
         title: 'Лечебное питание',
-        icon: 'src/assets/icons/therapeutic_nutrition.svg',
+        icon: '/src/assets/icons/therapeutic_nutrition.svg',
         submenu: [
             { title: 'Детская диета' },
             { title: 'Диета №1' },
@@ -140,7 +140,7 @@ const menuItems: {
     },
     {
         title: 'Национальные',
-        icon: 'src/assets/icons/international-food-96 1.svg',
+        icon: '/src/assets/icons/international-food-96 1.svg',
         submenu: [
             { title: 'Американская кухня' },
             { title: 'Армянская кухня' },
@@ -161,12 +161,12 @@ const menuItems: {
     },
     {
         title: 'Соусы',
-        icon: 'src/assets/icons/ступка-и-пестик-96 1.svg',
+        icon: '/src/assets/icons/ступка-и-пестик-96 1.svg',
         submenu: [{ title: 'Соусы мясные' }, { title: 'Соусы сырные' }, { title: 'Маринады' }],
     },
     {
         title: 'Напитки',
-        icon: 'src/assets/icons/drinks.svg',
+        icon: '/src/assets/icons/drinks.svg',
         submenu: [
             { title: 'Соки и фреши' },
             { title: 'Смузи' },
@@ -181,7 +181,7 @@ const menuItems: {
     },
     {
         title: 'Заготовки',
-        icon: 'src/assets/icons/паста-из-овощного-бульона.svg',
+        icon: '/src/assets/icons/паста-из-овощного-бульона.svg',
         submenu: [
             { title: 'Мясные заготовки' },
             { title: 'Рыбные заготовки' },
@@ -195,16 +195,16 @@ const menuItems: {
     },
 ];
 
-const logos = {
-    compact: './src/assets/logo.svg',
-    normal: './src/assets/logo-md.svg',
-};
-
-const person = {
-    avatar: './src/assets/kate-avatar.png',
+const profile = {
+    avatar: '/src/assets/images/kate-avatar.png',
     firstName: 'Екатерина',
     lastName: 'Константинопольская',
     nickname: '@bake_and_pie',
+    activity: {
+        bookmarks: 185,
+        persons: 589,
+        likes: 587,
+    },
 };
 
-export { logos, menuItems, person };
+export { menuItems, profile };

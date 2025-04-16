@@ -92,7 +92,7 @@ function MostPopularCard({
                         />
                     </HStack>
                 </CardHeader>
-                <CardBody px='8px' py='0px'>
+                <CardBody p={0}>
                     <Text fontSize='20px' fontWeight={500} lineHeight='28px' mb='8px' noOfLines={1}>
                         {title}
                     </Text>
@@ -112,7 +112,7 @@ function MostPopularCard({
                         px='12px'
                         py='6px'
                         fontSize='14px'
-                        leftIcon={<Image src='./src/assets/icons/bookmark.svg' />}
+                        leftIcon={<Image src='/src/assets/icons/bookmark.svg' />}
                         h='32px'
                     >
                         Сохранить
@@ -158,7 +158,7 @@ function MostPopularCardCompact({
             <Badge
                 borderRadius='4px'
                 bgColor=' lime.50'
-                display={['inline-flex', null, null, 'none']}
+                display={{ base: 'inline-flex', lg: 'none' }}
                 pos='absolute'
                 top='6px'
                 left='6px'
@@ -189,7 +189,7 @@ function MostPopularCardCompact({
                         border=' 1px solid rgba(0, 0, 0, 0.48);'
                         borderRadius='6px'
                     >
-                        <Image src='./src/assets/icons/bookmark.svg' />
+                        <Image src='/src/assets/icons/bookmark.svg' />
                     </Center>
 
                     <Button

@@ -3,7 +3,7 @@ import { JSX } from '@emotion/react/jsx-runtime';
 
 import ContentContainer from './ContentContainer';
 
-export default function PageWithTabs({
+export default function ContainerWithTabs({
     title,
     subtitle,
     tabData,
