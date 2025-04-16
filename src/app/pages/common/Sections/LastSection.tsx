@@ -25,7 +25,7 @@ export default function LastSection({
     compactCards: { icon: string; title: string }[];
 }) {
     return (
-        <Box>
+        <Box px={{ base: '16px', lg: '0px' }}>
             <Divider mb={{ base: 0, lg: '24px' }} />
             <SimpleGrid
                 columns={{ base: 1, lg: 4 }}

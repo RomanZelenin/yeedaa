@@ -29,7 +29,7 @@ export default function Index() {
             </GridItem>
             <GridItem
                 area='main'
-                px={{ base: '16px', md: '20px', lg: '0px' }}
+                px='0px'
                 py={{ base: '16px', lg: '32px' }}
                 mr={{ lg: '73px' }}
                 ml={{ lg: '24px' }}

@@ -11,7 +11,7 @@ export default function Footer() {
                 px={0}
                 variant='ghost'
                 justifyContent='start'
-                leftIcon={<Image src='./src/assets/icons/left.svg' />}
+                leftIcon={<Image src='/src/assets/icons/left.svg' />}
             >
                 Выйти
             </Button>

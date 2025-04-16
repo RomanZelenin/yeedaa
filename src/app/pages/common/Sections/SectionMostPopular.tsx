@@ -60,7 +60,12 @@ export default function SectionMostPopular() {
     return (
         <VStack spacing='12px' align='stretch'>
             <HStack>
-                <Text fontSize={{ base: '24px', lg: '48px' }} fontWeight='500' flex={1}>
+                <Text
+                    px={{ base: '16px', lg: '0px' }}
+                    fontSize={{ base: '24px', lg: '48px' }}
+                    fontWeight='500'
+                    flex={1}
+                >
                     Самое сочное
                 </Text>
                 <Button
@@ -73,7 +78,7 @@ export default function SectionMostPopular() {
                     variant='ghost'
                     px='16px'
                     py='8px'
-                    rightIcon={<Image src='./src/assets/icons/BsArrowRight.svg' />}
+                    rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
                     data-test-id='juiciest-link'
                 >
                     Вся подборка
@@ -92,7 +97,7 @@ export default function SectionMostPopular() {
                 flex={1}
                 px='16px'
                 py='8px'
-                rightIcon={<Image src='./src/assets/icons/BsArrowRight.svg' />}
+                rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
                 data-test-id='juiciest-link-mobile'
             >
                 Вся подборка

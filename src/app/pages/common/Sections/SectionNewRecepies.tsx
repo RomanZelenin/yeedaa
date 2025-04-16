@@ -55,7 +55,12 @@ export default function SectionNewRecipes() {
 
     return (
         <Box>
-            <Text fontSize={{ base: '24px', lg: '48px' }} fontWeight='500' mb='12px'>
+            <Text
+                fontSize={{ base: '24px', lg: '48px' }}
+                fontWeight='500'
+                mb='12px'
+                ml={{ base: '16px', lg: '0px' }}
+            >
                 Новые рецепты
             </Text>
             <HStack
@@ -70,17 +75,20 @@ export default function SectionNewRecipes() {
                 }}
                 padding='1pt'
             >
-                {recepies.map((it) => (
-                    <NewRecepieCard
-                        badgeText={it.category}
-                        cover={it.cover}
-                        badgeIcon={it.badgeIcon}
-                        title={it.title}
-                        description={it.description}
-                        bookmarksCount={it.bookmarksCount}
-                        likesCount={it.likesCount}
-                        personsCount={it.personsCount}
-                    />
+                {recepies.map((it, idx) => (
+                    <>
+                        {idx == 0 ? <Box></Box> : <></>}
+                        <NewRecepieCard
+                            badgeText={it.category}
+                            cover={it.cover}
+                            badgeIcon={it.badgeIcon}
+                            title={it.title}
+                            description={it.description}
+                            bookmarksCount={it.bookmarksCount}
+                            likesCount={it.likesCount}
+                            personsCount={it.personsCount}
+                        />
+                    </>
                 ))}
             </HStack>
         </Box>

@@ -200,7 +200,7 @@ function MostPopularContent({
                     ))}
                 </SimpleGrid>
             </VStack>
-            <VStack display={{ base: 'flex', lg: 'none' }} alignItems='stretch'>
+            <VStack display={{ base: 'flex', lg: 'none' }} alignItems='stretch' px='16px'>
                 <SimpleGrid
                     columns={{ base: 1, md: 2 }}
                     columnGap={{ base: '0px', md: '12px' }}

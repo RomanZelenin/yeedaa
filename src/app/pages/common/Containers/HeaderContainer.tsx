@@ -40,7 +40,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                 >
                     <Image
                         boxSize={{ base: '14px', lg: '24px' }}
-                        src='./src/assets/icons/filter.svg'
+                        src='/src/assets/icons/filter.svg'
                     />
                 </Center>
                 <InputGroup flex={{ base: 1, md: 0.7, lg: 1 }}>

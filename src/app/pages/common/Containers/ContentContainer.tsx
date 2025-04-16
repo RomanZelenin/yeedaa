@@ -1,4 +1,4 @@
-import { GridItem, VStack } from '@chakra-ui/react';
+import { Box, GridItem, VStack } from '@chakra-ui/react';
 import { JSX } from '@emotion/react/jsx-runtime';
 
 import HeaderContainer from './HeaderContainer';
@@ -21,7 +21,9 @@ export default function ContentContainer({
                 colStart={{ base: 1, md: 1, lg: 2, xl: 4 }}
                 colEnd={{ base: 5, md: 13, lg: 12, xl: 10 }}
             >
-                <HeaderContainer title={title} subtitle={subtitle} />
+                <Box px={{ base: '16px', md: '0px' }}>
+                    <HeaderContainer title={title} subtitle={subtitle} />
+                </Box>
             </GridItem>
 
             <GridItem

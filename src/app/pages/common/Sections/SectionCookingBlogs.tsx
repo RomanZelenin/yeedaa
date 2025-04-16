@@ -52,7 +52,14 @@ export default function SectionCookingBlogs() {
     ];
 
     return (
-        <VStack bgColor='lime.300' borderRadius='16px' p='12px' spacing='12px' align='stretch'>
+        <VStack
+            bgColor='lime.300'
+            borderRadius='16px'
+            p='12px'
+            spacing='12px'
+            align='stretch'
+            mx={{ base: '16px', lg: '0px' }}
+        >
             <HStack>
                 <Text
                     alignSelf='start'

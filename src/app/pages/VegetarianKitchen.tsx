@@ -1,4 +1,4 @@
-import { Button, VStack } from '@chakra-ui/react';
+import { Box, Button, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
 import { menuItems } from '../ConfigApp';
@@ -133,8 +133,10 @@ export default function VegetarianKitchen() {
                     label: it.title,
                     content: (
                         <>
-                            <VStack spacing='12px'>
-                                <MostPopularContent cards={mostPopularCards} />
+                            <VStack spacing='12px' px='0px'>
+                                <Box px='0px'>
+                                    <MostPopularContent cards={mostPopularCards} />
+                                </Box>
                                 <Button
                                     display={['inline-flex']}
                                     as={Link}
