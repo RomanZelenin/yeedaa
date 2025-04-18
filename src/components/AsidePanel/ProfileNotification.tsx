@@ -4,7 +4,7 @@ import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
 import { PersonsIcon } from '../Icons/PersonsIcon';
 
-export default function ProfileNotification({
+export const ProfileNotification = ({
     bookmarks,
     persons,
     likes,
@@ -12,7 +12,7 @@ export default function ProfileNotification({
     bookmarks: number;
     persons: number;
     likes: number;
-}) {
+}) => {
     const menuItems = [
         { icon: <BookmarkIcon boxSize='16px' />, count: bookmarks },
         { icon: <PersonsIcon boxSize='16px' />, count: persons },
@@ -28,4 +28,4 @@ export default function ProfileNotification({
             ))}
         </VStack>
     );
-}
+};

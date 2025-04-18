@@ -1,6 +1,6 @@
 import { Box, HStack, Text } from '@chakra-ui/react';
 
-import NewRecepieCard from '~/components/Cards/NewRecepieCard';
+import { NewRecepieCard } from '~/components/Cards/NewRecepieCard';
 
 export default function SectionNewRecipes() {
     const recepies = [

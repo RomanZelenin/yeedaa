@@ -14,13 +14,13 @@ export default function LastSection({
     title: string;
     description: string;
     cards: {
-        badgeText: string;
+        subcategory: string;
         badgeIcon: string;
         title: string;
         description: string;
-        bookmarksCount?: number;
-        likesCount?: number;
-        personsCount?: number;
+        bookmarks?: number;
+        likes?: number;
+        persons?: number;
     }[];
     compactCards: { icon: string; title: string }[];
 }) {
@@ -60,13 +60,13 @@ export default function LastSection({
                 {cards.map((it) => (
                     <GridItem colSpan={{ xl: 1 }}>
                         <VegeterianKitchenCard
-                            badgeText={it.badgeText}
+                            badgeText={it.subcategory}
                             badgeIcon={it.badgeIcon}
                             title={it.title}
                             description={it.description}
-                            likesCount={it.likesCount}
-                            bookmarksCount={it.bookmarksCount}
-                            personsCount={it.personsCount}
+                            likesCount={it.likes}
+                            bookmarksCount={it.bookmarks}
+                            personsCount={it.persons}
                         />
                     </GridItem>
                 ))}

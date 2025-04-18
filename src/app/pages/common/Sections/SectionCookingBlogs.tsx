@@ -1,6 +1,6 @@
 import { Box, Button, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 
-import BlogCard from '~/components/Cards/BlogCard';
+import { BlogCard } from '~/components/Cards/BlogCard';
 
 export default function SectionCookingBlogs() {
     const blogs = [

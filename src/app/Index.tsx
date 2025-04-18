@@ -1,12 +1,12 @@
 import { Grid, GridItem } from '@chakra-ui/react';
 import { Outlet } from 'react-router';
 
-import AsidePanel from '~/components/AsidePanel/AsidePanel';
-import BottomMenu from '~/components/BottomMenu/BottomMenu';
-import Header from '~/components/Header/Header';
-import Menu from '~/components/Menu/Menu';
+import { AsidePanel } from '~/components/AsidePanel/AsidePanel';
+import { Header } from '~/components/Header/Header';
+import { BottomMenu } from '~/components/Menu/BottomMenu';
+import { SideMenu } from '~/components/Menu/SideMenu';
 
-import { menuItems, profile } from './ConfigApp';
+import { profile } from './ConfigApp';
 
 export default function Index() {
     return (
@@ -25,7 +25,7 @@ export default function Index() {
                 <Header profile={profile} />
             </GridItem>
             <GridItem area='nav' hideBelow='lg'>
-                <Menu menuItems={menuItems} />
+                <SideMenu />
             </GridItem>
             <GridItem
                 area='main'

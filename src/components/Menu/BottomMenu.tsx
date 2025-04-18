@@ -5,7 +5,7 @@ import { HomeIcon } from '../Icons/HomeIcon';
 import { SearchIcon } from '../Icons/SearchIcon';
 import { WriteIcon } from '../Icons/WriteIcon';
 
-export default function BottomMenu({ avatar }: { avatar: string }) {
+export const BottomMenu = ({ avatar }: { avatar: string }) => {
     const [selectedMenuIdx, _] = useState(0);
 
     const items = useMemo(() => {
@@ -67,7 +67,7 @@ export default function BottomMenu({ avatar }: { avatar: string }) {
                     py='10px'
                     flex={1}
                     fontSize='12px'
-                    fontWeight={selectedMenuIdx === idx ? '500' : '400'}
+                    fontWeight={selectedMenuIdx === idx ? 500 : 400}
                     lineHeight='133%'
                     color={selectedMenuIdx === idx ? 'black' : 'rgba(0, 0, 0, 0.64)'}
                     bgGradient={
@@ -89,4 +89,4 @@ export default function BottomMenu({ avatar }: { avatar: string }) {
             ))}
         </Flex>
     );
-}
+};

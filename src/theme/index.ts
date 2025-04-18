@@ -53,6 +53,21 @@ const theme = extendTheme({
                 },
             },
         },
+        Drawer: {
+            baseStyle: {
+                overlay: {
+                    bg: 'rgba(0, 0, 0, 0.16)',
+                    backdropFilter: 'blur(2px)',
+                },
+                dialog: {
+                    borderRadius: '0 0 6px 6px',
+                    h: 'fit-content',
+                },
+                body: {
+                    p: 0,
+                },
+            },
+        },
     },
     colors: {
         lime: {

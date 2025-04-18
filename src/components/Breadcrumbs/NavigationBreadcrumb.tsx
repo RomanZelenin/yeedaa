@@ -1,0 +1,95 @@
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react';
+import { useMemo } from 'react';
+import { Location, useLocation, useParams } from 'react-router';
+
+import { menuItems } from '~/app/ConfigApp';
+
+interface BreadcrumbItem {
+    title: string;
+    path: string;
+}
+
+interface MenuItem {
+    title: string;
+    path?: string;
+    submenu?: MenuItem[];
+}
+
+export const NavigationBreadcrumb = () => {
+    const breadcrumbItems = useBreadcrumbItems();
+
+    return (
+        <Breadcrumb separator='>' flex={1} fontStyle='breadcrumb' listProps={{ flexWrap: 'wrap' }}>
+            {breadcrumbItems}
+        </Breadcrumb>
+    );
+};
+
+const useBreadcrumbItems = () => {
+    const location = useLocation();
+    const { category, subcategory } = useParams();
+    /* const [menuItems] = useState<MenuItem[]>([]); */
+
+    return useMemo(() => {
+        const items = buildBreadcrumbItems(location, category, subcategory, menuItems);
+        return renderBreadcrumbItems(items);
+    }, [location, category, subcategory]);
+};
+
+export const buildBreadcrumbItems = (
+    location: Location,
+    category?: string,
+    subcategory?: string,
+    menuItems: MenuItem[] = [],
+): BreadcrumbItem[] => {
+    const items: BreadcrumbItem[] = [{ title: 'Главная', path: '/' }];
+
+    if (category && subcategory) {
+        const selectedCategory = menuItems.find((it) => it.path?.substring(1) === category);
+        const selectedSubcategory = selectedCategory?.submenu?.find(
+            (it) => it.path?.substring(1) === subcategory,
+        );
+
+        if (selectedCategory && selectedSubcategory) {
+            items.push(
+                {
+                    title: selectedCategory.title,
+                    path: `/${category}${selectedCategory.submenu?.[0]?.path || ''}`,
+                },
+                {
+                    title: selectedSubcategory.title,
+                    path: '#',
+                },
+            );
+        }
+    } else {
+        const pathSegment = location.pathname.split('/').filter(Boolean)[0];
+        addSpecialRoute(items, pathSegment);
+    }
+
+    return items;
+};
+
+const addSpecialRoute = (items: BreadcrumbItem[], pathSegment?: string) => {
+    const specialRoutes: Record<string, BreadcrumbItem> = {
+        most_popular: { title: 'Самое сочное', path: '/most_popular' },
+    };
+
+    if (pathSegment && specialRoutes[pathSegment]) {
+        items.push(specialRoutes[pathSegment]);
+    }
+};
+
+const renderBreadcrumbItems = (items: BreadcrumbItem[]) =>
+    items.map((item, index) => (
+        <BreadcrumbItem key={`${item.path}-${index}`}>
+            <BreadcrumbLink
+                whiteSpace='nowrap'
+                href={item.path}
+                color={index !== items.length - 1 ? 'rgba(0, 0, 0, 0.64)' : 'black'}
+                aria-current={index === items.length - 1 ? 'page' : undefined}
+            >
+                {item.title}
+            </BreadcrumbLink>
+        </BreadcrumbItem>
+    ));

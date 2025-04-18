@@ -9,22 +9,22 @@ import LastSection from './common/Sections/LastSection';
 export default function MostPopular() {
     const cards = [
         {
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             badgeIcon: '/src/assets/icons/pan.svg',
             title: 'Хачапури по-аджарски',
             description:
                 'Давно ходил вокруг рецепта хачапури по-аджарски, не решался. Сегодня  попробовал - я в полном восторге! Тесто замечательное, интересный  процесс приготовления, а вкус - не передать, просто сказка!',
-            likesCount: 1,
-            bookmarksCount: 1,
+            likes: 1,
+            bookmarks: 1,
         },
         {
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             badgeIcon: '/src/assets/icons/pan.svg',
             title: 'Жареные сосиски в тесте',
             description:
                 'Сосиски, жареные в тесте, - звучит уже аппетитно! Тончайшая румяная  корочка, воздушное дрожжевое тесто, сочная сосиска... Мало кто может  устоять перед такими вот пирожочками, особенно домашнего приготовления.  Да, жареные в тесте сосиски',
-            likesCount: 1,
-            bookmarksCount: 2,
+            likes: 1,
+            bookmarks: 2,
         },
     ];
 
@@ -36,89 +36,89 @@ export default function MostPopular() {
 
     const mostPopularCards = [
         {
-            bookmarksCount: 258,
-            likesCount: 342,
+            bookmarks: 258,
+            likes: 342,
             title: 'Лапша с курицей и шафраном',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/chiken_pasta.png',
             coverMini: '/src/assets/images/chiken_pasta_mini.png',
             badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
-            bookmarksCount: 124,
-            likesCount: 324,
+            bookmarks: 124,
+            likes: 324,
             title: 'Том-ям с капустой кимчи',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Национальные',
+            subcategory: 'Национальные',
             coverBig: '/src/assets/images/tom-yam-kimchi.png',
             coverMini: '/src/assets/images/tom-yam-kimchi-mini.png',
             badgeIcon: '/src/assets/icons/international-food-96 1.svg',
         },
         {
-            bookmarksCount: 1,
-            likesCount: 2,
+            bookmarks: 1,
+            likes: 2,
             title: 'Пряная ветчина по итальянски',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/italian_ham.png',
             coverMini: '/src/assets/images/italian_ham_mini.png',
             badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
-            bookmarksCount: 85,
-            likesCount: 152,
+            bookmarks: 85,
+            likes: 152,
             title: 'Кнелли со спагетти',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/spagetti-big.png',
             coverMini: '/src/assets/images/spagetti.png',
             badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
-            bookmarksCount: 120,
-            likesCount: 180,
+            bookmarks: 120,
+            likes: 180,
             title: 'Картошка, тушенная с болгарским перцем и фасолью в томатном соусе',
             description:
                 'Картошка, тушенная с болгарским перцем, фасолью, морковью и луком, -  вариант сытного блюда на каждый день. Фасоль в данном случае заменяет  мясо, делая рагу сытным и питательным. Чтобы сократить время  приготовления, возьмём консервированную фасоль. Блюдо хоть и простое, но в полной мере наполнено ароматами и имеет выразительный вкус за счёт  добавления томатной пасты.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/potatoes-with-bell-pepper.png',
             coverMini: '/src/assets/images/potatoes-with-bell-pepper-mini.png',
             badgeIcon: '/src/assets/icons/pan.svg',
         },
         {
-            bookmarksCount: 85,
-            likesCount: 180,
+            bookmarks: 85,
+            likes: 180,
             title: 'Картофельные рулетики с грибами',
             description:
                 'Картошка, тушенная с болгарским перцем, фасолью, морковью и луком, -  вариант сытного блюда на каждый день. Фасоль в данном случае заменяет  мясо, делая рагу сытным и питательным. Чтобы сократить время  приготовления, возьмём консервированную фасоль. Блюдо хоть и простое, но в полной мере наполнено ароматами и имеет выразительный вкус за счёт  добавления томатной пасты.',
-            badgeText: 'Детские блюда',
+            subcategory: 'Детские блюда',
             coverBig: '/src/assets/images/potatoes-with-mushrooms.png',
             coverMini: '/src/assets/images/potatoes-with-mushrooms-mini.png',
             badgeIcon: '/src/assets/icons/child-tasty-96 1.svg',
         },
         {
-            bookmarksCount: 85,
-            likesCount: 152,
+            bookmarks: 85,
+            likes: 152,
             title: 'Овощная лазанья из лаваша',
             description:
                 'Большое, сытное блюдо для ценителей блюд без мяса! Такая лазанья  готовится с овощным соусом и соусом бешамель, а вместо листов для  лазаньи используется тонкий лаваш.',
-            badgeText: 'Блюда на гриле',
+            subcategory: 'Блюда на гриле',
             coverBig: '/src/assets/images/vegetable-lasagna.png',
             coverMini: '/src/assets/images/vegetable-lasagna-mini.png',
             badgeIcon: '/src/assets/icons/посудомоечная-машина-96 1.svg',
         },
         {
-            bookmarksCount: 85,
-            likesCount: 150,
+            bookmarks: 85,
+            likes: 150,
             title: 'Тефтели из булгура и чечевицы, запечённые в томатном соусе',
             description:
                 'Тефтели из булгура и чечевицы – яркие и питательные, отлично подходят  для постного и вегетарианского меню. Тефтели получаются нежными, а также сочными и ароматными благодаря использованию томатного соуса и душистых пряностей.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/meatballs.png',
             coverMini: '/src/assets/images/meatballs-mini.png',
             badgeIcon: '/src/assets/icons/pan.svg',
@@ -163,12 +163,12 @@ function MostPopularContent({
     cards: {
         avatar?: string;
         recommendation?: string;
-        bookmarksCount?: number;
-        likesCount?: number;
-        personsCount?: number;
+        bookmarks?: number;
+        likes?: number;
+        persons?: number;
         title: string;
         description: string;
-        badgeText: string;
+        subcategory: string;
         coverBig: string;
         coverMini: string;
         badgeIcon: string;
@@ -187,12 +187,12 @@ function MostPopularContent({
                             <MostPopularCard
                                 avatar={it.avatar}
                                 recommendation={it.recommendation}
-                                bookmarksCount={it.bookmarksCount}
-                                likesCount={it.likesCount}
-                                personsCount={it.personsCount}
+                                bookmarks={it.bookmarks}
+                                likes={it.likes}
+                                persons={it.persons}
                                 title={it.title}
                                 description={it.description}
-                                badgeText={it.badgeText}
+                                subcategory={it.subcategory}
                                 cover={it.coverBig}
                                 badgeIcon={it.badgeIcon}
                             />
@@ -209,12 +209,12 @@ function MostPopularContent({
                     {cards.map((it, idx) => (
                         <Box key={idx}>
                             <MostPopularCardCompact
-                                bookmarksCount={it.bookmarksCount}
-                                likesCount={it.likesCount}
-                                personsCount={it.personsCount}
+                                bookmarks={it.bookmarks}
+                                likes={it.likes}
+                                persons={it.persons}
                                 title={it.title}
                                 cover={it.coverMini}
-                                badgeText={it.badgeText}
+                                subcategory={it.subcategory}
                                 badgeIcon={it.badgeIcon}
                             />
                         </Box>

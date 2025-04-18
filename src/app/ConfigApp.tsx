@@ -7,6 +7,7 @@ const menuItems: {
     {
         title: 'Салаты',
         icon: '/src/assets/icons/eggplant.svg',
+        path: '/salads',
         submenu: [
             { title: 'Мясные салаты' },
             { title: 'Рыбные салаты' },
@@ -17,6 +18,7 @@ const menuItems: {
     {
         title: 'Закуски',
         icon: '/src/assets/icons/snacks.svg',
+        path: '/snacks',
         submenu: [
             { title: 'Мясные закуски' },
             { title: 'Рыбные закуски' },
@@ -29,6 +31,7 @@ const menuItems: {
     {
         title: 'Первые блюда',
         icon: '/src/assets/icons/pot.svg',
+        path: '/first-dish',
         submenu: [
             { title: 'Мясные супы' },
             { title: 'Овощные супы' },
@@ -39,6 +42,7 @@ const menuItems: {
     },
     {
         title: 'Вторые блюда',
+        path: '/second-dish',
         icon: '/src/assets/icons/pan.svg',
         submenu: [
             { title: 'Мясные' },
@@ -58,6 +62,7 @@ const menuItems: {
     {
         title: 'Десерты, выпечка',
         icon: '/src/assets/icons/хлеб-и-скалка-96 1.svg',
+        path: '/desserts',
         submenu: [
             { title: 'Блины и оладьи' },
             { title: 'Пироги и пончики' },
@@ -77,6 +82,7 @@ const menuItems: {
     {
         title: 'Блюда на гриле',
         icon: '/src/assets/icons/посудомоечная-машина-96 1.svg',
+        path: '/grill',
         submenu: [
             { title: 'Говядина' },
             { title: 'Свинина' },
@@ -91,19 +97,20 @@ const menuItems: {
         icon: '/src/assets/icons/лавровый-лист-96 1.svg',
         path: '/vegan-cuisine',
         submenu: [
-            { title: 'Закуски', path: '/vegan-cuisine/Закуски' },
-            { title: 'Первые блюда', path: '/vegan-cuisine/Первые блюда' },
-            { title: 'Вторые блюда', path: '/vegan-cuisine/Вторые блюда' },
-            { title: 'Гарниры', path: '/vegan-cuisine/Гарниры' },
-            { title: 'Десерты', path: '/vegan-cuisine/Десерты' },
-            { title: 'Выпечка', path: '/vegan-cuisine/Выпечка' },
-            { title: 'Сыроедческие блюда', path: '/vegan-cuisine/Сыроедческие блюда' },
-            { title: 'Напитки', path: '/vegan-cuisine/Напитки' },
+            { title: 'Закуски', path: '/snacks' },
+            { title: 'Первые блюда', path: '/first-dish' },
+            { title: 'Вторые блюда', path: '/second-dish' },
+            { title: 'Гарниры', path: '/side' },
+            { title: 'Десерты', path: '/desserts' },
+            { title: 'Выпечка', path: '/bakery' },
+            { title: 'Сыроедческие блюда', path: '/raw-food' },
+            { title: 'Напитки', path: '/drinks' },
         ],
     },
     {
         title: 'Детские блюда',
         icon: '/src/assets/icons/child-tasty-96 1.svg',
+        path: '/children',
         submenu: [
             { title: 'Первые блюда' },
             { title: 'Вторые блюда' },
@@ -118,6 +125,7 @@ const menuItems: {
     {
         title: 'Лечебное питание',
         icon: '/src/assets/icons/therapeutic_nutrition.svg',
+        path: '/medic',
         submenu: [
             { title: 'Детская диета' },
             { title: 'Диета №1' },
@@ -141,6 +149,7 @@ const menuItems: {
     {
         title: 'Национальные',
         icon: '/src/assets/icons/international-food-96 1.svg',
+        path: '/nationality',
         submenu: [
             { title: 'Американская кухня' },
             { title: 'Армянская кухня' },
@@ -161,11 +170,13 @@ const menuItems: {
     },
     {
         title: 'Соусы',
+        path: '/souse',
         icon: '/src/assets/icons/ступка-и-пестик-96 1.svg',
         submenu: [{ title: 'Соусы мясные' }, { title: 'Соусы сырные' }, { title: 'Маринады' }],
     },
     {
         title: 'Напитки',
+        path: '/drinks',
         icon: '/src/assets/icons/drinks.svg',
         submenu: [
             { title: 'Соки и фреши' },
@@ -181,6 +192,7 @@ const menuItems: {
     },
     {
         title: 'Заготовки',
+        path: '/stuff',
         icon: '/src/assets/icons/паста-из-овощного-бульона.svg',
         submenu: [
             { title: 'Мясные заготовки' },

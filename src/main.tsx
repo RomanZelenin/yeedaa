@@ -9,9 +9,10 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import { store } from '~/store/configure-store.ts';
 
 import Index from './app/Index';
+import Category from './app/pages/Category';
+import { ErrorView } from './app/pages/ErrorView';
 import Home from './app/pages/Home';
 import MostPopular from './app/pages/MostPopular';
-import VegetarianKitchen from './app/pages/VegetarianKitchen';
 import theme from './theme';
 
 createRoot(document.getElementById('root')!).render(
@@ -23,10 +24,8 @@ createRoot(document.getElementById('root')!).render(
                         <Route element={<Index />}>
                             <Route index element={<Home />} />
                             <Route path='most_popular' element={<MostPopular />} />
-                            <Route
-                                path='vegan-cuisine/:category?'
-                                element={<VegetarianKitchen />}
-                            />
+                            <Route path=':category/:subcategory' element={<Category />} />
+                            <Route path='/*' element={<ErrorView />} />
                         </Route>
                     </Routes>
                 </BrowserRouter>
