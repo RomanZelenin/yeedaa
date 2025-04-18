@@ -1,4 +1,8 @@
-import { Box, HStack, Text } from '@chakra-ui/react';
+import 'swiper/swiper-bundle.css';
+
+import { Box, Text } from '@chakra-ui/react';
+import { Keyboard, Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { NewRecepieCard } from '~/components/Cards/NewRecepieCard';
 
@@ -63,21 +67,52 @@ export default function SectionNewRecipes() {
             >
                 Новые рецепты
             </Text>
-            <HStack
-                spacing={{ base: '12px', xl: '24px' }}
-                align='stretch'
-                overflowX='auto'
-                sx={{
-                    '&::-webkit-scrollbar': {
-                        width: '0px',
-                        height: '0px',
+
+            <Swiper
+                loop={true}
+                modules={[Navigation, Keyboard]}
+                spaceBetween='12px'
+                slidesPerView={2.1}
+                navigation={true}
+                keyboard={{
+                    enabled: true,
+                    onlyInViewport: true,
+                }}
+                breakpoints={{
+                    360: {
+                        slidesPerView: 2.1,
+                        spaceBetween: '12px',
+                        navigation: {
+                            enabled: false,
+                        },
+                    },
+                    768: {
+                        slidesPerView: 4.3,
+                        spaceBetween: '12px',
+                        navigation: {
+                            enabled: false,
+                        },
+                    },
+                    1440: {
+                        slidesPerView: 3.1,
+                        spaceBetween: '12px',
+                        navigation: {
+                            enabled: true,
+                        },
+                    },
+                    1920: {
+                        slidesPerView: 4,
+                        spaceBetween: '24px',
+                        navigation: {
+                            enabled: true,
+                        },
                     },
                 }}
-                padding='1pt'
+                onSlideChange={() => console.log('slide change')}
+                onSwiper={(swiper) => console.log(swiper)}
             >
-                {recepies.map((it, idx) => (
-                    <>
-                        {idx == 0 ? <Box></Box> : <></>}
+                {recepies.map((it) => (
+                    <SwiperSlide>
                         <NewRecepieCard
                             badgeText={it.category}
                             cover={it.cover}
@@ -88,9 +123,9 @@ export default function SectionNewRecipes() {
                             likesCount={it.likesCount}
                             personsCount={it.personsCount}
                         />
-                    </>
+                    </SwiperSlide>
                 ))}
-            </HStack>
+            </Swiper>
         </Box>
     );
 }

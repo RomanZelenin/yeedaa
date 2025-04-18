@@ -25,3 +25,27 @@
     font-weight: 700;
     font-style: normal;
 }
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    display: none;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    min-width: 40px;
+    min-height: 40px;
+    background: black;
+    border-radius: 10%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px;
+}
+
+.swiper-button-prev {
+    background-image: url('/src/assets/icons/left-arrow.svg');
+}
+
+.swiper-button-next {
+    background-image: url('/src/assets/icons/right-arrow.svg');
+}
