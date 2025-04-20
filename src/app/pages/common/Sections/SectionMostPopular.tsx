@@ -12,7 +12,7 @@ export default function SectionMostPopular() {
             title: 'Кнелли со спагетти',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/spagetti-big.png',
             coverMini: '/src/assets/images/spagetti.png',
             badgeIcon: '/src/assets/icons/pan.svg',
@@ -25,7 +25,7 @@ export default function SectionMostPopular() {
             title: 'Пряная ветчина по итальянски',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/italian_ham.png',
             coverMini: '/src/assets/images/italian_ham_mini.png',
             badgeIcon: '/src/assets/icons/pan.svg',
@@ -38,7 +38,7 @@ export default function SectionMostPopular() {
             title: 'Лапша с курицей и шафраном',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Вторые блюда',
+            subcategory: 'Вторые блюда',
             coverBig: '/src/assets/images/chiken_pasta.png',
             coverMini: '/src/assets/images/chiken_pasta_mini.png',
             badgeIcon: '/src/assets/icons/pan.svg',
@@ -50,7 +50,7 @@ export default function SectionMostPopular() {
             title: 'Том-ям с капустой кимчи',
             description:
                 'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-            badgeText: 'Национальные',
+            subcategory: 'Национальные',
             coverBig: '/src/assets/images/tom-yam-kimchi.png',
             coverMini: '/src/assets/images/tom-yam-kimchi-mini.png',
             badgeIcon: '/src/assets/icons/international-food-96 1.svg',

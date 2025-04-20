@@ -1,6 +1,6 @@
 const menuItems: {
     title: string;
-    path?: string;
+    path: string;
     icon: string;
     submenu?: { title: string; path?: string }[];
 }[] = [

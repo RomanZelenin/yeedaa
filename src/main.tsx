@@ -13,6 +13,7 @@ import Category from './app/pages/Category';
 import { ErrorView } from './app/pages/ErrorView';
 import Home from './app/pages/Home';
 import MostPopular from './app/pages/MostPopular';
+import { Recipe } from './app/pages/Recepie/Recipe';
 import theme from './theme';
 
 createRoot(document.getElementById('root')!).render(
@@ -21,10 +22,11 @@ createRoot(document.getElementById('root')!).render(
             <Provider store={store}>
                 <BrowserRouter>
                     <Routes>
-                        <Route element={<Index />}>
+                        <Route path='/' element={<Index />}>
                             <Route index element={<Home />} />
                             <Route path='most_popular' element={<MostPopular />} />
                             <Route path=':category/:subcategory' element={<Category />} />
+                            <Route path=':category/:subcategory/:id' element={<Recipe />} />
                             <Route path='/*' element={<ErrorView />} />
                         </Route>
                     </Routes>

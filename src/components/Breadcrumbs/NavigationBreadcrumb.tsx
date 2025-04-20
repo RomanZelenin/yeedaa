@@ -36,7 +36,7 @@ const useBreadcrumbItems = () => {
     }, [location, category, subcategory]);
 };
 
-export const buildBreadcrumbItems = (
+const buildBreadcrumbItems = (
     location: Location,
     category?: string,
     subcategory?: string,

@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Image } from '@chakra-ui/react';
+import { HStack, Image, Text } from '@chakra-ui/react';
 
 interface ThreeButtonsProps {
     bookmarksCount?: number;
@@ -25,10 +25,10 @@ export const ThreeButtons = ({ bookmarksCount, likesCount, personsCount }: Three
 };
 
 const ButtonItem = ({ iconSrc, count }: { iconSrc: string; count: number }) => (
-    <Flex alignItems='center' columnGap='6px'>
+    <HStack spacing='6px' p='4px'>
         <Image src={iconSrc} boxSize='12px' alt='' />
-        <Box as='span' fontSize='12px' lineHeight='16px' fontWeight='600' color='lime.600'>
+        <Text textStyle='textXsLh4Semibold' color='lime.600'>
             {count}
-        </Box>
-    </Flex>
+        </Text>
+    </HStack>
 );

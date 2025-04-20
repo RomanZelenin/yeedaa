@@ -79,6 +79,13 @@ const theme = extendTheme({
             600: '#2DB100',
             800: '#134B00',
         },
+        blackAlpha: {
+            100: 'rgba(0, 0, 0, 0.06)',
+            200: 'rgba(0, 0, 0, 0.08)',
+            600: 'rgba(0, 0, 0, 0.48)',
+            700: 'rgba(0, 0, 0, 0.64)',
+            900: 'rgba(0, 0, 0, 0.92)',
+        },
     },
     fonts: {
         body: 'Inter, sans-serif',
@@ -150,6 +157,99 @@ const theme = extendTheme({
             fontSize: '14px',
             lineHeight: '20px',
             fontWeight: 400,
+        },
+
+        textSmLh5: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '20px',
+        },
+
+        textXsLh4Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '12px',
+            lineHeight: '16px',
+        },
+        textXsLh4Semibold: {
+            fontStyle: 'normal',
+            fontWeight: 600,
+            fontSize: '12px',
+            lineHeight: '16px',
+        },
+        textXsLh4BoldLsw: {
+            fontStyle: 'normal',
+            fontWeight: 700,
+            fontSize: '12px',
+            lineHeight: '16px',
+            letterSpacing: '5%',
+        },
+        textSmLh5Semibold: {
+            fontStyle: 'normal',
+            fontWeight: 600,
+            fontSize: '14px',
+            lineHeight: '20px',
+        },
+        textSmLh5Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '20px',
+        },
+        textSmLh5Medium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '14px',
+            lineHeight: '20px',
+        },
+        textLgLh7Semibold: {
+            fontStyle: 'normal',
+            fontWeight: 600,
+            fontSize: '18px',
+            lineHeight: '28px',
+        },
+        text2xlLh8Bold: {
+            fontStyle: 'normal',
+            fontWeight: 700,
+            fontSize: '24px',
+            lineHeight: '32px',
+        },
+        text2xlLh8Medium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '24px',
+            lineHeight: '32px',
+        },
+        text5xlLhNoneBold: {
+            fontStyle: 'normal',
+            fontWeight: 700,
+            fontSize: '48px',
+            lineHeight: '48px',
+        },
+        text4xlLh10Medium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '36px',
+            lineHeight: '40px',
+        },
+    },
+    layerStyles: {
+        categoryTag: {
+            bgColor: 'lime.50',
+            color: 'black',
+            borderRadius: '4px',
+            columnGap: '8px',
+            paddingX: '8px',
+            paddingY: '2px',
+        },
+        timerTag: {
+            bgColor: 'blackAlpha.100',
+            color: 'black',
+            borderRadius: '4px',
+            columnGap: '8px',
+            paddingX: '8px',
+            paddingY: '2px',
         },
     },
 });

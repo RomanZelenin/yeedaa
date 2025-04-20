@@ -59,6 +59,7 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
             bottom={0}
             w='100%'
             data-test-id='footer'
+            zIndex={1}
         >
             {items.map((it, idx) => (
                 <Box
