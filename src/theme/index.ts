@@ -47,9 +47,11 @@ const theme = extendTheme({
         Input: {
             baseStyle: {
                 field: {
+                    borderRadius: '4px',
                     _placeholder: {
                         color: 'lime.800',
                     },
+                    _focus: {},
                 },
             },
         },
@@ -99,8 +101,12 @@ const theme = extendTheme({
                     fontWeight: 400,
                     fontSize: '16px',
                     lineHeight: '24px',
-                    border: '1px solid var(--chakra-colors-lime-400)',
-                    _active: {},
+                    border: '1px solid var(--chakra-colors-blackAlpha-200)',
+                    color: 'blackAlpha.700',
+                    _active: {
+                        border: '1px solid var(--chakra-colors-lime-400)',
+                        color: 'gray.700',
+                    },
                     _disabled: {
                         borderColor: 'blackAlpha.200',
                         color: 'blackAlpha.700',
@@ -142,6 +148,7 @@ const theme = extendTheme({
             300: '#C4FF61',
             400: '#B1FF2E',
             600: '#2DB100',
+            700: '#207E00',
             800: '#134B00',
         },
         blackAlpha: {
@@ -250,6 +257,7 @@ const theme = extendTheme({
             lineHeight: '16px',
             letterSpacing: '5%',
         },
+
         textSmLh5Semibold: {
             fontStyle: 'normal',
             fontWeight: 600,
@@ -271,7 +279,7 @@ const theme = extendTheme({
         textLgLh7Semibold: {
             fontStyle: 'normal',
             fontWeight: 600,
-            fontSize: '18px',
+            fontSize: '14px',
             lineHeight: '28px',
         },
         text2xlLh8Bold: {
@@ -301,6 +309,12 @@ const theme = extendTheme({
         textMdLh6Normal: {
             fontStyle: 'normal',
             fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '24px',
+        },
+        textMdLh6Medium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
             fontSize: '16px',
             lineHeight: '24px',
         },

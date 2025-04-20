@@ -21,7 +21,7 @@ export const Header = ({ profile }: { profile: Profile }) => {
                 alignItems='center'
                 px='16px'
                 data-test-id='header'
-                zIndex='popover'
+                zIndex={isOpen ? 'popover' : 'docked'}
             >
                 <Logo />
                 <Hide above='lg'>
@@ -35,6 +35,7 @@ export const Header = ({ profile }: { profile: Profile }) => {
                     </Box>
 
                     <IconButton
+                        data-test-id={!isOpen ? 'hamburger-icon' : 'close-icon'}
                         aria-label='Open hamburger menu'
                         icon={
                             !isOpen ? <BurgerIcon boxSize='24px' /> : <CloseIcon boxSize='12px' />
@@ -43,7 +44,6 @@ export const Header = ({ profile }: { profile: Profile }) => {
                         boxSize='48px'
                         onClick={!isOpen ? onOpen : onClose}
                     />
-
                     <HamburgerMenu isOpen={isOpen} onClose={onClose} />
                 </Hide>
 

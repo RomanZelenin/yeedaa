@@ -19,7 +19,13 @@ export const NavigationBreadcrumb = () => {
     const breadcrumbItems = useBreadcrumbItems();
 
     return (
-        <Breadcrumb separator='>' flex={1} fontStyle='breadcrumb' listProps={{ flexWrap: 'wrap' }}>
+        <Breadcrumb
+            data-test-id='breadcrumbs'
+            separator='>'
+            flex={1}
+            fontStyle='breadcrumb'
+            listProps={{ flexWrap: 'wrap' }}
+        >
             {breadcrumbItems}
         </Breadcrumb>
     );
@@ -72,9 +78,8 @@ const buildBreadcrumbItems = (
 
 const addSpecialRoute = (items: BreadcrumbItem[], pathSegment?: string) => {
     const specialRoutes: Record<string, BreadcrumbItem> = {
-        most_popular: { title: 'Самое сочное', path: '/most_popular' },
+        'the-juiciest': { title: 'Самое сочное', path: '/the-juiciest' },
     };
-
     if (pathSegment && specialRoutes[pathSegment]) {
         items.push(specialRoutes[pathSegment]);
     }

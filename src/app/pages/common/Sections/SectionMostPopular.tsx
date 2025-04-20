@@ -70,7 +70,7 @@ export default function SectionMostPopular() {
                 </Text>
                 <Button
                     as={Link}
-                    to='/most_popular'
+                    to='/the-juiciest'
                     display={{ base: 'none', lg: 'inline-flex' }}
                     bgColor='lime.300'
                     fontSize='16px'
@@ -88,7 +88,7 @@ export default function SectionMostPopular() {
             <Button
                 display={{ base: 'flex', lg: 'none' }}
                 as={Link}
-                to='/most_popular'
+                to='/the-juiciest'
                 bgColor='lime.300'
                 alignSelf='center'
                 fontSize='16px'

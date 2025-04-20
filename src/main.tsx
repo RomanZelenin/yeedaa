@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
                     <Routes>
                         <Route path='/' element={<Index />}>
                             <Route index element={<Home />} />
-                            <Route path='most_popular' element={<MostPopular />} />
+                            <Route path='the-juiciest' element={<MostPopular />} />
                             <Route path=':category/:subcategory' element={<Category />} />
                             <Route path=':category/:subcategory/:id' element={<Recipe />} />
                             <Route path='/*' element={<ErrorView />} />
