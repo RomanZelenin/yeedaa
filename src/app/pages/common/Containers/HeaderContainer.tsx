@@ -1,19 +1,27 @@
 import {
     Box,
-    Center,
     Flex,
     HStack,
+    IconButton,
     Image,
     Input,
     InputGroup,
     InputRightElement,
-    Select,
     Switch,
     Text,
+    useDisclosure,
     VStack,
 } from '@chakra-ui/react';
+import { useState } from 'react';
+
+import { FilterDrawer } from '~/components/Drawer/FilterDrawer';
+import { FilterIcon } from '~/components/Icons/FilterIcon';
+import { AllergySelect } from '~/components/Select /AllergySelect';
 
 export default function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string }) {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isExcludeAllergens, setIsExcludeAllergens] = useState(false);
+
     return (
         <VStack spacing={0}>
             <Box>
@@ -32,17 +40,17 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                 mt={{ base: '16px', lg: '32px' }}
                 justify='center'
             >
-                <Center
-                    as='button'
-                    boxSize={{ base: '32px', lg: '48px' }}
-                    border=' 1px solid rgba(0, 0, 0, 0.48);'
+                <IconButton
+                    minW={0}
                     borderRadius='6px'
-                >
-                    <Image
-                        boxSize={{ base: '14px', lg: '24px' }}
-                        src='/src/assets/icons/filter.svg'
-                    />
-                </Center>
+                    boxSize={{ base: '32px', lg: '48px' }}
+                    border=' 1px solid rgba(0, 0, 0, 0.48)'
+                    icon={<FilterIcon boxSize={{ base: '14px', lg: '24px' }} />}
+                    aria-label='Filter'
+                    bgColor='transparent'
+                    onClick={onOpen}
+                />
+
                 <InputGroup flex={{ base: 1, md: 0.7, lg: 1 }}>
                     <Input
                         borderRadius='4px'
@@ -56,25 +64,19 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                     </InputRightElement>
                 </InputGroup>
             </Flex>
-
-            <HStack
-                display={{ base: 'none', lg: 'flex' }}
-                alignContent='center'
-                spacing={0}
-                mt='16px'
-                w='31em'
-            >
-                <Text fontSize='16px' fontWeight='500' flex={1}>
-                    Исключить мои аллергены
-                </Text>
-                <Switch ml='12px' />
-                <Select
-                    flex={1}
-                    ml='16px'
-                    variant='outline'
-                    placeholder='Выберите из списка...'
-                ></Select>
+            <HStack display={{ base: 'none', lg: 'flex' }} spacing='16px' mt='16px' w='31em'>
+                <HStack flex={1} spacing='12px' alignSelf='start'>
+                    <Text fontSize='16px' fontWeight='500' flex={1} whiteSpace='nowrap'>
+                        Исключить мои аллергены
+                    </Text>
+                    <Switch
+                        isChecked={isExcludeAllergens}
+                        onChange={() => setIsExcludeAllergens(!isExcludeAllergens)}
+                    />
+                    <AllergySelect isEnabled={isExcludeAllergens} />
+                </HStack>
             </HStack>
+            <FilterDrawer isOpen={isOpen} onClose={onClose} />
         </VStack>
     );
 }

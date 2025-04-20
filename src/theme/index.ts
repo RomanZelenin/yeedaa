@@ -68,6 +68,71 @@ const theme = extendTheme({
                 },
             },
         },
+        Switch: {
+            baseStyle: {
+                track: {
+                    _checked: {
+                        bg: 'lime.400',
+                    },
+                },
+            },
+        },
+        Select: {
+            variants: {
+                outline: {
+                    field: {
+                        borderColor: 'lime.400',
+                        borderRadius: '6px',
+                        _disabled: {
+                            borderColor: 'blackAlpha.200',
+                            color: 'blackAlpha.700',
+                        },
+                    },
+                },
+            },
+        },
+        Button: {
+            variants: {
+                lime: {
+                    borderRadius: '6px',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '24px',
+                    border: '1px solid var(--chakra-colors-lime-400)',
+                    _active: {},
+                    _disabled: {
+                        borderColor: 'blackAlpha.200',
+                        color: 'blackAlpha.700',
+                    },
+                },
+            },
+        },
+        Checkbox: {
+            variants: {
+                lime: {
+                    control: {
+                        width: '12px',
+                        height: '12px',
+                        borderColor: 'lime.150',
+                        _checked: {
+                            bg: 'lime.400',
+                            borderColor: 'lime.400',
+                        },
+                    },
+                    icon: {
+                        width: '8px',
+                        height: '8px',
+                        color: 'black',
+                    },
+                },
+            },
+        },
+        Menu: {
+            baseStyle: {
+                item: {},
+            },
+        },
     },
     colors: {
         lime: {
@@ -232,6 +297,12 @@ const theme = extendTheme({
             fontWeight: 500,
             fontSize: '36px',
             lineHeight: '40px',
+        },
+        textMdLh6Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '24px',
         },
     },
     layerStyles: {
