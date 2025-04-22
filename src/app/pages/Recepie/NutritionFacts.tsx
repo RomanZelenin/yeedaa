@@ -1,6 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
 
-import { NutritionValue } from './Recipe';
+import { NutritionValue } from '~/app/mocks/types/type_defenitions';
 
 export const NutritionFacts = ({ nutrition }: { nutrition: NutritionValue }) => (
     <>

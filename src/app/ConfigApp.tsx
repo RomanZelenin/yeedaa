@@ -2,25 +2,26 @@ const menuItems: {
     title: string;
     path: string;
     icon: string;
-    submenu?: { title: string; path?: string }[];
+    subtitle?: string;
+    subcategory?: { title: string; path?: string }[];
 }[] = [
     {
         title: 'Салаты',
         icon: '/src/assets/icons/eggplant.svg',
         path: '/salads',
-        submenu: [
-            { title: 'Мясные салаты' },
-            { title: 'Рыбные салаты' },
-            { title: 'Овощные салаты' },
-            { title: 'Теплые салаты' },
+        subcategory: [
+            { title: 'Мясные салаты', path: '/meat' },
+            { title: 'Рыбные салаты', path: '#' },
+            { title: 'Овощные салаты', path: '#' },
+            { title: 'Теплые салаты', path: '#' },
         ],
     },
     {
         title: 'Закуски',
         icon: '/src/assets/icons/snacks.svg',
         path: '/snacks',
-        submenu: [
-            { title: 'Мясные закуски' },
+        subcategory: [
+            { title: 'Мясные закуски', path: '/meat' },
             { title: 'Рыбные закуски' },
             { title: 'Овощные закуски' },
             { title: 'Теплые закуски' },
@@ -32,7 +33,7 @@ const menuItems: {
         title: 'Первые блюда',
         icon: '/src/assets/icons/pot.svg',
         path: '/first-dish',
-        submenu: [
+        subcategory: [
             { title: 'Мясные супы' },
             { title: 'Овощные супы' },
             { title: 'Бульоны' },
@@ -44,7 +45,7 @@ const menuItems: {
         title: 'Вторые блюда',
         path: '/second-dish',
         icon: '/src/assets/icons/pan.svg',
-        submenu: [
+        subcategory: [
             { title: 'Мясные' },
             { title: 'Рыбные' },
             { title: 'Овощные' },
@@ -63,7 +64,7 @@ const menuItems: {
         title: 'Десерты, выпечка',
         icon: '/src/assets/icons/хлеб-и-скалка-96 1.svg',
         path: '/desserts',
-        submenu: [
+        subcategory: [
             { title: 'Блины и оладьи' },
             { title: 'Пироги и пончики' },
             { title: 'Торты' },
@@ -83,7 +84,7 @@ const menuItems: {
         title: 'Блюда на гриле',
         icon: '/src/assets/icons/посудомоечная-машина-96 1.svg',
         path: '/grill',
-        submenu: [
+        subcategory: [
             { title: 'Говядина' },
             { title: 'Свинина' },
             { title: 'Птица' },
@@ -94,13 +95,15 @@ const menuItems: {
     },
     {
         title: 'Веганская кухня',
+        subtitle:
+            'Интересны не только убеждённым вегетарианцам, но и тем, кто хочет  попробовать вегетарианскую диету и готовить вкусные  вегетарианские блюда.',
         icon: '/src/assets/icons/лавровый-лист-96 1.svg',
-        path: '/vegan-cuisine',
-        submenu: [
+        path: '/vegan',
+        subcategory: [
             { title: 'Закуски', path: '/snacks' },
             { title: 'Первые блюда', path: '/first-dish' },
             { title: 'Вторые блюда', path: '/second-dish' },
-            { title: 'Гарниры', path: '/side' },
+            { title: 'Гарниры', path: '/side-dishes' },
             { title: 'Десерты', path: '/desserts' },
             { title: 'Выпечка', path: '/bakery' },
             { title: 'Сыроедческие блюда', path: '/raw-food' },
@@ -111,7 +114,7 @@ const menuItems: {
         title: 'Детские блюда',
         icon: '/src/assets/icons/child-tasty-96 1.svg',
         path: '/children',
-        submenu: [
+        subcategory: [
             { title: 'Первые блюда' },
             { title: 'Вторые блюда' },
             { title: 'Гарниры' },
@@ -126,7 +129,7 @@ const menuItems: {
         title: 'Лечебное питание',
         icon: '/src/assets/icons/therapeutic_nutrition.svg',
         path: '/medic',
-        submenu: [
+        subcategory: [
             { title: 'Детская диета' },
             { title: 'Диета №1' },
             { title: 'Диета №2' },
@@ -150,7 +153,7 @@ const menuItems: {
         title: 'Национальные',
         icon: '/src/assets/icons/international-food-96 1.svg',
         path: '/nationality',
-        submenu: [
+        subcategory: [
             { title: 'Американская кухня' },
             { title: 'Армянская кухня' },
             { title: 'Греческая кухгя' },
@@ -172,13 +175,13 @@ const menuItems: {
         title: 'Соусы',
         path: '/souse',
         icon: '/src/assets/icons/ступка-и-пестик-96 1.svg',
-        submenu: [{ title: 'Соусы мясные' }, { title: 'Соусы сырные' }, { title: 'Маринады' }],
+        subcategory: [{ title: 'Соусы мясные' }, { title: 'Соусы сырные' }, { title: 'Маринады' }],
     },
     {
         title: 'Напитки',
         path: '/drinks',
         icon: '/src/assets/icons/drinks.svg',
-        submenu: [
+        subcategory: [
             { title: 'Соки и фреши' },
             { title: 'Смузи' },
             { title: 'Компоты' },
@@ -194,7 +197,7 @@ const menuItems: {
         title: 'Заготовки',
         path: '/stuff',
         icon: '/src/assets/icons/паста-из-овощного-бульона.svg',
-        submenu: [
+        subcategory: [
             { title: 'Мясные заготовки' },
             { title: 'Рыбные заготовки' },
             { title: 'Из огурцов' },

@@ -6,7 +6,7 @@ import { Header } from '~/components/Header/Header';
 import { BottomMenu } from '~/components/Menu/BottomMenu';
 import { SideMenu } from '~/components/Menu/SideMenu';
 
-import { profile } from './ConfigApp';
+import { profile } from '../ConfigApp';
 
 export default function Index() {
     return (

@@ -33,11 +33,11 @@ export const NavigationBreadcrumb = () => {
 
 const useBreadcrumbItems = () => {
     const location = useLocation();
-    const { category, subcategory } = useParams();
+    const { category, subcategory, id } = useParams();
     /* const [menuItems] = useState<MenuItem[]>([]); */
 
     return useMemo(() => {
-        const items = buildBreadcrumbItems(location, category, subcategory, menuItems);
+        const items = buildBreadcrumbItems(location, category, subcategory, id, menuItems);
         return renderBreadcrumbItems(items);
     }, [location, category, subcategory]);
 };
@@ -46,27 +46,40 @@ const buildBreadcrumbItems = (
     location: Location,
     category?: string,
     subcategory?: string,
+    id?: string,
     menuItems: MenuItem[] = [],
 ): BreadcrumbItem[] => {
     const items: BreadcrumbItem[] = [{ title: 'Главная', path: '/' }];
 
     if (category && subcategory) {
         const selectedCategory = menuItems.find((it) => it.path?.substring(1) === category);
-        const selectedSubcategory = selectedCategory?.submenu?.find(
+
+        const selectedSubcategory = selectedCategory!.subcategory!.find(
             (it) => it.path?.substring(1) === subcategory,
         );
 
         if (selectedCategory && selectedSubcategory) {
-            items.push(
-                {
-                    title: selectedCategory.title,
-                    path: `/${category}${selectedCategory.submenu?.[0]?.path || ''}`,
-                },
-                {
+            items.push({
+                title: selectedCategory.title,
+                path: `/${category}${selectedCategory.subcategory?.[0]?.path || ''}`,
+            });
+            if (id) {
+                items.push(
+                    {
+                        title: selectedSubcategory.title,
+                        path: `/${category}/${subcategory}`,
+                    },
+                    {
+                        title: id,
+                        path: '#',
+                    },
+                );
+            } else {
+                items.push({
                     title: selectedSubcategory.title,
                     path: '#',
-                },
-            );
+                });
+            }
         }
     } else {
         const pathSegment = location.pathname.split('/').filter(Boolean)[0];

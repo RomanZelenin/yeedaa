@@ -1,27 +1,30 @@
 import {
     Avatar,
-    Badge,
-    Box,
     Button,
     Card,
     CardBody,
     CardFooter,
     CardHeader,
-    Center,
-    Heading,
     HStack,
+    IconButton,
     Image,
     Stack,
+    Tag,
+    TagLabel,
     Text,
+    Wrap,
+    WrapItem,
 } from '@chakra-ui/react';
 
+import { useResource } from '~/hooks/ResourceContext';
+
+import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { ThreeButtons } from './ThreeButtons';
 
 export const MostPopularCard = ({
-    subcategory,
+    tags,
     avatar,
     recommendation,
-    badgeIcon,
     title,
     description,
     cover,
@@ -29,173 +32,170 @@ export const MostPopularCard = ({
     likes,
     persons,
 }: {
-    subcategory: string;
+    tags: string[];
     avatar?: string;
     recommendation?: string;
-    badgeIcon: string;
     title: string;
     description: string;
     cover: string;
     bookmarks?: number;
     likes?: number;
     persons?: number;
-}) => (
-    <Card direction='row' overflow='clip' minW='340px' h='244px' flex={1}>
-        <Box>
-            <Image src={cover} />
-            {typeof recommendation === 'string' ? (
-                <Badge
+}) => {
+    const { getString, getPicture } = useResource();
+
+    return (
+        <Card direction='row' overflow='clip' minH='244px'>
+            <Image src={cover} w='346px' />
+            {recommendation ? (
+                <Tag
                     py='4px'
                     px='8px'
                     pos='absolute'
-                    borderRadius='4px'
+                    layerStyle='categoryTag'
                     bgColor='lime.150'
-                    display='inline-flex'
                     bottom='20px'
                     left='24px'
-                    alignItems='center'
-                    columnGap='8px'
                 >
                     <Avatar src={avatar} boxSize='16px' />
-                    <Text color='black' fontSize='14px' fontWeight='400' textTransform='initial'>
-                        {recommendation}
-                    </Text>
-                </Badge>
+                    <TagLabel textStyle='textSmLh5'>{recommendation}</TagLabel>
+                </Tag>
             ) : (
                 <></>
             )}
-        </Box>
-        <Stack spacing='24px' flex={1} px='24px' py='20px'>
-            <CardHeader p='0px'>
-                <HStack spacing='50px' justify='space-between'>
-                    <Badge borderRadius='4px' bgColor=' lime.50' display='inline-flex'>
-                        <Image src={badgeIcon} />
-                        <Text
-                            color='black'
-                            fontSize='14px'
-                            fontWeight='400'
-                            textTransform='initial'
-                        >
-                            {subcategory}
-                        </Text>
-                    </Badge>
-                    <ThreeButtons
-                        bookmarksCount={bookmarks}
-                        likesCount={likes}
-                        personsCount={persons}
-                    />
-                </HStack>
-            </CardHeader>
-            <CardBody p={0}>
-                <Text fontSize='20px' fontWeight={500} lineHeight='28px' mb='8px' noOfLines={1}>
-                    {title}
-                </Text>
-                <Text fontSize='14px' fontWeight={400} lineHeight='20px' noOfLines={3}>
-                    {description}
-                </Text>
-            </CardBody>
-            <CardFooter
-                px='8px'
-                py='4px'
-                justifyContent='right'
-                columnGap='8px'
-                alignItems='center'
-            >
-                <Button
-                    variant='outline'
-                    px='12px'
-                    py='6px'
-                    fontSize='14px'
-                    leftIcon={<Image src='/src/assets/icons/bookmark.svg' />}
-                    h='32px'
-                >
-                    Сохранить
-                </Button>
-                <Button
-                    bgColor='black'
-                    color='white'
-                    fontSize='14px'
-                    alignItems='center'
-                    px='12px'
-                    py='6px'
-                    h='32px'
-                    borderRadius='6px'
-                >
-                    Готовить
-                </Button>
-            </CardFooter>
-        </Stack>
-    </Card>
-);
+
+            <Stack spacing='4px' px='4px' flex={1}>
+                <CardHeader>
+                    <HStack spacing='50px' justify='space-between' alignItems='start'>
+                        <Wrap>
+                            {tags.map((it) => (
+                                <WrapItem key={it}>
+                                    <Tag layerStyle='categoryTag'>
+                                        <Image src={getPicture(it)} boxSize='16px' />
+                                        <TagLabel textStyle='textSmLh5'>{getString(it)}</TagLabel>
+                                    </Tag>
+                                </WrapItem>
+                            ))}
+                        </Wrap>
+                        <ThreeButtons
+                            bookmarksCount={bookmarks}
+                            likesCount={likes}
+                            personsCount={persons}
+                        />
+                    </HStack>
+                </CardHeader>
+                <CardBody py={0}>
+                    <Text textStyle='textXlLh7Medium' mb='8px' noOfLines={1}>
+                        {title}
+                    </Text>
+                    <Text textStyle='textSmLh5Normal' noOfLines={3}>
+                        {description}
+                    </Text>
+                </CardBody>
+                <CardFooter flex={1} justifyContent='right' alignItems='end' columnGap='8px'>
+                    <Button
+                        variant='outline'
+                        px='12px'
+                        py='6px'
+                        textStyle='textSmLh5Semibold'
+                        leftIcon={<Image src='/src/assets/icons/bookmark.svg' />}
+                        h='32px'
+                        borderRadius='6px'
+                        borderColor='blackAlpha.600'
+                        borderWidth='1px'
+                    >
+                        Сохранить
+                    </Button>
+                    <Button
+                        bgColor='blackAlpha.900'
+                        color='white'
+                        textStyle='textSmLh5Semibold'
+                        alignItems='center'
+                        px='12px'
+                        py='6px'
+                        h='32px'
+                        borderRadius='6px'
+                        borderColor='blackAlpha.200'
+                        borderWidth='1px'
+                    >
+                        Готовить
+                    </Button>
+                </CardFooter>
+            </Stack>
+        </Card>
+    );
+};
 
 export const MostPopularCardCompact = ({
-    subcategory,
-    badgeIcon,
+    tags,
     title,
     cover,
     bookmarks,
     likes,
     persons,
 }: {
-    subcategory: string;
-    badgeIcon: string;
+    tags: string[];
     title: string;
     cover: string;
     bookmarks?: number;
     likes?: number;
     persons?: number;
-}) => (
-    <Card direction='row' overflow='clip' flex={1}>
-        <Image src={cover} />
-        <Badge
-            borderRadius='4px'
-            bgColor=' lime.50'
-            display={{ base: 'inline-flex', lg: 'none' }}
-            pos='absolute'
-            top='6px'
-            left='6px'
-            alignItems='center'
-        >
-            <Image src={badgeIcon} />
-            <Text color='black' fontSize='10pt' fontWeight='400' textTransform='initial'>
-                {subcategory}
-            </Text>
-        </Badge>
-        <Stack spacing={0} flex={1} p='8px'>
-            <CardHeader p='0px'>
-                <ThreeButtons
-                    bookmarksCount={bookmarks}
-                    likesCount={likes}
-                    personsCount={persons}
-                />
-            </CardHeader>
-            <CardBody p={0}>
-                <Heading size='16px' fontWeight={500} lineHeight='24px' noOfLines={2}>
-                    {title}
-                </Heading>
-            </CardBody>
-            <CardFooter p={0} justifyContent='right' columnGap='12px' alignItems='center'>
-                <Center
-                    as='button'
-                    boxSize='24px'
-                    border=' 1px solid rgba(0, 0, 0, 0.48);'
-                    borderRadius='6px'
-                >
-                    <Image src='/src/assets/icons/bookmark.svg' />
-                </Center>
+}) => {
+    const { getString, getPicture } = useResource();
+    return (
+        <Card direction='row' overflow='clip' minH='128px'>
+            <Image src={cover} w='158px' />
+            <Wrap pos='absolute' top='6px' left='6px' alignItems='center' maxW='158px'>
+                {tags.map((it) => (
+                    <WrapItem key={it}>
+                        <Tag layerStyle='categoryTag'>
+                            <Image src={getPicture(it)} boxSize='16px' />
+                            <TagLabel textStyle='textSmLh5'>{getString(it)}</TagLabel>
+                        </Tag>
+                    </WrapItem>
+                ))}
+            </Wrap>
 
-                <Button
-                    bgColor='black'
-                    color='white'
-                    fontSize='12px'
-                    alignItems='center'
-                    px='8px'
-                    h='1.4rem'
-                    borderRadius='6px'
-                >
-                    Готовить
-                </Button>
-            </CardFooter>
-        </Stack>
-    </Card>
-);
+            <Stack spacing={0} flex={1} px='8px' pt='8px' pb='4px'>
+                <CardHeader p={0}>
+                    <ThreeButtons
+                        bookmarksCount={bookmarks}
+                        likesCount={likes}
+                        personsCount={persons}
+                    />
+                </CardHeader>
+                <CardBody p={0}>
+                    <Text textStyle='textMdLh6Medium' noOfLines={2}>
+                        {title}
+                    </Text>
+                </CardBody>
+                <CardFooter p={0} justifyContent='right' columnGap='12px' alignItems='center'>
+                    <IconButton
+                        minW={0}
+                        borderWidth='1px'
+                        borderRadius='6px'
+                        borderColor='blackAlpha.600'
+                        bgColor='transparent'
+                        boxSize='24px'
+                        icon={<BookmarkIcon boxSize='12px' />}
+                        aria-label=''
+                    />
+
+                    <Button
+                        bgColor='black'
+                        color='white'
+                        fontSize='12px'
+                        lineHeight='16px'
+                        alignItems='center'
+                        px='8px'
+                        fontWeight={600}
+                        h='1.5rem'
+                        borderRadius='6px'
+                    >
+                        Готовить
+                    </Button>
+                </CardFooter>
+            </Stack>
+        </Card>
+    );
+};

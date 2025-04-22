@@ -1,0 +1,44 @@
+[
+    {
+        "person": {
+            "firstName": "Елена",
+            "lastName": "Высоцкая",
+            "nickname": "@elenapovar",
+            "avatar": "/src/assets/images//kate-avatar.png",
+            "activity": {
+                "bookmarks": 185,
+                "persons": 589,
+                "likes": 587
+            }
+        },
+        "comment": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку."
+    },
+    {
+        "person": {
+            "firstName": "Alex",
+            "lastName": "Cook",
+            "nickname": "@funtasticooking",
+            "avatar": "/src/assets/images/kate-avatar.png",
+            "activity": {
+                "bookmarks": 185,
+                "persons": 589,
+                "likes": 587
+            }
+        },
+        "comment": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку."
+    },
+    {
+        "person": {
+            "firstName": "Екатерина",
+            "lastName": "Константинопольская",
+            "nickname": "@bake_and_pie",
+            "avatar": "/src/assets/images/kate-avatar.png",
+            "activity": {
+                "bookmarks": 185,
+                "persons": 589,
+                "likes": 587
+            }
+        },
+        "comment": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку."
+    }
+]

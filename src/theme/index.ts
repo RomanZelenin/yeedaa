@@ -28,9 +28,12 @@ const theme = extendTheme({
         Tabs: {
             baseStyle: {
                 tab: {
-                    _selected: { color: 'lime.600', borderBottom: '4px solid' },
+                    _selected: { color: 'lime.600', borderBottom: '2px solid' },
                     fontWeight: 500,
+                },
+                tablist: {
                     whiteSpace: 'nowrap',
+                    scrollbarWidth: 'none',
                 },
             },
         },
@@ -282,6 +285,12 @@ const theme = extendTheme({
             fontSize: '14px',
             lineHeight: '28px',
         },
+        textLgLh7Medium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '18px',
+            lineHeight: '28px',
+        },
         text2xlLh8Bold: {
             fontStyle: 'normal',
             fontWeight: 700,
@@ -297,6 +306,12 @@ const theme = extendTheme({
         text5xlLhNoneBold: {
             fontStyle: 'normal',
             fontWeight: 700,
+            fontSize: '48px',
+            lineHeight: '48px',
+        },
+        text5xlLhNoneMedium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
             fontSize: '48px',
             lineHeight: '48px',
         },
@@ -317,6 +332,12 @@ const theme = extendTheme({
             fontWeight: 500,
             fontSize: '16px',
             lineHeight: '24px',
+        },
+        textXlLh7Medium: {
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '20px',
+            lineHeight: '28px',
         },
     },
     layerStyles: {

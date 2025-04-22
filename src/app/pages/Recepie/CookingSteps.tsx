@@ -1,8 +1,7 @@
 import { Text, VStack } from '@chakra-ui/react';
 
+import { CookingStep } from '~/app/mocks/types/type_defenitions';
 import { StepPreparationCard } from '~/components/Cards/StepPreparationCard';
-
-import { CookingStep } from './Recipe';
 
 export const CookingSteps = ({ steps }: { steps: CookingStep[] }) => (
     <>

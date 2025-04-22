@@ -1,0 +1,80 @@
+[
+    {
+        "avatar": "/src/assets/images/kate-avatar.png",
+        "bookmarks": 85,
+        "likes": 152,
+        "title": "Кнелли со спагетти",
+        "description": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.",
+        "category": ["second-dish"],
+        "image": "/src/assets/images/spagetti-big.png",
+        "badgeIcon": "/src/assets/icons/pan.svg"
+    },
+    {
+        "avatar": "/src/assets/images/kate-avatar.png",
+        "recommendation": "Елена Высоцкая рекомендует",
+        "bookmarks": 1,
+        "likes": 2,
+        "title": "Пряная ветчина по итальянски",
+        "description": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.",
+        "category": ["second-dish"],
+        "image": "/src/assets/images/italian_ham.png",
+        "badgeIcon": "/src/assets/icons/pan.svg"
+    },
+    {
+        "avatar": "/src/assets/images/kate-avatar.png",
+        "recommendation": "Alex Cook рекомендует",
+        "bookmarks": 258,
+        "likes": 342,
+        "title": "Лапша с курицей и шафраном",
+        "description": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.",
+        "category": ["second-dish"],
+        "image": "/src/assets/images/chiken_pasta.png",
+        "badgeIcon": "/src/assets/icons/pan.svg"
+    },
+    {
+        "avatar": "/src/assets/images/kate-avatar.png",
+        "bookmarks": 124,
+        "likes": 324,
+        "title": "Том-ям с капустой кимчи",
+        "description": "Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.",
+        "category": ["national"],
+        "image": "/src/assets/images/tom-yam-kimchi.png",
+        "badgeIcon": "/src/assets/icons/international-food-96 1.svg"
+    },
+    {
+        "bookmarks": 120,
+        "likes": 180,
+        "title": "Картошка, тушенная с болгарским перцем и фасолью в томатном соусе",
+        "description": "Картошка, тушенная с болгарским перцем, фасолью, морковью и луком, -  вариант сытного блюда на каждый день. Фасоль в данном случае заменяет  мясо, делая рагу сытным и питательным. Чтобы сократить время  приготовления, возьмём консервированную фасоль. Блюдо хоть и простое, но в полной мере наполнено ароматами и имеет выразительный вкус за счёт  добавления томатной пасты.",
+        "category": ["second-dish"],
+        "image": "/src/assets/images/potatoes-with-bell-pepper.png",
+        "badgeIcon": "/src/assets/icons/pan.svg"
+    },
+    {
+        "bookmarks": 85,
+        "likes": 180,
+        "title": "Картофельные рулетики с грибами",
+        "description": "Картошка, тушенная с болгарским перцем, фасолью, морковью и луком, - вариант сытного блюда на каждый день. Фасоль в данном случае заменяет мясо, делая рагу сытным и питательным. Чтобы сократить время приготовления, возьмём консервированную фасоль. Блюдо хоть и простое, но в полной мере наполнено ароматами и имеет выразительный вкус за счёт добавления томатной пасты.",
+        "category": ["children-dishes"],
+        "image": "/src/assets/images/potatoes-with-mushrooms.png",
+        "badgeIcon": "/src/assets/icons/child-tasty-96 1.svg"
+    },
+    {
+        "bookmarks": 85,
+        "likes": 152,
+        "title": "Овощная лазанья из лаваша",
+        "description": "Большое, сытное блюдо для ценителей блюд без мяса! Такая лазанья готовится с овощным соусом и соусом бешамель, а вместо листов для лазаньи используется тонкий лаваш.",
+        "category": ["grilled"],
+        "image": "/src/assets/images/vegetable-lasagna.png",
+        "badgeIcon": "/src/assets/icons/посудомоечная-машина-96 1.svg"
+    },
+    {
+        "bookmarks": 85,
+        "likes": 150,
+        "title": "Тефтели из булгура и чечевицы, запечённые в томатном соусе",
+        "description": "Тефтели из булгура и чечевицы – яркие и питательные, отлично подходят для постного и вегетарианского меню. Тефтели получаются нежными, а также сочными и ароматными благодаря использованию томатного соуса и душистых пряностей.",
+        "category": ["second-dish"],
+        "image": "/src/assets/images/meatballs.png",
+        "badgeIcon": "/src/assets/icons/pan.svg"
+    }
+]

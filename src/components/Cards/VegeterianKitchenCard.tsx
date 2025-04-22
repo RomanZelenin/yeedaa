@@ -13,9 +13,10 @@ import {
     Text,
 } from '@chakra-ui/react';
 
+import { useResource } from '~/hooks/ResourceContext';
+
 export const VegeterianKitchenCard = ({
     badgeText,
-    badgeIcon,
     title,
     description,
     bookmarksCount,
@@ -23,7 +24,6 @@ export const VegeterianKitchenCard = ({
     personsCount,
 }: {
     badgeText: string;
-    badgeIcon: string;
     title: string;
     description: string;
     bookmarksCount?: number;
@@ -39,6 +39,8 @@ export const VegeterianKitchenCard = ({
         count: number;
         icon: string;
     }[];
+
+    const { getString, getPicture } = useResource();
 
     return (
         <Card p='12px' borderRadius='8px' border='1px solid rgba(0, 0, 0, 0.08)' h='100%'>
@@ -59,9 +61,9 @@ export const VegeterianKitchenCard = ({
                     display='inline-flex'
                     alignItems='center'
                 >
-                    <Image src={badgeIcon} />
+                    <Image src={getPicture(badgeText)} />
                     <Text color='black' fontSize='10pt' fontWeight='400' textTransform='initial'>
-                        {badgeText}
+                        {getString(badgeText)}
                     </Text>
                 </Badge>
                 <Spacer />

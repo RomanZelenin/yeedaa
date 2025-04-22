@@ -27,7 +27,7 @@ export const MenuItems = () => {
         setSelectedItem(menuItems.findIndex((it) => it.path?.substring(1) === category));
         setSelectedSubmenuIdx(
             selectedItem >= 0
-                ? menuItems[selectedItem].submenu!.findIndex(
+                ? menuItems[selectedItem].subcategory!.findIndex(
                       (it) => it.path?.substring(1) === subcategory,
                   )
                 : 0,
@@ -88,7 +88,7 @@ export const MenuItems = () => {
                                     onClick={() =>
                                         handleMenuItemClick({
                                             idx: idx,
-                                            path: menu.path! + menu.submenu![0].path,
+                                            path: menu.path! + menu.subcategory![0].path,
                                         })
                                     }
                                 >
@@ -113,7 +113,7 @@ export const MenuItems = () => {
                             </h2>
                             <AccordionPanel>
                                 <UnorderedList styleType='none' m={0}>
-                                    {menu.submenu?.map((subItem, subIdx) => (
+                                    {menu.subcategory?.map((subItem, subIdx) => (
                                         <ListItem key={`${subItem.title}-${subIdx}`} mb='12px'>
                                             <ChakraLink
                                                 my='6px'

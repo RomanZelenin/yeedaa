@@ -1,29 +1,21 @@
 import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
+import { fetchRandomCategory } from '~/app/mocks/api';
 import {
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
 } from '~/components/Cards/VegeterianKitchenCard';
 
-export default function LastSection({
-    title,
-    description,
-    cards,
-    compactCards,
-}: {
-    title: string;
-    description: string;
-    cards: {
-        subcategory: string;
-        badgeIcon: string;
-        title: string;
-        description: string;
-        bookmarks?: number;
-        likes?: number;
-        persons?: number;
-    }[];
-    compactCards: { icon: string; title: string }[];
-}) {
+export default function SectionRandomCategory() {
+    const [randomCategory, setRandomCategory] = useState<CategoryData>();
+
+    useEffect(() => {
+        fetchRandomCategory().then((category) => {
+            setRandomCategory(category);
+        });
+    }, []);
+
     return (
         <Box px={{ base: '16px', lg: '0px' }}>
             <Divider mb={{ base: 0, lg: '24px' }} />
@@ -38,7 +30,7 @@ export default function LastSection({
                         fontWeight='500'
                         lineHeight={{ base: '32px', lg: '40px', xl: '48px' }}
                     >
-                        {title}
+                        {randomCategory?.title}
                     </Text>
                 </GridItem>
                 <GridItem colSpan={{ base: 1, lg: 3, xl: 2 }}>
@@ -48,7 +40,7 @@ export default function LastSection({
                         lineHeight={{ base: '20px', lg: '24px' }}
                         fontWeight='500'
                     >
-                        {description}
+                        {randomCategory?.description}
                     </Text>
                 </GridItem>
             </SimpleGrid>
@@ -57,11 +49,10 @@ export default function LastSection({
                 columnGap={{ base: '12px', lg: '16px', xl: '24px' }}
                 rowGap={{ base: '12px', lg: '16px', xl: '24px' }}
             >
-                {cards.map((it) => (
+                {randomCategory?.base.map((it) => (
                     <GridItem colSpan={{ xl: 1 }}>
                         <VegeterianKitchenCard
                             badgeText={it.subcategory}
-                            badgeIcon={it.badgeIcon}
                             title={it.title}
                             description={it.description}
                             likesCount={it.likes}
@@ -73,7 +64,7 @@ export default function LastSection({
 
                 <GridItem colSpan={{ xl: 2 }}>
                     <VStack spacing='12px' align='stretch'>
-                        {compactCards.map((it, idx) => (
+                        {randomCategory?.compact.map((it, idx) => (
                             <Box key={idx}>
                                 <VegeterianKitchenCompactCard icon={it.icon} title={it.title} />
                             </Box>
@@ -84,3 +75,25 @@ export default function LastSection({
         </Box>
     );
 }
+
+type Dish = {
+    title: string;
+    description: string;
+    subcategory: string;
+    badgeIcon: string;
+    likes?: number;
+    bookmarks?: number;
+    persons?: number;
+};
+
+type CompactItem = {
+    icon: string;
+    title: string;
+};
+
+export type CategoryData = {
+    title: string;
+    description: string;
+    base: Dish[];
+    compact: CompactItem[];
+};

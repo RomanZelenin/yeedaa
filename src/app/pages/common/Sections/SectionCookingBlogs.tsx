@@ -1,55 +1,18 @@
 import { Box, Button, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
+import { fetchBlogs } from '~/app/mocks/api';
 import { BlogCard } from '~/components/Cards/BlogCard';
+import { Profile } from '~/components/Header/ProfileInfo';
 
 export default function SectionCookingBlogs() {
-    const blogs = [
-        {
-            person: {
-                firstName: 'Елена',
-                lastName: 'Высоцкая',
-                nickname: '@elenapovar',
-                avatar: '/src/assets/images//kate-avatar.png',
-                activity: {
-                    bookmarks: 185,
-                    persons: 589,
-                    likes: 587,
-                },
-            },
-            comment:
-                'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-        },
-        {
-            person: {
-                firstName: 'Alex',
-                lastName: 'Cook',
-                nickname: '@funtasticooking',
-                avatar: '/src/assets/images/kate-avatar.png',
-                activity: {
-                    bookmarks: 185,
-                    persons: 589,
-                    likes: 587,
-                },
-            },
-            comment:
-                'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-        },
-        {
-            person: {
-                firstName: 'Екатерина',
-                lastName: 'Константинопольская',
-                nickname: '@bake_and_pie',
-                avatar: '/src/assets/images/kate-avatar.png',
-                activity: {
-                    bookmarks: 185,
-                    persons: 589,
-                    likes: 587,
-                },
-            },
-            comment:
-                'Как раз после праздников, когда мясные продукты еще остались, но никто их уже не хочет, время варить солянку.',
-        },
-    ];
+    const [blogs, setBlogs] = useState<{ person: Profile; comment: string }[]>([]);
+
+    useEffect(() => {
+        fetchBlogs().then((blogs) => {
+            setBlogs(blogs);
+        });
+    }, []);
 
     return (
         <VStack

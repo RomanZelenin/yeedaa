@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { Ingredient } from './Recipe';
+import { Ingredient } from '~/app/mocks/types/type_defenitions';
 
 export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) => {
     const [numServings, setNumServings] = useState(1);
