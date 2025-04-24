@@ -33,19 +33,17 @@ export const Header = ({ profile }: { profile: Profile }) => {
                             likes={profile.activity.likes}
                         />
                     </Box>
-
-                    <IconButton
-                        data-test-id={!isOpen ? 'hamburger-icon' : 'close-icon'}
-                        aria-label='Open hamburger menu'
-                        icon={
-                            !isOpen ? <BurgerIcon boxSize='24px' /> : <CloseIcon boxSize='12px' />
-                        }
-                        variant='ghost'
-                        boxSize='48px'
-                        onClick={!isOpen ? onOpen : onClose}
-                    />
                     <HamburgerMenu isOpen={isOpen} onClose={onClose} />
                 </Hide>
+                <IconButton
+                    visibility={{ lg: 'hidden' }}
+                    data-test-id={!isOpen ? 'hamburger-icon' : 'close-icon'}
+                    aria-label='Open hamburger menu'
+                    icon={!isOpen ? <BurgerIcon boxSize='24px' /> : <CloseIcon boxSize='12px' />}
+                    variant='ghost'
+                    boxSize='48px'
+                    onClick={!isOpen ? onOpen : onClose}
+                />
 
                 <Show above='lg'>
                     <Box ml='127px'>

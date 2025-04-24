@@ -51,7 +51,12 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
         <>
             <Drawer isOpen={isOpen} placement='right' onClose={onClose}>
                 <DrawerOverlay />
-                <DrawerContent h='100vh' p={{ base: '16px' }} w='500px'>
+                <DrawerContent
+                    h='100vh'
+                    p={{ base: '16px' }}
+                    w='500px'
+                    data-test-id='filter-drawer'
+                >
                     <DrawerHeader p={0}>
                         <Flex align='center'>
                             <Text textStyle='text2xlLh8Bold' flex={1}>
@@ -111,14 +116,30 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                     </DrawerBody>
 
                     <DrawerFooter p={0}>
-                        <Button flex={1} h='32px' px='12px' py='6px' variant='outline' mr={3}>
+                        <Button
+                            flex={1}
+                            h='32px'
+                            px='12px'
+                            py='6px'
+                            variant='outline'
+                            mr={3}
+                            data-test-id='clear-filter-button'
+                        >
                             <Text
                                 textStyle={{ base: 'textSmLh5Semibold', lg: 'textLgLh7Semibold' }}
                             >
                                 Очистить Фильтр
                             </Text>
                         </Button>
-                        <Button flex={1} h='32px' px='12px' py='6px' bgColor='black' color='white'>
+                        <Button
+                            flex={1}
+                            h='32px'
+                            px='12px'
+                            py='6px'
+                            bgColor='black'
+                            color='white'
+                            data-test-id='find-recipe-button'
+                        >
                             <Text
                                 textStyle={{ base: 'textSmLh5Semibold', lg: 'textLgLh7Semibold' }}
                                 onClick={onClose}
@@ -135,6 +156,7 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
 
 const CategorySelector = () => (
     <Selector
+        data-test-id='filter-menu-button-категория'
         defaultItems={['Первые блюда', 'Вторые блюда', 'Веганская кухня']}
         placeholder='Категория'
     />

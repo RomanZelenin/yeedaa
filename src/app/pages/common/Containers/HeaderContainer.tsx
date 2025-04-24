@@ -10,6 +10,7 @@ import {
     useDisclosure,
     VStack,
 } from '@chakra-ui/react';
+import { createContext, useContext, useState } from 'react';
 
 import { FilterDrawer } from '~/components/Drawer/FilterDrawer';
 import { FilterIcon } from '~/components/Icons/FilterIcon';
@@ -18,9 +19,21 @@ import { AllergySelectorWithSwitcher } from '~/components/Selector /AllergySelec
 
 export default function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isActive] = useState(true);
+    const { setQuery } = useContext(SearchContext);
+    const [inputQuery, setInputQuery] = useState('');
 
     return (
-        <VStack spacing={0}>
+        <VStack
+            spacing={0}
+            pb={{ base: '16px', lg: '32px' }}
+            borderRadius={isActive ? '0px 0px 8px 8px' : 'unset'}
+            boxShadow={
+                isActive
+                    ? '0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                    : 'none'
+            }
+        >
             <Box>
                 <Text textStyle='headerContainerTitle'>{title}</Text>
                 <Text
@@ -38,6 +51,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                 justify='center'
             >
                 <IconButton
+                    data-test-id='filter-button'
                     minW={0}
                     borderRadius='6px'
                     boxSize={{ base: '32px', lg: '48px' }}
@@ -55,6 +69,11 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                         border='1px solid rgba(0, 0, 0, 0.48)'
                         textStyle='searchInput'
                         placeholder='Название или ингредиент...'
+                        /* onFocus={() => setIsActive(true)}
+                        onBlur={() => setIsActive(false)} */
+                        onInput={(e) => {
+                            setInputQuery(e.target.value);
+                        }}
                         h='100%'
                     />
                     <InputRightElement
@@ -64,8 +83,14 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                         <IconButton
                             data-test-id='search-button'
                             backgroundColor='transparent'
+                            _hover={{
+                                backgroundColor: 'transparent',
+                            }}
+                            pointerEvents={inputQuery.length < 3 ? 'none' : 'auto'}
                             icon={<SearchIcon boxSize={{ base: '32px', lg: '48px' }} />}
                             aria-label='Search'
+                            isDisabled={inputQuery.length < 3}
+                            onClick={() => setQuery(inputQuery)}
                         />
                     </InputRightElement>
                 </InputGroup>
@@ -77,3 +102,5 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
         </VStack>
     );
 }
+
+export const SearchContext = createContext({});

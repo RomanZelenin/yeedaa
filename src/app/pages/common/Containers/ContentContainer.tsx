@@ -28,7 +28,7 @@ export default function ContentContainer({
 
             <GridItem
                 colSpan={{ base: 4, md: 13 }}
-                mt={{ base: '20px', lg: '24px' }}
+                mt={{ base: '16px', lg: '24px' }}
                 display='block'
                 colStart={1}
                 colEnd={{ lg: 13 }}

@@ -1,18 +1,14 @@
-import { Grid, GridItem } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Grid, GridItem, Show } from '@chakra-ui/react';
 import { Outlet } from 'react-router';
 
 import { AsidePanel } from '~/components/AsidePanel/AsidePanel';
 import { Header } from '~/components/Header/Header';
 import { BottomMenu } from '~/components/Menu/BottomMenu';
 import { SideMenu } from '~/components/Menu/SideMenu';
-import { AllergySelectorContext } from '~/components/Selector /AllergySelectorWithSwitcher';
 
 import { profile } from '../ConfigApp';
 
 export default function Index() {
-    const [allergens, setAllergens] = useState<string[]>([]);
-
     return (
         <Grid
             templateAreas={{
@@ -28,9 +24,11 @@ export default function Index() {
             <GridItem area='header'>
                 <Header profile={profile} />
             </GridItem>
-            <GridItem area='nav' hideBelow='lg'>
-                <SideMenu />
-            </GridItem>
+            <Show above='lg'>
+                <GridItem area='nav' data-test-id='nav'>
+                    <SideMenu />
+                </GridItem>
+            </Show>
             <GridItem
                 area='main'
                 px='0px'
@@ -38,13 +36,8 @@ export default function Index() {
                 mr={{ lg: '73px' }}
                 ml={{ lg: '24px' }}
             >
-                <Grid
-                    templateColumns={{ base: 'repeat(4, 1fr)', md: 'repeat(12, 1fr)' }}
-                    gap={{ base: '12px', md: '16px', lg: '24px' }}
-                >
-                    <AllergySelectorContext.Provider value={{ allergens, setAllergens }}>
-                        <Outlet />
-                    </AllergySelectorContext.Provider>
+                <Grid templateColumns={{ base: 'repeat(4, 1fr)', md: 'repeat(12, 1fr)' }}>
+                    <Outlet />
                 </Grid>
             </GridItem>
             <GridItem area='aside' hideBelow='lg'>

@@ -57,8 +57,8 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                                     >
                                         <NumberInputField />
                                         <NumberInputStepper>
-                                            <NumberIncrementStepper />
-                                            <NumberDecrementStepper />
+                                            <NumberIncrementStepper data-test-id='increment-stepper' />
+                                            <NumberDecrementStepper data-test-id='decrement-stepper' />
                                         </NumberInputStepper>
                                     </NumberInput>
                                 </HStack>
@@ -66,8 +66,8 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {ingredients.map((it) => (
-                            <Tr>
+                        {ingredients.map((it, idx) => (
+                            <Tr data-test-id={`ingredient-quantity-${idx}`}>
                                 <Td px='8px' py='10px' textStyle='textSmLh5Medium'>
                                     {it.title}
                                 </Td>

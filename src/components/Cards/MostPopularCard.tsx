@@ -5,6 +5,7 @@ import {
     CardBody,
     CardFooter,
     CardHeader,
+    Highlight,
     HStack,
     IconButton,
     Image,
@@ -15,7 +16,9 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { useContext } from 'react';
 
+import { SearchContext } from '~/app/pages/common/Containers/HeaderContainer';
 import { useResource } from '~/hooks/ResourceContext';
 
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
@@ -43,6 +46,7 @@ export const MostPopularCard = ({
     persons?: number;
 }) => {
     const { getString, getPicture } = useResource();
+    const { query } = useContext(SearchContext);
 
     return (
         <Card direction='row' overflow='clip' minH='244px'>
@@ -86,7 +90,9 @@ export const MostPopularCard = ({
                 </CardHeader>
                 <CardBody py={0}>
                     <Text textStyle='textXlLh7Medium' mb='8px' noOfLines={1}>
-                        {title}
+                        <Highlight query={query} styles={{ color: 'lime.600' }}>
+                            {title}
+                        </Highlight>
                     </Text>
                     <Text textStyle='textSmLh5Normal' noOfLines={3}>
                         {description}
@@ -142,6 +148,8 @@ export const MostPopularCardCompact = ({
     persons?: number;
 }) => {
     const { getString, getPicture } = useResource();
+    const { query } = useContext(SearchContext);
+
     return (
         <Card direction='row' overflow='clip' minH='128px'>
             <Image src={cover} w='158px' />
@@ -166,7 +174,9 @@ export const MostPopularCardCompact = ({
                 </CardHeader>
                 <CardBody p={0}>
                     <Text textStyle='textMdLh6Medium' noOfLines={2}>
-                        {title}
+                        <Highlight query={query} styles={{ color: 'lime.600' }}>
+                            {title}
+                        </Highlight>
                     </Text>
                 </CardBody>
                 <CardFooter p={0} justifyContent='right' columnGap='12px' alignItems='center'>
