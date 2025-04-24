@@ -22,7 +22,11 @@ export default function SectionNewRecipes() {
     const [recepies, setRecepies] = useState<Recipe[]>([]);
 
     useEffect(() => {
-        fetchRecepies().then((recepies) => setRecepies(recepies));
+        fetchRecepies().then((recepies) => {
+            setRecepies(
+                recepies.sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 10),
+            );
+        });
     }, []);
 
     return (
