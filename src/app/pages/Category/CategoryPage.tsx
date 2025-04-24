@@ -1,8 +1,10 @@
 import { Box, Button, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
+import { filterRecipesByAllergens } from '~/app/Utils/filterRecipesByAllergens';
 import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
+import { AllergySelectorContext } from '~/components/Selector /AllergySelectorWithSwitcher';
 
 import { menuItems } from '../../ConfigApp';
 import { fetchRecepies } from '../../mocks/api';
@@ -20,19 +22,23 @@ export default function CategoryPage() {
     const [titleCategory, setTitleCategory] = useState('');
     const [subtitleCategory, setSubtitleCategory] = useState('');
 
+    const { allergens } = useContext(AllergySelectorContext);
     useEffect(() => {
         fetchRecepies().then((recipes) => {
             const recepiesFromCurrentCategory = recipes.filter((recepie) =>
                 recepie.category.includes(category!),
             );
-            setRecepies(recepiesFromCurrentCategory);
+            const filteredRecepies = filterRecipesByAllergens(
+                recepiesFromCurrentCategory,
+                allergens,
+            );
+            setRecepies(allergens.length > 0 ? filteredRecepies : recepiesFromCurrentCategory);
         });
 
         const currCategory = menuItems.find((it) => it.path?.substring(1) === category)!;
-
         setTitleCategory(currCategory.title);
         setSubtitleCategory(currCategory.subtitle ?? '');
-    }, [category]);
+    }, [category, allergens]);
 
     useEffect(() => {
         setTabIndex(

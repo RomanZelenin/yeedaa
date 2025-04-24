@@ -1,5 +1,5 @@
 import { Switch, Text, Wrap, WrapItem } from '@chakra-ui/react';
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 import { Selector } from './Selector';
 
@@ -17,6 +17,8 @@ const DEFAULT_ALLERGENS = [
 
 export const AllergySelectorWithSwitcher = () => {
     const [isExcludeAllergens, setIsExcludeAllergens] = useState(false);
+    const { setAllergens } = useContext(AllergySelectorContext);
+
     return (
         <>
             <Wrap flex={1} columnGap='12px' align='baseline'>
@@ -36,9 +38,14 @@ export const AllergySelectorWithSwitcher = () => {
                         placeholder='Выберите из списка...'
                         defaultItems={DEFAULT_ALLERGENS}
                         addItemPlaceholder='Другой аллерген'
+                        onChange={(selected) => {
+                            setAllergens(selected);
+                        }}
                     />
                 </WrapItem>
             </Wrap>
         </>
     );
 };
+
+export const AllergySelectorContext = createContext({});
