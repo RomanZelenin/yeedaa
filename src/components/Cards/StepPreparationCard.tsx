@@ -1,5 +1,7 @@
 import { Card, CardBody, CardHeader, Image, Stack, Tag, TagLabel, Text } from '@chakra-ui/react';
 
+import { useResource } from '../ResourceContext/ResourceContext';
+
 export const StepPreparationCard = ({
     description,
     step,
@@ -10,26 +12,31 @@ export const StepPreparationCard = ({
     step: number;
     cover?: string;
     isLast: boolean;
-}) => (
-    <Card direction='row' overflow='clip' flex={1}>
-        {cover ? (
-            <Image
-                src={cover}
-                w={{ base: '158px', lg: '346px' }}
-                h={{ base: '128px', lg: '244px' }}
-            />
-        ) : (
-            <></>
-        )}
-        <Stack spacing={{ base: '12px', lg: '16px' }} flex={1} p={{ base: '8px', lg: '24px' }}>
-            <CardHeader p='0px'>
-                <Tag layerStyle={isLast ? 'categoryTag' : 'timerTag'}>
-                    <TagLabel textStyle='textSmLh5'>Шаг {step}</TagLabel>
-                </Tag>
-            </CardHeader>
-            <CardBody p={0}>
-                <Text textStyle='textSmLh5'>{description}</Text>
-            </CardBody>
-        </Stack>
-    </Card>
-);
+}) => {
+    const { getString } = useResource();
+    return (
+        <Card direction='row' overflow='clip' flex={1}>
+            {cover ? (
+                <Image
+                    src={cover}
+                    w={{ base: '158px', lg: '346px' }}
+                    h={{ base: '128px', lg: '244px' }}
+                />
+            ) : (
+                <></>
+            )}
+            <Stack spacing={{ base: '12px', lg: '16px' }} flex={1} p={{ base: '8px', lg: '24px' }}>
+                <CardHeader p='0px'>
+                    <Tag layerStyle={isLast ? 'categoryTag' : 'timerTag'}>
+                        <TagLabel textStyle='textSmLh5'>
+                            {getString('step')} {step}
+                        </TagLabel>
+                    </Tag>
+                </CardHeader>
+                <CardBody p={0}>
+                    <Text textStyle='textSmLh5'>{description}</Text>
+                </CardBody>
+            </Stack>
+        </Card>
+    );
+};

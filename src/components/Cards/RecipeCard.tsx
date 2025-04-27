@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useResource } from '~/hooks/ResourceContext';
+import { useResource } from '~/components/ResourceContext/ResourceContext';
 
 import { ThreeButtons } from './ThreeButtons';
 
@@ -25,7 +25,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                 direction={{ base: 'column', md: 'row' }}
                 alignItems={{ md: 'start' }}
                 rowGap={{ base: '16px' }}
-                columnGap={{ md: '16px' }} /* spacing={{ base: '16px' }} */
+                columnGap={{ md: '16px' }}
             >
                 <Image
                     objectFit='cover'
@@ -106,7 +106,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                                             xl: 'textLgLh7Semibold',
                                         }}
                                     >
-                                        Оценить рецепт
+                                        {getString('rate-recipe')}
                                     </Text>
                                 </Button>
                                 <Button
@@ -130,7 +130,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                                             xl: 'textLgLh7Semibold',
                                         }}
                                     >
-                                        Сохранить в закладки
+                                        {getString('save-to-bookmarks')}
                                     </Text>
                                 </Button>
                             </HStack>

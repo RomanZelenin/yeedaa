@@ -6,13 +6,12 @@ import ruStrings from '~/locales/ru/strings.json';
 type Locale = 'en' | 'ru';
 type Translations = Record<string, string>;
 type LocaleDictionary = Record<Locale, Translations>;
-
-interface ResourceContextType {
+type ResourceContextType = {
     locale: Locale;
     setLocale: (locale: Locale) => void;
     getString: (key: string) => string;
     getPicture: (key: string) => string;
-}
+};
 
 const translations: LocaleDictionary = {
     en: {},

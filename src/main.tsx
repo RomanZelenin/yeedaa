@@ -14,7 +14,7 @@ import HomePage from './app/pages/Home/HomePage';
 import Index from './app/pages/Index';
 import JuiciestPage from './app/pages/Juiciest/JuiciestPage';
 import { RecipePage } from './app/pages/Recepie/RecipePage';
-import { ResourceProvider } from './hooks/ResourceContext';
+import { ResourceProvider } from './components/ResourceContext/ResourceContext';
 import theme from './theme';
 
 createRoot(document.getElementById('root')!).render(
@@ -27,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
                             <Route path='/' element={<Index />}>
                                 <Route index element={<HomePage />} />
                                 <Route path='the-juiciest' element={<JuiciestPage />} />
-                                <Route path=':category/:subcategory' element={<CategoryPage />} />
+                                <Route path=':category/:subcategory?' element={<CategoryPage />} />
                                 <Route path=':category/:subcategory/:id' element={<RecipePage />} />
                                 <Route path='/*' element={<ErrorView />} />
                             </Route>

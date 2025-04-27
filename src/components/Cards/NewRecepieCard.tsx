@@ -14,7 +14,7 @@ import {
     WrapItem,
 } from '@chakra-ui/react';
 
-import { useResource } from '~/hooks/ResourceContext';
+import { useResource } from '~/components/ResourceContext/ResourceContext';
 
 import { ThreeButtons } from './ThreeButtons';
 
@@ -59,8 +59,8 @@ export const NewRecepieCard = ({
                     left='6px'
                     right='6px'
                 >
-                    {categories.map((category) => (
-                        <WrapItem key={category}>
+                    {categories.map((category, i) => (
+                        <WrapItem key={i}>
                             <Tag layerStyle='categoryTag' bgColor=' lime.150'>
                                 <Image src={getPicture(category)} boxSize='16px' />
                                 <TagLabel textStyle='textSmLh5'>{getString(category)}</TagLabel>
@@ -102,8 +102,8 @@ export const NewRecepieCard = ({
                     </Hide>
                     <Show above='lg'>
                         <Flex justify='space-between' flex={1} alignItems='end'>
-                            {categories.slice(0, 1).map((category) => (
-                                <Tag layerStyle='categoryTag' bgColor=' lime.150'>
+                            {categories.slice(0, 1).map((category, i) => (
+                                <Tag key={i} layerStyle='categoryTag' bgColor=' lime.150'>
                                     <Image src={getPicture(category)} boxSize='16px' />
                                     <TagLabel textStyle='textSmLh5'>{getString(category)}</TagLabel>
                                 </Tag>

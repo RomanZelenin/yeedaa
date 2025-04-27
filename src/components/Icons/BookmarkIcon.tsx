@@ -9,8 +9,8 @@ export const BookmarkIcon = (
 ) => (
     <Icon viewBox='0 0 12 12' fill='none' {...props}>
         <path
-            fill-rule='evenodd'
-            clip-rule='evenodd'
+            fillRule='evenodd'
+            clipRule='evenodd'
             d='M5.99985 3.30749C7.0401 2.23874 9.64035 4.10999 5.99985 6.51524C2.35935 4.10999 4.9596 2.23949 5.99985 3.30899V3.30749Z'
             fill='black'
         />

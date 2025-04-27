@@ -1,18 +1,11 @@
-import { Box, Button, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { Button, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 
-import { fetchBlogs } from '~/app/mocks/api';
 import { BlogCard } from '~/components/Cards/BlogCard';
-import { Profile } from '~/components/Header/ProfileInfo';
+import { blogsSelector } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 export default function SectionCookingBlogs() {
-    const [blogs, setBlogs] = useState<{ person: Profile; comment: string }[]>([]);
-
-    useEffect(() => {
-        fetchBlogs().then((blogs) => {
-            setBlogs(blogs);
-        });
-    }, []);
+    const blogs = useAppSelector(blogsSelector);
 
     return (
         <VStack
@@ -51,10 +44,8 @@ export default function SectionCookingBlogs() {
                     columnGap={{ base: '0px', md: '12px' }}
                     rowGap='12px'
                 >
-                    {blogs.map((it, idx) => (
-                        <Box key={idx}>
-                            <BlogCard person={it.person} comment={it.comment} />
-                        </Box>
+                    {blogs.map((it, i) => (
+                        <BlogCard key={i} person={it.person} comment={it.comment} />
                     ))}
                 </SimpleGrid>
                 <Button

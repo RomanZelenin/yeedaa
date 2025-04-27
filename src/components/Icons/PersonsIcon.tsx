@@ -13,8 +13,8 @@ export const PersonsIcon = (
             fill='black'
         />
         <path
-            fill-rule='evenodd'
-            clip-rule='evenodd'
+            fillRule='evenodd'
+            clipRule='evenodd'
             d='M3.912 10.5C3.80082 10.2658 3.74537 10.0091 3.75 9.74995C3.75 8.7337 4.26 7.68745 5.202 6.95995C4.73182 6.81508 4.24196 6.74423 3.75 6.74995C0.75 6.74995 0 8.99995 0 9.74995C0 10.5 0.75 10.5 0.75 10.5H3.912Z'
             fill='black'
         />

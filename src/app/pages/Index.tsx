@@ -1,14 +1,45 @@
 import { Grid, GridItem, Show } from '@chakra-ui/react';
-import { Outlet } from 'react-router';
+import { useEffect } from 'react';
+import { Outlet, useLocation, useParams } from 'react-router';
 
+import profile from '~/app/mocks/profile.json';
 import { AsidePanel } from '~/components/AsidePanel/AsidePanel';
 import { Header } from '~/components/Header/Header';
 import { BottomMenu } from '~/components/Menu/BottomMenu';
 import { SideMenu } from '~/components/Menu/SideMenu';
-
-import { profile } from '../ConfigApp';
+import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { recipesSelector, setAppBreadcrumb } from '~/store/app-slice';
+import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function Index() {
+    const { category, subcategory, id } = useParams();
+    const location = useLocation();
+    const { getString } = useResource();
+    const dispatcher = useAppDispatch();
+    const recepie = useAppSelector(recipesSelector);
+
+    useEffect(() => {
+        const breadcrumbs = [{ title: 'Главная', path: '/' }];
+        if (category) {
+            breadcrumbs.push({ title: `${getString(category!)}`, path: `/${category}` });
+            if (subcategory) {
+                breadcrumbs.push({
+                    title: `${getString(subcategory!)}`,
+                    path: `/${category}/${subcategory}`,
+                });
+                if (id) {
+                    const title = recepie.find((recepie) => recepie?.id === id)!.title;
+                    breadcrumbs.push({ title: `${title}`, path: `#` });
+                }
+            }
+        } else {
+            if (location.pathname.startsWith('/the-juiciest')) {
+                breadcrumbs.push({ title: 'Самое сочное', path: '#' });
+            }
+        }
+        dispatcher(setAppBreadcrumb(breadcrumbs));
+    }, [location]);
+
     return (
         <Grid
             templateAreas={{

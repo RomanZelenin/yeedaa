@@ -14,74 +14,52 @@ import {
     Text,
     Wrap,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { PlusIcon } from '../Icons/PlusIcon';
 
 type SelectProps = {
-    isEnabled?: boolean;
-    initialSelected?: string[];
-    onChange?: (selected: string[]) => void;
+    items: { title: string; selected: boolean }[];
     placeholder?: string;
-    defaultItems?: string[];
     addItemPlaceholder?: string;
     isShowAddItemInput?: boolean;
+    onClickClearAll: () => undefined;
+    onAddCustomItem?: (item: string) => undefined;
+    isDisabled: boolean;
+    onSelect: (item: { title: string; selected: boolean }) => undefined;
 };
 
 export const Selector = ({
-    isEnabled = true,
-    initialSelected = [],
-    onChange,
+    items,
     placeholder,
-    defaultItems = [],
     addItemPlaceholder = '',
     isShowAddItemInput = false,
+    isDisabled,
+    onClickClearAll = () => {},
+    onAddCustomItem = () => {},
+    onSelect,
 }: SelectProps) => {
-    const [selectedItems, setSelectedItems] = useState<string[]>(initialSelected);
-    const [customItem, setCustomItem] = useState('');
+    const [customAllergen, setCustomAllergen] = useState('');
+    const countSelectedAllergens = items.filter((item) => item.selected === true).length;
 
-    const handleToggleItem = (item: string) => {
-        const newSelected = selectedItems.includes(item)
-            ? selectedItems.filter((a) => a !== item)
-            : [...selectedItems, item];
-
-        setSelectedItems(newSelected);
-        onChange?.(newSelected);
-    };
-
-    const addCustomItem = () => {
-        if (!customItem.trim()) return;
-
-        let formattedItem = customItem.trim().toLocaleLowerCase();
-        formattedItem = formattedItem[0].toLocaleUpperCase() + formattedItem.substring(1);
-
-        if (!selectedItems.includes(formattedItem)) {
-            const newSelected = [...selectedItems, formattedItem];
-            setSelectedItems(newSelected);
-            onChange?.(newSelected);
-            setCustomItem('');
-        }
-    };
-
-    const clearAll = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setSelectedItems([]);
-        onChange?.([]);
-    };
-
+    const refInput = useRef(null);
     return (
         <Menu closeOnSelect={false}>
             {({ isOpen }) => (
                 <>
                     <MenuButton
+                        data-test-id='allergens-menu-button'
                         as={Button}
                         variant='lime'
                         rightIcon={
                             <HStack spacing={0}>
                                 <IconButton
                                     as='span'
-                                    onClick={clearAll}
-                                    display={selectedItems.length > 0 ? 'inline-flex' : 'none'}
+                                    onClick={(e) => {
+                                        onClickClearAll();
+                                        e.stopPropagation();
+                                    }}
+                                    display={countSelectedAllergens > 0 ? 'inline-flex' : 'none'}
                                     backgroundColor='transparent'
                                     minW={0}
                                     boxSize='8px'
@@ -96,58 +74,75 @@ export const Selector = ({
                         h='fit-content'
                         py='8px'
                         px='12px'
-                        isDisabled={!isEnabled}
+                        isDisabled={isDisabled}
                         textAlign='start'
                     >
-                        {selectedItems.length === 0 ? (
+                        {countSelectedAllergens === 0 ? (
                             placeholder
                         ) : (
                             <>
-                                {selectedItems.length > 0 && (
+                                {countSelectedAllergens > 0 && (
                                     <Wrap>
-                                        {selectedItems.map((allergen) => (
-                                            <Tag
-                                                key={allergen}
-                                                color='lime.600'
-                                                border='1px solid var(--chakra-colors-lime-400)'
-                                                bgColor='transparent'
-                                                borderRadius='6px'
-                                            >
-                                                <TagLabel>{allergen}</TagLabel>
-                                            </Tag>
-                                        ))}
+                                        {items
+                                            .filter((item) => item.selected === true)
+                                            .map((item, i) => (
+                                                <Tag
+                                                    key={i}
+                                                    color='lime.600'
+                                                    border='1px solid var(--chakra-colors-lime-400)'
+                                                    bgColor='transparent'
+                                                    borderRadius='6px'
+                                                >
+                                                    <TagLabel>{item.title}</TagLabel>
+                                                </Tag>
+                                            ))}
                                     </Wrap>
                                 )}
                             </>
                         )}
                     </MenuButton>
 
-                    <MenuList overflowY='auto' zIndex='popover' py='4px'>
-                        {defaultItems.map((allergen, idx) => (
+                    <MenuList
+                        overflowY='auto'
+                        zIndex='popover'
+                        py='4px'
+                        data-test-id='allergens-menu'
+                    >
+                        {items.map((item, i) => (
                             <MenuItem
                                 h='32px'
                                 py='6px'
                                 px='16px'
-                                key={allergen}
-                                value={allergen}
-                                bgColor={idx % 2 == 0 ? 'blackAlpha.100' : 'white'}
+                                key={i}
+                                value={item.title}
+                                bgColor={i % 2 == 0 ? 'blackAlpha.100' : 'white'}
                             >
                                 <Checkbox
+                                    data-test-id={isOpen ? `allergen-${i}` : ''}
                                     variant='lime'
-                                    isChecked={selectedItems.includes(allergen)}
-                                    onChange={() => handleToggleItem(allergen)}
+                                    isChecked={item.selected}
+                                    onChange={() => onSelect(item)}
                                     mr={2}
                                 >
-                                    <Text textStyle='textSmLh5'>{allergen}</Text>
+                                    <Text textStyle='textSmLh5'>{item.title}</Text>
                                 </Checkbox>
                             </MenuItem>
                         ))}
                         <HStack
-                            p='8px'
-                            spacing='8px'
                             display={isShowAddItemInput ? 'flex' : 'none'}
+                            spacing='8px'
+                            p='8px'
                         >
                             <Input
+                                ref={refInput}
+                                onBlur={
+                                    isOpen
+                                        ? () => {
+                                              refInput.current?.focus();
+                                          }
+                                        : () => {}
+                                }
+                                data-test-id={isOpen ? 'add-other-allergen' : ''}
                                 placeholder={addItemPlaceholder}
                                 minH={0}
                                 ml='24px'
@@ -157,24 +152,36 @@ export const Selector = ({
                                 fontSize='14px'
                                 lineHeight='20px'
                                 fontWeight={400}
+                                value={customAllergen}
+                                border='1px solid'
                                 borderColor='blackAlpha.200'
-                                value={customItem}
-                                onChange={(e) => setCustomItem(e.target.value)}
+                                _hover={{
+                                    borderColor: 'blackAlpha.200',
+                                }}
+                                _focusVisible={{
+                                    borderColor: 'blackAlpha.200',
+                                }}
+                                onChange={(e) => setCustomAllergen(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
-                                        addCustomItem();
+                                        onAddCustomItem(customAllergen);
+                                        setCustomAllergen('');
                                     }
                                 }}
                             />
                             <IconButton
+                                data-test-id={isOpen ? 'add-allergen-button' : ''}
                                 bgColor='transparent'
                                 minW={0}
                                 flex='1 0 auto'
                                 boxSize='24px'
-                                aria-label='Add item'
+                                aria-label='Add allergen'
                                 icon={<PlusIcon boxSize='12px' />}
-                                onClick={addCustomItem}
-                                isDisabled={!customItem.trim()}
+                                onClick={() => {
+                                    onAddCustomItem(customAllergen);
+                                    setCustomAllergen('');
+                                }}
+                                isDisabled={!customAllergen.trim()}
                             />
                         </HStack>
                     </MenuList>

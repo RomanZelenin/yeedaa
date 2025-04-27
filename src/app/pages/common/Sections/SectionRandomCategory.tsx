@@ -1,21 +1,14 @@
 import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 
-import { fetchRandomCategory } from '~/app/mocks/api';
 import {
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
 } from '~/components/Cards/VegeterianKitchenCard';
+import { randomCategorySelector } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 export default function SectionRandomCategory() {
-    const [randomCategory, setRandomCategory] = useState<CategoryData>();
-
-    useEffect(() => {
-        fetchRandomCategory().then((category) => {
-            setRandomCategory(category);
-        });
-    }, []);
-
+    const randomCategory = useAppSelector(randomCategorySelector);
     return (
         <Box px={{ base: '16px', lg: '0px' }}>
             <Divider mb={{ base: 0, lg: '24px' }} />
@@ -30,7 +23,7 @@ export default function SectionRandomCategory() {
                         fontWeight='500'
                         lineHeight={{ base: '32px', lg: '40px', xl: '48px' }}
                     >
-                        {randomCategory?.title}
+                        {randomCategory.title}
                     </Text>
                 </GridItem>
                 <GridItem colSpan={{ base: 1, lg: 3, xl: 2 }}>
@@ -40,7 +33,7 @@ export default function SectionRandomCategory() {
                         lineHeight={{ base: '20px', lg: '24px' }}
                         fontWeight='500'
                     >
-                        {randomCategory?.description}
+                        {randomCategory.description}
                     </Text>
                 </GridItem>
             </SimpleGrid>
@@ -49,8 +42,8 @@ export default function SectionRandomCategory() {
                 columnGap={{ base: '12px', lg: '16px', xl: '24px' }}
                 rowGap={{ base: '12px', lg: '16px', xl: '24px' }}
             >
-                {randomCategory?.base.map((it) => (
-                    <GridItem colSpan={{ xl: 1 }}>
+                {randomCategory?.base.map((it, i) => (
+                    <GridItem key={i} colSpan={{ xl: 1 }}>
                         <VegeterianKitchenCard
                             badgeText={it.subcategory}
                             title={it.title}
@@ -64,8 +57,8 @@ export default function SectionRandomCategory() {
 
                 <GridItem colSpan={{ xl: 2 }}>
                     <VStack spacing='12px' align='stretch'>
-                        {randomCategory?.compact.map((it, idx) => (
-                            <Box key={idx}>
+                        {randomCategory?.compact.map((it, i) => (
+                            <Box key={i}>
                                 <VegeterianKitchenCompactCard icon={it.icon} title={it.title} />
                             </Box>
                         ))}

@@ -1,13 +1,13 @@
 import 'swiper/swiper-bundle.css';
 
 import { Box, Link as ChakraLink, Text } from '@chakra-ui/react';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect } from 'react';
 import { Keyboard, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { fetchRecepies } from '~/app/mocks/api';
-import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { NewRecepieCard } from '~/components/Cards/NewRecepieCard';
+import { recipesSelector } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 export default function SectionNewRecipes() {
     useLayoutEffect(() => {
@@ -19,15 +19,9 @@ export default function SectionNewRecipes() {
             ?.setAttribute('data-test-id', 'carousel-back');
     }, []);
 
-    const [recepies, setRecepies] = useState<Recipe[]>([]);
-
-    useEffect(() => {
-        fetchRecepies().then((recepies) => {
-            setRecepies(
-                recepies.sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 10),
-            );
-        });
-    }, []);
+    const recipes = [...useAppSelector(recipesSelector)]
+        .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+        .slice(0, 10);
 
     return (
         <Box>
@@ -83,15 +77,16 @@ export default function SectionNewRecipes() {
                     },
                 }}
             >
-                {recepies.map((it, idx) => (
-                    <SwiperSlide data-test-id={`carousel-card-${idx}`}>
+                {recipes.map((it, i) => (
+                    <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
                         <ChakraLink
                             _hover={{
                                 textDecoration: 'none',
                             }}
-                            href={`/${it.category[0]}/${it.subcategory[0]}/${it.id}`}
+                            href={`/${it.category[0]}/${it.subcategory[0]}/${i}`}
                         >
                             <NewRecepieCard
+                                key={i}
                                 categories={it.category}
                                 cover={it.image}
                                 title={it.title}

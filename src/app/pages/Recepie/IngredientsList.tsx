@@ -1,4 +1,5 @@
 import {
+    Box,
     HStack,
     NumberDecrementStepper,
     NumberIncrementStepper,
@@ -17,10 +18,11 @@ import {
 import { useState } from 'react';
 
 import { Ingredient } from '~/app/mocks/types/type_defenitions';
+import { useResource } from '~/components/ResourceContext/ResourceContext';
 
 export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) => {
     const [numServings, setNumServings] = useState(1);
-
+    const { getString } = useResource();
     return (
         <>
             <TableContainer whiteSpace='none' overflowX='clip'>
@@ -33,7 +35,7 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                                     color='lime.600'
                                     textAlign='start'
                                 >
-                                    Ингридиенты
+                                    {getString('ingredients')}
                                 </Text>
                             </Th>
                             <Th px='0px'>
@@ -43,14 +45,14 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                                         color='lime.600'
                                         textAlign='end'
                                     >
-                                        Порций
+                                        {getString('portions')}
                                     </Text>
                                     <NumberInput
                                         value={numServings}
                                         onChange={(_valueString, valueNumber) =>
                                             setNumServings(valueNumber)
                                         }
-                                        step={1}
+                                        step={0.25}
                                         min={0}
                                         w='90px'
                                         h='40px'
@@ -67,13 +69,16 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                     </Thead>
                     <Tbody>
                         {ingredients.map((it, idx) => (
-                            <Tr data-test-id={`ingredient-quantity-${idx}`}>
+                            <Tr>
                                 <Td px='8px' py='10px' textStyle='textSmLh5Medium'>
                                     {it.title}
                                 </Td>
                                 <Td py='10px' px={0}>
                                     <Text mr='8px' textStyle='textSmLh5' textAlign='end'>
-                                        {parseInt(it.count) * numServings} {it.measureUnit}
+                                        <Box as='span' data-test-id={`ingredient-quantity-${idx}`}>
+                                            {parseInt(it.count) * numServings}
+                                        </Box>{' '}
+                                        {it.measureUnit}
                                     </Text>
                                 </Td>
                             </Tr>

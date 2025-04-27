@@ -2,12 +2,15 @@ import { Text, VStack } from '@chakra-ui/react';
 
 import { CookingStep } from '~/app/mocks/types/type_defenitions';
 import { StepPreparationCard } from '~/components/Cards/StepPreparationCard';
+import { useResource } from '~/components/ResourceContext/ResourceContext';
 
-export const CookingSteps = ({ steps }: { steps: CookingStep[] }) => (
-    <>
+export const CookingSteps = ({ steps }: { steps: CookingStep[] }) => {
+    const { getString } = useResource();
+
+    return (
         <VStack spacing={{ base: '20px' }} align='stretch'>
             <Text alignSelf='start' textStyle={{ base: 'text2xlLh8Medium' }}>
-                Шаги приготовления
+                {getString('cooking-steps')}
             </Text>
             {steps.map((it, idx) => (
                 <StepPreparationCard
@@ -18,5 +21,5 @@ export const CookingSteps = ({ steps }: { steps: CookingStep[] }) => (
                 />
             ))}
         </VStack>
-    </>
-);
+    );
+};

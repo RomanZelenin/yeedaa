@@ -1,17 +1,13 @@
 import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 
-import { fetchJuicestRecepies } from '~/app/mocks/api';
 import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
+import { recipesSelector } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 export default function SectionJuiciest() {
-    const [recipes, setRecepies] = useState<Record<string, string>[]>([]);
-
-    useEffect(() => {
-        fetchJuicestRecepies().then((recipes) => {
-            setRecepies(recipes.slice(0, 4));
-        });
-    }, []);
+    const recipes = [...useAppSelector(recipesSelector)]
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 4);
 
     return (
         <VStack spacing='12px' align='stretch'>

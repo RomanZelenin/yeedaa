@@ -1,5 +1,7 @@
 import { Button, Image, Stack, Text } from '@chakra-ui/react';
 
+import { useResource } from '../ResourceContext/ResourceContext';
+
 interface FooterProps {
     onLogout?: () => void;
 }
@@ -8,6 +10,7 @@ export const Footer = ({ onLogout }: FooterProps) => {
     const appVersion = '03.25';
     const currentYear = new Date().getFullYear();
     const copyright = `Все права защищены, ученический\u00A0файл, ©Клевер\u00A0Технолоджи, ${currentYear}`;
+    const { getString } = useResource();
 
     return (
         <Stack
@@ -18,7 +21,9 @@ export const Footer = ({ onLogout }: FooterProps) => {
             width='full'
             aria-label='Футер приложения'
         >
-            <Text color='rgba(0, 0, 0, 0.24)'>Версия программы {appVersion}</Text>
+            <Text color='rgba(0, 0, 0, 0.24)'>
+                {getString('program-version')} {appVersion}
+            </Text>
             <Text color='rgba(0, 0, 0, 0.64)' whiteSpace='pre-wrap'>
                 {copyright}
             </Text>
@@ -34,7 +39,7 @@ export const Footer = ({ onLogout }: FooterProps) => {
                     />
                 }
             >
-                Выйти
+                {getString('exit')}
             </Button>
         </Stack>
     );

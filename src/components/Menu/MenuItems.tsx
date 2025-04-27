@@ -12,12 +12,11 @@ import {
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 
-import { menuItems } from '~/app/ConfigApp';
+import menuItems from '~/app/mocks/menu_items.json';
 
 export const MenuItems = () => {
     const { category, subcategory } = useParams();
     const navigate = useNavigate();
-
     const [selectedItem, setSelectedItem] = useState(() =>
         menuItems.findIndex((it) => it.path?.substring(1) === category),
     );
@@ -25,13 +24,13 @@ export const MenuItems = () => {
 
     useEffect(() => {
         setSelectedItem(menuItems.findIndex((it) => it.path?.substring(1) === category));
-        setSelectedSubmenuIdx(
-            selectedItem >= 0
-                ? menuItems[selectedItem].subcategory!.findIndex(
-                      (it) => it.path?.substring(1) === subcategory,
-                  )
-                : 0,
-        );
+        if (selectedItem >= 0) {
+            setSelectedSubmenuIdx(
+                menuItems[selectedItem].subcategory!.findIndex(
+                    (it) => it.path?.substring(1) === subcategory,
+                ),
+            );
+        }
     }, [category, subcategory]);
 
     const handleMenuItemClick = ({ idx, path }: { idx: number; path: string }) => {
@@ -51,24 +50,8 @@ export const MenuItems = () => {
             paddingEnd='16px'
             overflowY='auto'
             mb='12px'
-            sx={{
-                '&::-webkit-scrollbar': {
-                    width: '8px',
-                    borderRadius: '8px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                    background: '#cecece',
-                    borderRadius: '10px',
-                },
-                '&::-webkit-scrollbar-thumb:hover': {
-                    background: 'darkgray',
-                },
-                '&::-webkit-scrollbar-track': {
-                    background: '#f5f5f5',
-                },
-            }}
         >
-            {menuItems.map((menu, idx) => (
+            {menuItems.map((item, idx) => (
                 <AccordionItem key={idx} style={{ borderWidth: 0 }}>
                     {({ isExpanded }) => (
                         <>
@@ -83,22 +66,24 @@ export const MenuItems = () => {
                                         lineHeight: '24px',
                                     }}
                                     data-test-id={
-                                        menu.title === 'Веганская кухня' ? 'vegan-cuisine' : ''
+                                        item.title === 'Веганская кухня'
+                                            ? 'vegan-cuisine'
+                                            : `${item.title}`
                                     }
                                     onClick={() =>
                                         handleMenuItemClick({
                                             idx: idx,
-                                            path: menu.path! + menu.subcategory![0].path,
+                                            path: item.path! + item.subcategory![0].path,
                                         })
                                     }
                                 >
                                     <Image
-                                        src={menu.icon}
+                                        src={item.icon}
                                         boxSize='24px'
-                                        alt={`${menu.title} icon`}
+                                        alt={`${item.title} icon`}
                                     />
                                     <Text flex='1' textAlign='left' fontSize='16px'>
-                                        {menu.title}
+                                        {item.title}
                                     </Text>
 
                                     <Image
@@ -113,14 +98,25 @@ export const MenuItems = () => {
                             </h2>
                             <AccordionPanel>
                                 <UnorderedList styleType='none' m={0}>
-                                    {menu.subcategory?.map((subItem, subIdx) => (
-                                        <ListItem key={`${subItem.title}-${subIdx}`} mb='12px'>
+                                    {item.subcategory?.map((subItem, subIdx) => (
+                                        <ListItem
+                                            key={`${subItem.title}-${subIdx}`}
+                                            mb='12px'
+                                            aria-selected={
+                                                selectedSubmenuIdx === subIdx ? true : false
+                                            }
+                                            data-test-id={
+                                                selectedSubmenuIdx === subIdx
+                                                    ? `${subItem?.path?.substring(1)}-active`
+                                                    : ''
+                                            }
+                                        >
                                             <ChakraLink
                                                 my='6px'
                                                 display='flex'
                                                 onClick={() => setSelectedSubmenuIdx(subIdx)}
                                                 as={RouterLink}
-                                                to={`${menu.path}${subItem?.path}`}
+                                                to={`${item.path}${subItem?.path}`}
                                                 borderLeft={
                                                     selectedSubmenuIdx === subIdx
                                                         ? '8px solid '

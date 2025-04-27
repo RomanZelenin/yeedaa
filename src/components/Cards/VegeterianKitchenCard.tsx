@@ -13,7 +13,7 @@ import {
     Text,
 } from '@chakra-ui/react';
 
-import { useResource } from '~/hooks/ResourceContext';
+import { useResource } from '~/components/ResourceContext/ResourceContext';
 
 export const VegeterianKitchenCard = ({
     badgeText,
@@ -79,37 +79,40 @@ export const VegeterianKitchenCard = ({
     );
 };
 
-export const VegeterianKitchenCompactCard = ({ icon, title }: { icon: string; title: string }) => (
-    <Card>
-        <CardBody px='12px' py='10px'>
-            <HStack justify='space-between' alignItems='center'>
-                <Image src={icon} boxSize='24px' />
-                <Text
-                    fontSize={{ base: '16px', xl: '20px' }}
-                    fontWeight={500}
-                    isTruncated
-                    textOverflow='ellipsis'
-                    flex={1}
-                >
-                    {title}
-                </Text>
-                <Button
-                    minWidth='60px'
-                    variant='outline'
-                    color='lime.600'
-                    borderColor='lime.600'
-                    fontWeight={600}
-                    borderRadius='6px'
-                    h='32px'
-                    fontSize={{ base: '12px', xl: '14px' }}
-                    p='8px'
-                >
-                    Готовить
-                </Button>
-            </HStack>
-        </CardBody>
-    </Card>
-);
+export const VegeterianKitchenCompactCard = ({ icon, title }: { icon: string; title: string }) => {
+    const { getString } = useResource();
+    return (
+        <Card>
+            <CardBody px='12px' py='10px'>
+                <HStack justify='space-between' alignItems='center'>
+                    <Image src={icon} boxSize='24px' />
+                    <Text
+                        fontSize={{ base: '16px', xl: '20px' }}
+                        fontWeight={500}
+                        isTruncated
+                        textOverflow='ellipsis'
+                        flex={1}
+                    >
+                        {title}
+                    </Text>
+                    <Button
+                        minWidth='60px'
+                        variant='outline'
+                        color='lime.600'
+                        borderColor='lime.600'
+                        fontWeight={600}
+                        borderRadius='6px'
+                        h='32px'
+                        fontSize={{ base: '12px', xl: '14px' }}
+                        p='8px'
+                    >
+                        {getString('cooking')}
+                    </Button>
+                </HStack>
+            </CardBody>
+        </Card>
+    );
+};
 
 const MenuItemButton = ({ src, count }: { src: string; count: number }) => (
     <Flex alignItems='center' columnGap={{ base: '6px', lg: '8px' }}>

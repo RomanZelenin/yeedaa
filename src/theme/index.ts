@@ -54,7 +54,6 @@ const theme = extendTheme({
                     _placeholder: {
                         color: 'lime.800',
                     },
-                    _focus: {},
                 },
             },
         },
@@ -216,6 +215,8 @@ const theme = extendTheme({
         },
         searchInput: {
             fontSize: { base: '14px', lg: '18px' },
+            fontWeight: '400',
+            color: 'lime.800',
         },
         profileNameBlogCard: {
             fontSize: '16px',
@@ -282,7 +283,7 @@ const theme = extendTheme({
         textLgLh7Semibold: {
             fontStyle: 'normal',
             fontWeight: 600,
-            fontSize: '14px',
+            fontSize: '15px',
             lineHeight: '28px',
         },
         textLgLh7Medium: {

@@ -1,3 +1,5 @@
+import { Profile } from '~/components/Header/ProfileInfo';
+
 export type Recipe = {
     id: string;
     title: string;
@@ -15,6 +17,7 @@ export type Recipe = {
     steps: CookingStep[];
     meat?: string;
     side?: string;
+    recommendation?: Profile[];
 };
 
 export type NutritionValue = {
