@@ -11,7 +11,7 @@ import { ApplicationState } from './configure-store';
 
 export type AppState = typeof initialState;
 
-const DEFAULT_ALLERGENS = [
+export const DEFAULT_ALLERGENS = [
     { title: 'Молочные продукты', selected: false },
     { title: 'Яйцо', selected: false },
     { title: 'Рыба', selected: false },
@@ -41,6 +41,8 @@ export const DEFAULT_AUTHORS = [
     { title: 'Мирием Чонишвили', selected: false },
     { title: 'Елена Прекрасная', selected: false },
 ];
+
+export const ERR_RECEPIES_NOT_FOUND = 'recepies not found';
 
 export const DEFAULT_GLOBAL_FILTER: GlobalFilter = {
     categories: [] as string[],
@@ -110,7 +112,7 @@ export const appSlice = createSlice({
     },
 });
 export const userLoadingSelector = (state: ApplicationState) => state.app.isLoading;
-export const userErrorSelector = (state: ApplicationState) => state.app.error;
+export const errorSelector = (state: ApplicationState) => state.app.error;
 
 export const {
     setAppError,

@@ -1,11 +1,13 @@
-import { Box, Button, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
+import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 
 import menuItems from '~/app/mocks/menu_items.json';
+import { filterRecipesByAllergens } from '~/app/Utils/filterRecipesByAllergens';
+import { filterRecipesByTitleOrIngridient } from '~/app/Utils/filterRecipesByTitle';
 import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
 import { useResource } from '~/components/ResourceContext/ResourceContext';
-import { recipesSelector } from '~/store/app-slice';
+import { allergensSelector, querySelector, recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import ContentContainer from '../common/Containers/ContentContainer';
@@ -16,6 +18,8 @@ export default function CategoryPage() {
     const { getString } = useResource();
     const recipes = useAppSelector(recipesSelector);
     const [tabIndex, setTabIndex] = useState(0);
+    const query = useAppSelector(querySelector);
+    const allergens = useAppSelector(allergensSelector).filter((item) => item.selected === true);
 
     useEffect(() => {
         setTabIndex(
@@ -31,7 +35,21 @@ export default function CategoryPage() {
         return <Navigate to={`/${category}${path}`} replace />;
     }
 
-    const recepiesFromCategory = recipes.filter((recepie) => recepie.category.includes(category!));
+    let recepiesFromCategory = recipes.filter((recepie) => recepie.category.includes(category!));
+
+    if (query.length > 0) {
+        recepiesFromCategory = filterRecipesByTitleOrIngridient(recepiesFromCategory, query);
+    }
+    if (allergens.length > 0) {
+        recepiesFromCategory = filterRecipesByAllergens(
+            recepiesFromCategory,
+            allergens.map((it) => it.title),
+        );
+    }
+
+    recepiesFromCategory = recepiesFromCategory.filter((recepie) =>
+        recepie.subcategory.includes(subcategory!),
+    );
 
     let subtitle = '';
     if (category === 'vegan') {
@@ -87,21 +105,6 @@ export default function CategoryPage() {
                                                     )}
                                                 />
                                             </Box>
-                                            <Button
-                                                display={['inline-flex']}
-                                                as='a'
-                                                href='#'
-                                                bgColor='lime.300'
-                                                alignSelf='center'
-                                                fontSize='16px'
-                                                color='black'
-                                                variant='ghost'
-                                                flex={1}
-                                                px='16px'
-                                                py='8px'
-                                            >
-                                                {getString('load-more')}
-                                            </Button>
                                         </VStack>
                                     </TabPanel>
                                 ))}

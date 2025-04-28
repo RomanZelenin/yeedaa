@@ -7,7 +7,10 @@ import {
     MenuButton,
     MenuItem,
     MenuList,
+    Tag,
+    TagLabel,
     Text,
+    Wrap,
 } from '@chakra-ui/react';
 
 import { useResource } from '../ResourceContext/ResourceContext';
@@ -42,7 +45,27 @@ export const MultiSelectDropdown = ({
                         px='12px'
                         textAlign='start'
                     >
-                        {placeholder}
+                        {selectedItems.length === 0 ? (
+                            placeholder
+                        ) : (
+                            <>
+                                {selectedItems.length > 0 && (
+                                    <Wrap>
+                                        {selectedItems.map((item, i) => (
+                                            <Tag
+                                                key={i}
+                                                color='lime.600'
+                                                border='1px solid var(--chakra-colors-lime-400)'
+                                                bgColor='transparent'
+                                                borderRadius='6px'
+                                            >
+                                                <TagLabel>{getString(item)}</TagLabel>
+                                            </Tag>
+                                        ))}
+                                    </Wrap>
+                                )}
+                            </>
+                        )}
                     </MenuButton>
 
                     <MenuList flex={1} zIndex='popover' py='4px'>

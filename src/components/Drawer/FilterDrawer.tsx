@@ -19,6 +19,8 @@ import {
     MenuList,
     Stack,
     Switch,
+    Tag,
+    TagLabel,
     Text,
     Wrap,
     WrapItem,
@@ -89,7 +91,12 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
         <>
             <Drawer isOpen={isOpen} placement='right' onClose={onClose} size='md'>
                 <DrawerOverlay />
-                <DrawerContent h='100vh' p={{ base: '32px' }} data-test-id='filter-drawer'>
+                <DrawerContent
+                    maxW='450px'
+                    h='100vh'
+                    p={{ base: '32px' }}
+                    data-test-id='filter-drawer'
+                >
                     <DrawerHeader p={0}>
                         <Flex align='center'>
                             <Text textStyle='text2xlLh8Bold' flex={1}>
@@ -209,7 +216,7 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
     );
 };
 
-export const AllergySelectorFilterWithSwitcher = ({
+const AllergySelectorFilterWithSwitcher = ({
     onChange,
     selectedItems,
 }: {
@@ -219,6 +226,7 @@ export const AllergySelectorFilterWithSwitcher = ({
     const { getString } = useResource();
     const [isExcludeAllergens, setIsExcludeAllergens] = useState(false);
     const [allergens, setAllergens] = useState(useAppSelector(allergensSelector));
+    const countSelectedAllergens = allergens.filter((item) => item.selected === true).length;
 
     useEffect(() => {
         if (!isExcludeAllergens)
@@ -278,7 +286,29 @@ export const AllergySelectorFilterWithSwitcher = ({
                                 textAlign='start'
                                 isDisabled={!isExcludeAllergens}
                             >
-                                {getString('select-from-list-of-allergens')}...
+                                {countSelectedAllergens === 0 ? (
+                                    getString('select-from-list-of-allergens') + '...'
+                                ) : (
+                                    <>
+                                        {countSelectedAllergens > 0 && (
+                                            <Wrap>
+                                                {allergens
+                                                    .filter((item) => item.selected === true)
+                                                    .map((item, i) => (
+                                                        <Tag
+                                                            key={i}
+                                                            color='lime.600'
+                                                            border='1px solid var(--chakra-colors-lime-400)'
+                                                            bgColor='transparent'
+                                                            borderRadius='6px'
+                                                        >
+                                                            <TagLabel>{item.title}</TagLabel>
+                                                        </Tag>
+                                                    ))}
+                                            </Wrap>
+                                        )}
+                                    </>
+                                )}
                             </MenuButton>
 
                             <MenuList
@@ -302,7 +332,14 @@ export const AllergySelectorFilterWithSwitcher = ({
                                                 data-test-id={`allergen-${i}`}
                                                 variant='lime'
                                                 isChecked={item.selected}
-                                                onChange={onChange}
+                                                onChange={(e) => {
+                                                    onChange(e);
+                                                    setAllergens([
+                                                        ...allergens.slice(0, i),
+                                                        { ...item, selected: !item.selected },
+                                                        ...allergens.slice(i + 1),
+                                                    ]);
+                                                }}
                                                 mr={2}
                                             >
                                                 <Text textStyle='textSmLh5'>{item.title}</Text>

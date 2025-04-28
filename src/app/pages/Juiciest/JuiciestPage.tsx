@@ -1,37 +1,36 @@
-import { Button, VStack } from '@chakra-ui/react';
-import { Link } from 'react-router';
+import { VStack } from '@chakra-ui/react';
 
+import { filterRecipesByAllergens } from '~/app/Utils/filterRecipesByAllergens';
+import { filterRecipesByTitleOrIngridient } from '~/app/Utils/filterRecipesByTitle';
 import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
 import { useResource } from '~/components/ResourceContext/ResourceContext';
-import { recipesSelector } from '~/store/app-slice';
+import { allergensSelector, querySelector, recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import ContentContainer from '../common/Containers/ContentContainer';
 
 export default function JuiciestPage() {
-    const recipes = [...useAppSelector(recipesSelector)].sort((a, b) => b.likes - a.likes);
     const { getString } = useResource();
+
+    let recipes = [...useAppSelector(recipesSelector)].sort((a, b) => b.likes - a.likes);
+
+    const query = useAppSelector(querySelector);
+    const allergens = useAppSelector(allergensSelector).filter((item) => item.selected === true);
+    if (query.length > 0) {
+        recipes = filterRecipesByTitleOrIngridient(recipes, query);
+    }
+    if (allergens.length > 0) {
+        recipes = filterRecipesByAllergens(
+            recipes,
+            allergens.map((it) => it.title),
+        );
+    }
 
     return (
         <ContentContainer title={getString('juiciest')}>
             <VStack spacing='32px'>
                 <VStack spacing='12px'>
                     <RecipeCollection recipes={recipes} />
-                    <Button
-                        display='inline-flex'
-                        as={Link}
-                        to='/the-juiciest#'
-                        bgColor='lime.300'
-                        alignSelf='center'
-                        fontSize='16px'
-                        color='black'
-                        variant='ghost'
-                        flex={1}
-                        px='16px'
-                        py='8px'
-                    >
-                        {getString('load-more')}
-                    </Button>
                 </VStack>
             </VStack>
         </ContentContainer>

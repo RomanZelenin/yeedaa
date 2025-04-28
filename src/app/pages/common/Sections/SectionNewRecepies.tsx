@@ -68,13 +68,15 @@ export default function SectionNewRecipes() {
                         navigation: {
                             enabled: true,
                         },
+                        slidesOffsetBefore: 16,
                     },
                     1920: {
-                        slidesPerView: 4,
+                        slidesPerView: 4.1,
                         spaceBetween: '24px',
                         navigation: {
                             enabled: true,
                         },
+                        slidesOffsetBefore: 16,
                     },
                 }}
             >

@@ -18,7 +18,13 @@ import { FilterIcon } from '~/components/Icons/FilterIcon';
 import { SearchIcon } from '~/components/Icons/SearchIcon';
 import { useResource } from '~/components/ResourceContext/ResourceContext';
 import { AllergySelectorWithSwitcher } from '~/components/Selector /AllergySelectorWithSwitcher';
-import { querySelector, setAppQuery } from '~/store/app-slice';
+import {
+    ERR_RECEPIES_NOT_FOUND,
+    errorSelector,
+    querySelector,
+    setAppError,
+    setAppQuery,
+} from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string }) {
@@ -27,7 +33,8 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
     const { getString } = useResource();
     const dispatch = useAppDispatch();
     const [query, setQuery] = useState(useAppSelector(querySelector));
-
+    const error = useAppSelector(errorSelector);
+    console.log(error);
     return (
         <VStack
             spacing={0}
@@ -74,12 +81,14 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                         data-test-id='search-input'
                         borderRadius='4px'
                         border='1px solid'
-                        borderColor='blackAlpha.600'
+                        borderColor={error === ERR_RECEPIES_NOT_FOUND ? 'red' : 'blackAlpha.600'}
                         _hover={{
-                            borderColor: 'blackAlpha.600',
+                            borderColor:
+                                error === ERR_RECEPIES_NOT_FOUND ? 'red' : 'blackAlpha.600',
                         }}
                         _focusVisible={{
-                            borderColor: 'blackAlpha.600',
+                            borderColor:
+                                error === ERR_RECEPIES_NOT_FOUND ? 'red' : 'blackAlpha.600',
                         }}
                         textStyle='searchInput'
                         placeholder={`${getString('name_or_ingredient')}...`}
@@ -106,6 +115,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             onClick={() => {
                                 setQuery('');
                                 dispatch(setAppQuery(''));
+                                dispatch(setAppError(null));
                             }}
                             flex={1}
                             icon={<CloseIcon boxSize={{ base: '8px', lg: '10px' }} />}
