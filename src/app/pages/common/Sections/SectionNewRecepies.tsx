@@ -38,6 +38,7 @@ export default function SectionNewRecipes() {
             </Text>
 
             <Swiper
+                loopPreventsSliding={false}
                 data-test-id='carousel'
                 modules={[Navigation, Keyboard]}
                 loop={true}

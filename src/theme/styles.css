@@ -50,12 +50,6 @@
     background-image: url('/src/assets/icons/right-arrow.svg');
 }
 
-.swiper-slide-visible,
-.swiper-slide-prev, /* Makes previous slide visible */
-.swiper-slide-next {
-    visibility: visible;
-}
-
 /* Глобальные стили для всех scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
