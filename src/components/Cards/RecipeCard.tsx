@@ -3,6 +3,7 @@ import {
     Flex,
     HStack,
     Image,
+    Stack,
     Tag,
     TagLabel,
     Text,
@@ -57,22 +58,24 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                             likesCount={recepie.likes}
                         />
                     </HStack>
-                    <Text
-                        width='100%'
-                        textStyle={{ base: 'text2xlLh8Bold', lg: 'text5xlLhNoneBold' }}
-                        noOfLines={{ base: 2, md: 1, lg: 2 }}
-                        mt={{ base: '16px' }}
-                    >
-                        {recepie.title}
-                    </Text>
-                    <Text
-                        width='100%'
-                        textStyle={{ base: 'textSmLh5Normal' }}
-                        mt={{ base: '16px', lg: '24px' }}
-                        noOfLines={{ base: 3, md: 2, lg: 3 }}
-                    >
-                        {recepie.description}
-                    </Text>
+                    <Stack alignSelf='start' width='100%'>
+                        <Text
+                            maxW='437px'
+                            textStyle={{ base: 'text2xlLh8Bold', lg: 'text5xlLhNoneBold' }}
+                            noOfLines={{ base: 2, md: 1, lg: 2 }}
+                            mt={{ base: '16px' }}
+                        >
+                            {recepie.title}
+                        </Text>
+                        <Text
+                            maxW='510px'
+                            textStyle={{ base: 'textSmLh5Normal' }}
+                            mt={{ base: '16px', lg: '24px' }}
+                            noOfLines={{ base: 3, md: 2, lg: 3 }}
+                        >
+                            {recepie.description}
+                        </Text>
+                    </Stack>
                     <Wrap mt={{ base: '24px', md: 'auto' }} width='100%' justify='space-between'>
                         <WrapItem>
                             <Tag layerStyle='timerTag' alignSelf={{ base: 'start', lg: 'end' }}>
