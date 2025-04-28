@@ -79,16 +79,17 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
               });
     };
 
+    const isSearchAcitve =
+        filter.allergens.length !== 0 ||
+        filter.categories.length !== 0 ||
+        filter.meat.length !== 0 ||
+        filter.side_dish.length !== 0;
+
     return (
         <>
             <Drawer isOpen={isOpen} placement='right' onClose={onClose} size='md'>
                 <DrawerOverlay />
-                <DrawerContent
-                    h='100vh'
-                    p={{ base: '32px' }}
-                    width='inherit'
-                    data-test-id='filter-drawer'
-                >
+                <DrawerContent h='100vh' p={{ base: '32px' }} data-test-id='filter-drawer'>
                     <DrawerHeader p={0}>
                         <Flex align='center'>
                             <Text textStyle='text2xlLh8Bold' flex={1}>
@@ -182,26 +183,21 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             </Text>
                         </Button>
                         <Button
-                            pointerEvents={
-                                filter.allergens.length === 0 &&
-                                filter.categories.length === 0 &&
-                                filter.meat.length === 0 &&
-                                filter.side_dish.length === 0
-                                    ? 'none'
-                                    : 'auto'
-                            }
-                            bgColor='black'
+                            variant='solid'
+                            pointerEvents={!isSearchAcitve ? 'none' : 'auto'}
+                            bgColor={isSearchAcitve ? 'black' : '#c2c2c2'}
                             color='white'
                             data-test-id='find-recipe-button'
+                            disabled={!isSearchAcitve}
+                            onClick={() => {
+                                dispatcher(setAppGlobalFilter(filter));
+                                dispatcher(setAppIsFiltered(true));
+                                setFilter(DEFAULT_GLOBAL_FILTER);
+                                onClose();
+                            }}
                         >
                             <Text
                                 textStyle={{ base: 'textSmLh5Semibold', lg: 'textLgLh7Semibold' }}
-                                onClick={() => {
-                                    dispatcher(setAppGlobalFilter(filter));
-                                    dispatcher(setAppIsFiltered(true));
-                                    setFilter(DEFAULT_GLOBAL_FILTER);
-                                    onClose();
-                                }}
                             >
                                 {getString('find-recipe')}
                             </Text>
