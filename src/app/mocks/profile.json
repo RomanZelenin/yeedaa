@@ -1,0 +1,11 @@
+{
+    "avatar": "/src/assets/images/kate-avatar.png",
+    "firstName": "Екатерина",
+    "lastName": "Константинопольская",
+    "nickname": "@bake_and_pie",
+    "activity": {
+        "bookmarks": 185,
+        "persons": 589,
+        "likes": 587
+    }
+}

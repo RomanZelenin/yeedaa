@@ -1,0 +1,85 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('/src/assets/fonts/Inter_18pt-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/src/assets/fonts/Inter_18pt-Medium.ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/src/assets/fonts/Inter_18pt-SemiBold.ttf');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/src/assets/fonts/Inter_18pt-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    display: none;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    min-width: 40px;
+    min-height: 40px;
+    background: black;
+    border-radius: 10%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px;
+}
+
+.swiper-button-prev {
+    background-image: url('/src/assets/icons/left-arrow.svg');
+}
+
+.swiper-button-next {
+    background-image: url('/src/assets/icons/right-arrow.svg');
+    transform: translateX(6px);
+}
+
+/* Глобальные стили для всех scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+
+    /* ширина вертикального scrollbar */
+    height: 8px;
+
+    /* высота горизонтального scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+
+    /* цвет фона трека */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cecece;
+
+    /* цвет самого scrollbar */
+    border-radius: 10px;
+    border: 1px solid #f1f1f1;
+
+    /* создает отступ вокруг scrollbar */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a2a2a2;
+
+    /* цвет при наведении */
+}

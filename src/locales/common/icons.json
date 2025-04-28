@@ -1,0 +1,15 @@
+{
+    "salads": "/src/assets/icons/eggplant.svg",
+    "snacks": "/src/assets/icons/snacks.svg",
+    "first-dish": "/src/assets/icons/pot.svg",
+    "second-dish": "/src/assets/icons/pan.svg",
+    "desserts": "/src/assets/icons/хлеб-и-скалка-96 1.svg",
+    "grilled": "/src/assets/icons/посудомоечная-машина-96 1.svg",
+    "vegan": "/src/assets/icons/лавровый-лист-96 1.svg",
+    "children-dishes": "/src/assets/icons/child-tasty-96 1.svg",
+    "therapeutic-nutrition": "/src/assets/icons/therapeutic_nutrition.svg",
+    "national": "/src/assets/icons/international-food-96 1.svg",
+    "sauce": "/src/assets/icons/ступка-и-пестик-96 1.svg",
+    "drinks": "/src/assets/icons/drinks.svg",
+    "food-preparations": "/src/assets/icons/паста-из-овощного-бульона.svg"
+}
