@@ -13,7 +13,7 @@ import {
     Text,
 } from '@chakra-ui/react';
 
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { useResource } from '../ResourceContext/ResourceContext';
 
 export const VegeterianKitchenCard = ({
     badgeText,

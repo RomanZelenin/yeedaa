@@ -3,15 +3,15 @@ import { useEffect } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router';
 
 import profile from '~/app/mocks/profile.json';
-import { AsidePanel } from '~/components/AsidePanel/AsidePanel';
-import { Header } from '~/components/Header/Header';
-import { BottomMenu } from '~/components/Menu/BottomMenu';
-import { SideMenu } from '~/components/Menu/SideMenu';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { AsidePanel } from '~/common/components/AsidePanel/AsidePanel';
+import { Header } from '~/common/components/Header/Header';
+import { BottomMenu } from '~/common/components/Menu/BottomMenu';
+import { SideMenu } from '~/common/components/Menu/SideMenu';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { recipesSelector, setAppBreadcrumb } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
-export default function Index() {
+export default function App() {
     const { category, subcategory, id } = useParams();
     const location = useLocation();
     const { getString } = useResource();

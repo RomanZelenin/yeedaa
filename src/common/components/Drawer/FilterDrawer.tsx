@@ -27,7 +27,6 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useResource } from '~/components/ResourceContext/ResourceContext';
 import {
     allergensSelector,
     DEFAULT_AUTHORS,
@@ -42,6 +41,7 @@ import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { PlusIcon } from '../Icons/PlusIcon';
 import { DrawerComponentProps } from '../Menu/HamburgerMenu';
+import { useResource } from '../ResourceContext/ResourceContext';
 import { CustomCheckboxGroup } from './CustomCheckboxGroup';
 import { FilterTag } from './FilterTag';
 import { MultiSelectDropdown } from './MultiSelectDropdown';

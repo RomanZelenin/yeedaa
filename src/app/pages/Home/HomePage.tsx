@@ -1,16 +1,16 @@
 import { VStack } from '@chakra-ui/react';
 
-import { filterRecipesByAllergens } from '~/app/Utils/filterRecipesByAllergens';
-import { filterRecipesByTitleOrIngridient } from '~/app/Utils/filterRecipesByTitle';
-import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
+import { filterRecipesByAllergens } from '~/common/utils/filterRecipesByAllergens';
+import { filterRecipesByTitleOrIngridient } from '~/common/utils/filterRecipesByTitle';
 import { allergensSelector, querySelector, recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import ContentContainer from '../common/Containers/ContentContainer';
-import SectionCookingBlogs from '../common/Sections/SectionCookingBlogs';
-import SectionJuiciest from '../common/Sections/SectionJuiciest';
-import SectionNewRecipes from '../common/Sections/SectionNewRecepies';
+import SectionCookingBlogs from './Sections/SectionCookingBlogs';
+import SectionJuiciest from './Sections/SectionJuiciest';
+import SectionNewRecipes from './Sections/SectionNewRecepies';
 
 export default function HomePage() {
     const { getString } = useResource();

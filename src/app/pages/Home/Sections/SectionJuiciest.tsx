@@ -1,6 +1,6 @@
 import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
 
-import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
+import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 

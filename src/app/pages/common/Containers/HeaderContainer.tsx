@@ -1,4 +1,4 @@
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, SearchIcon } from '@chakra-ui/icons';
 import {
     Box,
     Flex,
@@ -13,11 +13,10 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { FilterDrawer } from '~/components/Drawer/FilterDrawer';
-import { FilterIcon } from '~/components/Icons/FilterIcon';
-import { SearchIcon } from '~/components/Icons/SearchIcon';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
-import { AllergySelectorWithSwitcher } from '~/components/Selector /AllergySelectorWithSwitcher';
+import { FilterDrawer } from '~/common/components/Drawer/FilterDrawer';
+import { FilterIcon } from '~/common/components/Icons/FilterIcon';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
+import { AllergySelectorWithSwitcher } from '~/common/components/Selector /AllergySelectorWithSwitcher';
 import {
     ERR_RECEPIES_NOT_FOUND,
     errorSelector,
@@ -102,7 +101,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             }
                         }}
                         h='100%'
-                        pr='54px'
+                        pr={{ base: '50px', lg: '60px' }}
                     />
                     <InputRightElement
                         alignItems='center'
@@ -124,14 +123,14 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                         />
                         <IconButton
                             minW={0}
-                            pr={{ lg: '28px' }}
+                            pr={{ base: '10px', lg: '28px' }}
                             data-test-id='search-button'
                             backgroundColor='transparent'
                             _hover={{
                                 backgroundColor: 'transparent',
                             }}
                             pointerEvents={query.length < 3 ? 'none' : 'auto'}
-                            icon={<SearchIcon minW={0} boxSize={{ base: '32px', lg: '48px' }} />}
+                            icon={<SearchIcon minW={0} boxSize={{ base: '16px', lg: '20px' }} />}
                             aria-label='Search'
                             isDisabled={query.length < 3}
                             onClick={() => dispatch(setAppQuery(query))}

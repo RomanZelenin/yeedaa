@@ -13,8 +13,8 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
 
+import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
 
 export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {

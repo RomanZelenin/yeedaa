@@ -14,8 +14,7 @@ import {
     WrapItem,
 } from '@chakra-ui/react';
 
-import { useResource } from '~/components/ResourceContext/ResourceContext';
-
+import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
 
 export const NewRecepieCard = ({

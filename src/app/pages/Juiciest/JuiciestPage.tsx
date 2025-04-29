@@ -1,9 +1,9 @@
 import { VStack } from '@chakra-ui/react';
 
-import { filterRecipesByAllergens } from '~/app/Utils/filterRecipesByAllergens';
-import { filterRecipesByTitleOrIngridient } from '~/app/Utils/filterRecipesByTitle';
-import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
+import { filterRecipesByAllergens } from '~/common/utils/filterRecipesByAllergens';
+import { filterRecipesByTitleOrIngridient } from '~/common/utils/filterRecipesByTitle';
 import { allergensSelector, querySelector, recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
