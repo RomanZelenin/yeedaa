@@ -18,11 +18,11 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
 import { querySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
+import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
 
 export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {

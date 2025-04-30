@@ -5,7 +5,7 @@ import { useLayoutEffect } from 'react';
 import { Keyboard, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { NewRecepieCard } from '~/components/Cards/NewRecepieCard';
+import { NewRecepieCard } from '~/common/components/Cards/NewRecepieCard';
 import { recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 

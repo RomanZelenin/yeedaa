@@ -3,7 +3,7 @@ import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/rea
 import {
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
-} from '~/components/Cards/VegeterianKitchenCard';
+} from '~/common/components/Cards/VegeterianKitchenCard';
 import { randomCategorySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 

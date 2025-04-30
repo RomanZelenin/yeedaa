@@ -1,6 +1,6 @@
 import { Button, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 
-import { BlogCard } from '~/components/Cards/BlogCard';
+import { BlogCard } from '~/common/components/Cards/BlogCard';
 import { blogsSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 

@@ -2,9 +2,9 @@ import { Box, Button, GridItem, VStack } from '@chakra-ui/react';
 import { JSX } from '@emotion/react/jsx-runtime';
 import { Link } from 'react-router';
 
-import { filterRecipesByTitleOrIngridient } from '~/app/Utils/filterRecipesByTitle';
-import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
+import { filterRecipesByTitleOrIngridient } from '~/common/utils/filterRecipesByTitle';
 import {
     ERR_RECEPIES_NOT_FOUND,
     errorSelector,
@@ -16,7 +16,7 @@ import {
 } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
-import SectionRandomCategory from '../Sections/SectionRandomCategory';
+import SectionRandomCategory from '../../Home/Sections/SectionRandomCategory';
 import HeaderContainer from './HeaderContainer';
 
 export default function ContentContainer({

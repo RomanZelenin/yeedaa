@@ -8,13 +8,13 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { store } from '~/store/configure-store.ts';
 
+import App from './app/App';
 import CategoryPage from './app/pages/Category/CategoryPage';
 import { ErrorView } from './app/pages/Error/ErrorView';
 import HomePage from './app/pages/Home/HomePage';
-import Index from './app/pages/Index';
 import JuiciestPage from './app/pages/Juiciest/JuiciestPage';
 import { RecipePage } from './app/pages/Recepie/RecipePage';
-import { ResourceProvider } from './components/ResourceContext/ResourceContext';
+import { ResourceProvider } from './common/components/ResourceContext/ResourceContext';
 import theme from './theme';
 
 createRoot(document.getElementById('root')!).render(
@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
                 <Provider store={store}>
                     <BrowserRouter>
                         <Routes>
-                            <Route path='/' element={<Index />}>
+                            <Route path='/' element={<App />}>
                                 <Route index element={<HomePage />} />
                                 <Route path='the-juiciest' element={<JuiciestPage />} />
                                 <Route path=':category/:subcategory?' element={<CategoryPage />} />

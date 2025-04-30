@@ -1,13 +1,13 @@
 import { Box, Flex, GridItem } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 
-import { AuthorRecipeCard } from '~/components/Cards/AuthorRecipeCard';
-import { RecipeCard } from '~/components/Cards/RecipeCard';
-import { Profile } from '~/components/Header/ProfileInfo';
+import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
+import { RecipeCard } from '~/common/components/Cards/RecipeCard';
+import { Profile } from '~/common/components/Header/ProfileInfo';
 import { recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
-import SectionNewRecipes from '../common/Sections/SectionNewRecepies';
+import SectionNewRecipes from '../Home/Sections/SectionNewRecepies';
 import { CookingSteps } from './CookingSteps';
 import { IngredientsList } from './IngredientsList';
 import { NutritionFacts } from './NutritionFacts';

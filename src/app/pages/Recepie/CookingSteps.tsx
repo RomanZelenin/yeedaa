@@ -1,8 +1,8 @@
 import { Text, VStack } from '@chakra-ui/react';
 
 import { CookingStep } from '~/app/mocks/types/type_defenitions';
-import { StepPreparationCard } from '~/components/Cards/StepPreparationCard';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { StepPreparationCard } from '~/common/components/Cards/StepPreparationCard';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 
 export const CookingSteps = ({ steps }: { steps: CookingStep[] }) => {
     const { getString } = useResource();

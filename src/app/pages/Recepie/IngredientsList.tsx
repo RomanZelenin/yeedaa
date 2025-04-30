@@ -18,7 +18,7 @@ import {
 import { useState } from 'react';
 
 import { Ingredient } from '~/app/mocks/types/type_defenitions';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 
 export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) => {
     const [numServings, setNumServings] = useState(1);

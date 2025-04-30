@@ -4,8 +4,8 @@ import blogs from '~/app/mocks/blogs.json';
 import randomCategory from '~/app/mocks/random.json';
 import recipes from '~/app/mocks/recepies.json';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { CategoryData } from '~/app/pages/common/Sections/SectionRandomCategory';
-import { Profile } from '~/components/Header/ProfileInfo';
+import { CategoryData } from '~/app/pages/Home/Sections/SectionRandomCategory';
+import { Profile } from '~/common/components/Header/ProfileInfo';
 
 import { ApplicationState } from './configure-store';
 
