@@ -1,4 +1,5 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react';
+import { Link } from 'react-router';
 
 import { breadcrumbSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
@@ -20,14 +21,30 @@ export const NavigationBreadcrumb = () => {
         >
             {breadcrumbs.map((item, index) => (
                 <BreadcrumbItem key={`${item.path}-${index}`}>
-                    <BreadcrumbLink
-                        whiteSpace='nowrap'
-                        href={item.path}
-                        color={index !== breadcrumbs.length - 1 ? 'rgba(0, 0, 0, 0.64)' : 'black'}
-                        aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}
-                    >
-                        {item.title}
-                    </BreadcrumbLink>
+                    {item.path === '/' ? (
+                        <BreadcrumbLink
+                            whiteSpace='nowrap'
+                            href={item.path}
+                            color={
+                                index !== breadcrumbs.length - 1 ? 'rgba(0, 0, 0, 0.64)' : 'black'
+                            }
+                            aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}
+                        >
+                            {item.title}
+                        </BreadcrumbLink>
+                    ) : (
+                        <BreadcrumbLink
+                            as={Link}
+                            whiteSpace='nowrap'
+                            to={item.path}
+                            color={
+                                index !== breadcrumbs.length - 1 ? 'rgba(0, 0, 0, 0.64)' : 'black'
+                            }
+                            aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}
+                        >
+                            {item.title}
+                        </BreadcrumbLink>
+                    )}
                 </BreadcrumbItem>
             ))}
         </Breadcrumb>

@@ -31,24 +31,27 @@
     display: none;
 }
 
-.swiper-button-next,
-.swiper-button-prev {
-    min-width: 40px;
-    min-height: 40px;
+.swiper-custom-button-prev,
+.swiper-custom-button-next {
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+    transform: translateY(-50%);
     background: black;
+    color: white;
+    border: none;
     border-radius: 10%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 16px;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
 }
 
-.swiper-button-prev {
-    background-image: url('/src/assets/icons/left-arrow.svg');
+.swiper-custom-button-prev {
+    left: 10px;
 }
 
-.swiper-button-next {
-    background-image: url('/src/assets/icons/right-arrow.svg');
-    transform: translateX(6px);
+.swiper-custom-button-next {
+    right: 10px;
 }
 
 /* Глобальные стили для всех scrollbar */

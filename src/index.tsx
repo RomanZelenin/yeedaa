@@ -10,7 +10,7 @@ import { store } from '~/store/configure-store.ts';
 
 import App from './app/App';
 import CategoryPage from './app/pages/Category/CategoryPage';
-import { ErrorView } from './app/pages/Error/ErrorView';
+import { ErrorPage } from './app/pages/Error/ErrorPage';
 import HomePage from './app/pages/Home/HomePage';
 import JuiciestPage from './app/pages/Juiciest/JuiciestPage';
 import { RecipePage } from './app/pages/Recepie/RecipePage';
@@ -26,10 +26,12 @@ createRoot(document.getElementById('root')!).render(
                         <Routes>
                             <Route path='/' element={<App />}>
                                 <Route index element={<HomePage />} />
-                                <Route path='the-juiciest' element={<JuiciestPage />} />
+                                <Route path='the-juiciest/' element={<JuiciestPage />} />
+                                <Route path='the-juiciest/:id' element={<RecipePage />} />
                                 <Route path=':category/:subcategory?' element={<CategoryPage />} />
                                 <Route path=':category/:subcategory/:id' element={<RecipePage />} />
-                                <Route path='/*' element={<ErrorView />} />
+                                <Route path='/not-found' element={<ErrorPage />} />
+                                <Route path='/*' element={<ErrorPage />} />
                             </Route>
                         </Routes>
                     </BrowserRouter>

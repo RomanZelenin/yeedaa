@@ -1,13 +1,21 @@
 import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
 
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
-import { recipesSelector } from '~/store/app-slice';
-import { useAppSelector } from '~/store/hooks';
+import { useGetJuiciestRecipesQuery } from '~/query/create-api';
 
 export default function SectionJuiciest() {
-    const recipes = [...useAppSelector(recipesSelector)]
-        .sort((a, b) => b.likes - a.likes)
-        .slice(0, 4);
+    const {
+        data: recipes,
+        isLoading,
+        isError,
+    } = useGetJuiciestRecipesQuery({ limit: 4, sortBy: 'likes', sortOrder: 'desc' });
+
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
+    if (isError) {
+        return <Text>Error</Text>;
+    }
 
     return (
         <VStack spacing='12px' align='stretch'>
@@ -36,7 +44,12 @@ export default function SectionJuiciest() {
                     Вся подборка
                 </Button>
             </HStack>
-            <RecipeCollection recipes={recipes} />
+            <RecipeCollection
+                recipes={recipes!.data.map((recipe) => ({
+                    ...recipe,
+                    path: `/the-juiciest/${recipe._id}`,
+                }))}
+            />
             <Button
                 display={{ base: 'flex', lg: 'none' }}
                 as='a'

@@ -62,7 +62,7 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                                         {getString('subscribe')}
                                     </Text>
                                 </Button>
-                                <ThreeButtons personsCount={1} />
+                                <ThreeButtons views={1} />
                             </HStack>
                         </VStack>
                     </Flex>

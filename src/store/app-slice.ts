@@ -4,7 +4,7 @@ import blogs from '~/app/mocks/blogs.json';
 import randomCategory from '~/app/mocks/random.json';
 import recipes from '~/app/mocks/recepies.json';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { CategoryData } from '~/app/pages/Home/Sections/SectionRandomCategory';
+import { CategoryData } from '~/app/pages/Home/Sections/SectionRelevantKitchen';
 import { Profile } from '~/common/components/Header/ProfileInfo';
 
 import { ApplicationState } from './configure-store';
@@ -22,6 +22,8 @@ export const DEFAULT_ALLERGENS = [
     { title: 'Клубника', selected: false },
     { title: 'Шоколад', selected: false },
 ];
+
+export const MOCK_RECIPES = recipes;
 
 export const DEFAULT_CATEGORIES = [
     { title: 'salads', selected: false },
@@ -59,10 +61,9 @@ const initialState = {
     recipes: recipes as Recipe[],
     blogs: blogs as { person: Profile; comment: string }[],
     randomCategory: randomCategory as CategoryData[],
-    isExcludeAllergens: false,
     allergens: DEFAULT_ALLERGENS,
     categories: DEFAULT_CATEGORIES,
-    breadcrumb: [{ title: 'Главная', path: '/' }] as { title: string; path: string }[],
+    breadcrumb: [] as { title: string; path: string }[],
     globalFilter: DEFAULT_GLOBAL_FILTER,
     isFiltered: false,
 };
@@ -78,15 +79,6 @@ export const appSlice = createSlice({
         },
         setAppQuery(state, { payload: query }: PayloadAction<string>) {
             state.query = query;
-        },
-        setAppExcludeAllergens(state, { payload: isExcludeAllergens }: PayloadAction<boolean>) {
-            state.isExcludeAllergens = isExcludeAllergens;
-        },
-        setAppAllergens(
-            state,
-            { payload: allergens }: PayloadAction<{ title: string; selected: boolean }[]>,
-        ) {
-            state.allergens = allergens;
         },
         setAppBreadcrumb(
             state,
@@ -109,6 +101,9 @@ export const appSlice = createSlice({
                 state.globalFilter = DEFAULT_GLOBAL_FILTER;
             }
         },
+        setRecepies(state, { payload: recipes }: PayloadAction<Recipe[]>) {
+            state.recipes = recipes;
+        },
     },
 });
 export const userLoadingSelector = (state: ApplicationState) => state.app.isLoading;
@@ -118,12 +113,11 @@ export const {
     setAppError,
     setAppLoader,
     setAppQuery,
-    setAppExcludeAllergens,
-    setAppAllergens,
     setAppBreadcrumb,
     setAppCategories,
     setAppIsFiltered,
     setAppGlobalFilter,
+    setRecepies,
 } = appSlice.actions;
 export default appSlice.reducer;
 
@@ -131,7 +125,6 @@ export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
 export const blogsSelector = (state: ApplicationState) => state.app.blogs;
 export const randomCategorySelector = (state: ApplicationState) => state.app.randomCategory[0];
-export const isExcludeAllergensSelector = (state: ApplicationState) => state.app.isExcludeAllergens;
 export const allergensSelector = (state: ApplicationState) => state.app.allergens;
 export const breadcrumbSelector = (state: ApplicationState) => state.app.breadcrumb;
 export const categoriesSelector = (state: ApplicationState) => state.app.categories;

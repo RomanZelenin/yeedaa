@@ -12,26 +12,28 @@ import {
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 
-import menuItems from '~/app/mocks/menu_items.json';
+import { useGetCategoriesQuery } from '~/query/create-api';
 
 export const MenuItems = () => {
     const { category, subcategory } = useParams();
     const navigate = useNavigate();
-    const [selectedItem, setSelectedItem] = useState(() =>
-        menuItems.findIndex((it) => it.path?.substring(1) === category),
-    );
+
+    const { data: categories, isLoading, isError } = useGetCategoriesQuery();
+    const [selectedItem, setSelectedItem] = useState(-1);
     const [selectedSubmenuIdx, setSelectedSubmenuIdx] = useState(0);
 
     useEffect(() => {
-        setSelectedItem(menuItems.findIndex((it) => it.path?.substring(1) === category));
-        if (selectedItem >= 0) {
-            setSelectedSubmenuIdx(
-                menuItems[selectedItem].subcategory!.findIndex(
-                    (it) => it.path?.substring(1) === subcategory,
-                ),
-            );
-        }
-    }, [category, subcategory]);
+        setSelectedItem(
+            categories
+                ?.filter((it) => it.subCategories)
+                .findIndex((it) => it.category === category) ?? -1,
+        );
+        setSelectedSubmenuIdx(
+            categories
+                ?.find((it) => it.category === category)
+                ?.subCategories?.findIndex((it) => it.category == subcategory) ?? 0,
+        );
+    }, [categories, subcategory]);
 
     const handleMenuItemClick = ({ idx, path }: { idx: number; path: string }) => {
         setSelectedItem(idx);
@@ -40,6 +42,13 @@ export const MenuItems = () => {
             navigate(path);
         }
     };
+
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
+    if (isError) {
+        return <Text>Error</Text>;
+    }
 
     return (
         <Accordion
@@ -51,102 +60,107 @@ export const MenuItems = () => {
             overflowY='auto'
             mb='12px'
         >
-            {menuItems.map((item, idx) => (
-                <AccordionItem key={idx} style={{ borderWidth: 0 }}>
-                    {({ isExpanded }) => (
-                        <>
-                            <h2>
-                                <AccordionButton
-                                    px='8px'
-                                    py='12px'
-                                    gap='8px'
-                                    _expanded={{
-                                        bg: 'lime.100',
-                                        fontWeight: 700,
-                                        lineHeight: '24px',
-                                    }}
-                                    data-test-id={
-                                        item.title === 'Веганская кухня'
-                                            ? 'vegan-cuisine'
-                                            : `${item.title}`
-                                    }
-                                    onClick={() =>
-                                        handleMenuItemClick({
-                                            idx: idx,
-                                            path: item.path! + item.subcategory![0].path,
-                                        })
-                                    }
-                                >
-                                    <Image
-                                        src={item.icon}
-                                        boxSize='24px'
-                                        alt={`${item.title} icon`}
-                                    />
-                                    <Text flex='1' textAlign='left' fontSize='16px'>
-                                        {item.title}
-                                    </Text>
-
-                                    <Image
-                                        src={
-                                            isExpanded
-                                                ? '/src/assets/icons/up.svg'
-                                                : '/src/assets/icons/down.svg'
+            {categories
+                ?.filter((it) => it.subCategories)
+                .map((category, idx) => (
+                    <AccordionItem key={idx} style={{ borderWidth: 0 }}>
+                        {({ isExpanded }) => (
+                            <>
+                                <h2>
+                                    <AccordionButton
+                                        px='8px'
+                                        py='12px'
+                                        gap='8px'
+                                        _expanded={{
+                                            bg: 'lime.100',
+                                            fontWeight: 700,
+                                            lineHeight: '24px',
+                                        }}
+                                        data-test-id={
+                                            category.title === 'Веганская кухня'
+                                                ? 'vegan-cuisine'
+                                                : `${category.title}`
                                         }
-                                        alt={isExpanded ? 'Collapse' : 'Expand'}
-                                    />
-                                </AccordionButton>
-                            </h2>
-                            <AccordionPanel>
-                                <UnorderedList styleType='none' m={0}>
-                                    {item.subcategory?.map((subItem, subIdx) => (
-                                        <ListItem
-                                            key={`${subItem.title}-${subIdx}`}
-                                            mb='12px'
-                                            aria-selected={
-                                                selectedSubmenuIdx === subIdx ? true : false
+                                        onClick={() =>
+                                            handleMenuItemClick({
+                                                idx: idx,
+                                                path:
+                                                    category.category +
+                                                    '/' +
+                                                    category.subCategories?.[0].category,
+                                            })
+                                        }
+                                    >
+                                        <Image
+                                            src={category.icon}
+                                            boxSize='24px'
+                                            alt={`${category.title} icon`}
+                                        />
+                                        <Text flex='1' textAlign='left' fontSize='16px'>
+                                            {category.title}
+                                        </Text>
+
+                                        <Image
+                                            src={
+                                                isExpanded
+                                                    ? '/src/assets/icons/up.svg'
+                                                    : '/src/assets/icons/down.svg'
                                             }
-                                            data-test-id={
-                                                selectedSubmenuIdx === subIdx
-                                                    ? `${subItem?.path?.substring(1)}-active`
-                                                    : ''
-                                            }
-                                        >
-                                            <ChakraLink
-                                                my='6px'
-                                                display='flex'
-                                                onClick={() => setSelectedSubmenuIdx(subIdx)}
-                                                as={RouterLink}
-                                                to={`${item.path}${subItem?.path}`}
-                                                borderLeft={
-                                                    selectedSubmenuIdx === subIdx
-                                                        ? '8px solid '
-                                                        : '1px solid '
+                                            alt={isExpanded ? 'Collapse' : 'Expand'}
+                                        />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel>
+                                    <UnorderedList styleType='none' m={0}>
+                                        {category.subCategories?.map((subCategory, i) => (
+                                            <ListItem
+                                                key={`${subCategory.title}-${i}`}
+                                                mb='12px'
+                                                aria-selected={
+                                                    selectedSubmenuIdx === i ? true : false
                                                 }
-                                                borderLeftColor='lime.300'
-                                                marginLeft={
-                                                    selectedSubmenuIdx === subIdx ? '-8px' : '-1px'
+                                                data-test-id={
+                                                    selectedSubmenuIdx === i
+                                                        ? `${subCategory.category}-active`
+                                                        : ''
                                                 }
-                                                _hover={{ textDecoration: 'none' }}
                                             >
-                                                <Text
-                                                    ml='11px'
-                                                    fontSize='16px'
-                                                    lineHeight='24px'
-                                                    fontWeight={
-                                                        selectedSubmenuIdx === subIdx ? 700 : 400
+                                                <ChakraLink
+                                                    my='6px'
+                                                    display='flex'
+                                                    onClick={() => setSelectedSubmenuIdx(i)}
+                                                    as={RouterLink}
+                                                    to={`${category.category}/${category.subCategories?.[i].category}`}
+                                                    borderLeft={
+                                                        selectedSubmenuIdx === i
+                                                            ? '8px solid '
+                                                            : '1px solid '
                                                     }
+                                                    borderLeftColor='lime.300'
+                                                    marginLeft={
+                                                        selectedSubmenuIdx === i ? '-8px' : '-1px'
+                                                    }
+                                                    _hover={{ textDecoration: 'none' }}
                                                 >
-                                                    {subItem.title}
-                                                </Text>
-                                            </ChakraLink>
-                                        </ListItem>
-                                    ))}
-                                </UnorderedList>
-                            </AccordionPanel>
-                        </>
-                    )}
-                </AccordionItem>
-            ))}
+                                                    <Text
+                                                        ml='11px'
+                                                        fontSize='16px'
+                                                        lineHeight='24px'
+                                                        fontWeight={
+                                                            selectedSubmenuIdx === i ? 700 : 400
+                                                        }
+                                                    >
+                                                        {subCategory.title}
+                                                    </Text>
+                                                </ChakraLink>
+                                            </ListItem>
+                                        ))}
+                                    </UnorderedList>
+                                </AccordionPanel>
+                            </>
+                        )}
+                    </AccordionItem>
+                ))}
         </Accordion>
     );
 };

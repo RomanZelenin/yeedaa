@@ -8,37 +8,55 @@ import { Header } from '~/common/components/Header/Header';
 import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { recipesSelector, setAppBreadcrumb } from '~/store/app-slice';
-import { useAppDispatch, useAppSelector } from '~/store/hooks';
+import { useGetCategoriesQuery, useGetRecipeByIdQuery } from '~/query/create-api';
+import { setAppBreadcrumb } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 export default function App() {
-    const { category, subcategory, id } = useParams();
-    const location = useLocation();
+    const { category: categoryId, subcategory: subcategoryId, id: recipeId } = useParams();
     const { getString } = useResource();
+    const location = useLocation();
     const dispatcher = useAppDispatch();
-    const recepie = useAppSelector(recipesSelector);
+    const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
+
+    const { data: categories } = useGetCategoriesQuery();
+    const category = categories?.find((it) => it.category === categoryId);
+    const subcategory = category?.subCategories?.find(
+        (subcategory) => subcategory.category == subcategoryId,
+    );
 
     useEffect(() => {
-        const breadcrumbs = [{ title: 'Главная', path: '/' }];
+        const breadcrumbs = [{ title: getString('home'), path: '/' }];
         if (category) {
-            breadcrumbs.push({ title: `${getString(category!)}`, path: `/${category}` });
+            breadcrumbs.push({
+                title: `${category.title}`,
+                path: `/${category.category}/${category.subCategories?.[0].category}`,
+            });
             if (subcategory) {
                 breadcrumbs.push({
-                    title: `${getString(subcategory!)}`,
-                    path: `/${category}/${subcategory}`,
+                    title: `${subcategory.title}`,
+                    path: `/${category.category}/${subcategory.category}`,
                 });
-                if (id) {
-                    const title = recepie.find((recepie) => recepie?.id === id)!.title;
-                    breadcrumbs.push({ title: `${title}`, path: `#` });
+                if (recipeId && recipe) {
+                    breadcrumbs.push({
+                        title: `${recipe.title}`,
+                        path: `/${category.category}/${subcategory.category}/${recipeId}#`,
+                    });
                 }
             }
         } else {
             if (location.pathname.startsWith('/the-juiciest')) {
-                breadcrumbs.push({ title: 'Самое сочное', path: '#' });
+                breadcrumbs.push({ title: getString('juiciest'), path: '/the-juiciest' });
+                if (recipeId && recipe) {
+                    breadcrumbs.push({
+                        title: `${recipe.title}`,
+                        path: `/the-juiciest/${recipeId}#`,
+                    });
+                }
             }
         }
         dispatcher(setAppBreadcrumb(breadcrumbs));
-    }, [location]);
+    }, [category, subcategory, recipe, recipeId]);
 
     return (
         <Grid

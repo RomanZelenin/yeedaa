@@ -26,7 +26,7 @@ export const ErrorPage = () => {
                         <Text textStyle='text2xlLh8Bold'>{getString('no-such-page')}</Text>
                         <Text as='span' textStyle='textMdLh6Normal' color='blackAlpha.700'>
                             {getString('you-can-look-another-recipe')}{' '}
-                            <Link href='#' textDecoration='underline'>
+                            <Link href='/' textDecoration='underline'>
                                 {getString('here').toLocaleLowerCase()}
                             </Link>
                         </Text>

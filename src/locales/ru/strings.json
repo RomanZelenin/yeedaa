@@ -51,7 +51,7 @@
     "eliminate-allergens": "Исключить аллергены",
     "select-from-list-of-allergens": "Выберите из списка аллергенов",
     "calories": "Калорийность",
-    "proteins": "Белки",
+    "protein": "Белки",
     "fats": "Жиры",
     "carbohydrates": "Углеводы",
     "gram": "Грамм",
@@ -67,5 +67,6 @@
     "new-recepies": "Новые рецепты",
     "no-such-page": "Упс! Такой страницы нет",
     "you-can-look-another-recipe": "Можете поискать другой рецепт",
-    "here": "Здесь"
+    "here": "Здесь",
+    "min": "Мин"
 }

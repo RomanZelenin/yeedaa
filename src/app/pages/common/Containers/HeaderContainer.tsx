@@ -11,8 +11,9 @@ import {
     useDisclosure,
     VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { filterSelector } from '~/app/features/filters/filtersSlice';
 import { FilterDrawer } from '~/common/components/Drawer/FilterDrawer';
 import { FilterIcon } from '~/common/components/Icons/FilterIcon';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
@@ -28,12 +29,24 @@ import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [isSearchInputActive, setIsSearchInputActive] = useState(false);
+    const [isSearchInputInFocus, setIsSearchInputActive] = useState(false);
     const { getString } = useResource();
     const dispatch = useAppDispatch();
     const [query, setQuery] = useState(useAppSelector(querySelector));
     const error = useAppSelector(errorSelector);
-    console.log(error);
+
+    const [searchIsActive, setSearchIsActive] = useState(false);
+    const filter = useAppSelector(filterSelector);
+    const countSelectedAllergens = filter.allergens.filter((it) => it.selected).length;
+
+    useEffect(() => {
+        if (query.length >= 3 || countSelectedAllergens > 0) {
+            setSearchIsActive(true);
+        } else {
+            setSearchIsActive(false);
+        }
+    }, [query, countSelectedAllergens]);
+
     return (
         <VStack
             spacing={0}
@@ -41,7 +54,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             px={{ base: '16px', md: '0px' }}
             borderRadius={{ base: '0px 0px 8px 8px', xl: '0px 0px 24px 24px' }}
             boxShadow={
-                isSearchInputActive
+                isSearchInputInFocus
                     ? '0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)'
                     : 'none'
             }
@@ -129,10 +142,10 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             _hover={{
                                 backgroundColor: 'transparent',
                             }}
-                            pointerEvents={query.length < 3 ? 'none' : 'auto'}
+                            pointerEvents={!searchIsActive ? 'none' : 'auto'}
                             icon={<SearchIcon minW={0} boxSize={{ base: '16px', lg: '20px' }} />}
                             aria-label='Search'
-                            isDisabled={query.length < 3}
+                            isDisabled={!searchIsActive}
                             onClick={() => dispatch(setAppQuery(query))}
                         />
                     </InputRightElement>

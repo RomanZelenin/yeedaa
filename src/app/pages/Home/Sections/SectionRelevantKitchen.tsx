@@ -1,14 +1,40 @@
 import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { useMemo } from 'react';
+import { useParams } from 'react-router';
 
 import {
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
 } from '~/common/components/Cards/VegeterianKitchenCard';
-import { randomCategorySelector } from '~/store/app-slice';
-import { useAppSelector } from '~/store/hooks';
+import { getRandomNumber } from '~/common/utils/getRandomNumber';
+import {
+    useGetCategoriesQuery,
+    useGetRecipeByCategoryQuery,
+    useGetRecipeQuery,
+} from '~/query/create-api';
 
-export default function SectionRandomCategory() {
-    const randomCategory = useAppSelector(randomCategorySelector);
+export default function SectionRelevantKitchen() {
+    const { category: categoryId } = useParams();
+    const { data: categories } = useGetCategoriesQuery();
+
+    const category = useMemo(() => {
+        const mainCategories = categories?.filter((it) => !!it.subCategories);
+        const randomIdx = getRandomNumber(1, mainCategories?.length ?? 1) - 1;
+        return mainCategories?.at(randomIdx);
+    }, [categoryId, categories]);
+
+    const subcategoriesIds = category?.subCategories?.map((subcategory) => subcategory._id);
+    //   .join(',');
+
+    /* const { data: recipes } = */ useGetRecipeByCategoryQuery(
+        { id: subcategoriesIds?.[0], limit: 5 },
+        { skip: !subcategoriesIds?.[0] },
+    );
+    const { data: recipes } = useGetRecipeQuery(
+        { limit: 5, subcategoriesIds: subcategoriesIds?.join(',') },
+        { skip: !subcategoriesIds },
+    );
+
     return (
         <Box px={{ base: '16px', lg: '0px' }}>
             <Divider mb={{ base: 0, lg: '24px' }} />
@@ -23,7 +49,7 @@ export default function SectionRandomCategory() {
                         fontWeight='500'
                         lineHeight={{ base: '32px', lg: '40px', xl: '48px' }}
                     >
-                        {randomCategory.title}
+                        {category?.title}
                     </Text>
                 </GridItem>
                 <GridItem colSpan={{ base: 1, lg: 3, xl: 2 }}>
@@ -33,7 +59,7 @@ export default function SectionRandomCategory() {
                         lineHeight={{ base: '20px', lg: '24px' }}
                         fontWeight='500'
                     >
-                        {randomCategory.description}
+                        {category?.description}
                     </Text>
                 </GridItem>
             </SimpleGrid>
@@ -42,24 +68,17 @@ export default function SectionRandomCategory() {
                 columnGap={{ base: '12px', lg: '16px', xl: '24px' }}
                 rowGap={{ base: '12px', lg: '16px', xl: '24px' }}
             >
-                {randomCategory?.base.map((it, i) => (
+                {recipes?.data?.slice(0, 2)?.map((recipe, i) => (
                     <GridItem key={i} colSpan={{ xl: 1 }}>
-                        <VegeterianKitchenCard
-                            badgeText={it.subcategory}
-                            title={it.title}
-                            description={it.description}
-                            likesCount={it.likes}
-                            bookmarksCount={it.bookmarks}
-                            personsCount={it.persons}
-                        />
+                        <VegeterianKitchenCard recipe={recipe} />
                     </GridItem>
                 ))}
 
-                <GridItem colSpan={{ xl: 2 }}>
-                    <VStack spacing='12px' align='stretch'>
-                        {randomCategory?.compact.map((it, i) => (
+                <GridItem colSpan={{ xl: 2 }} display='flex' flexDirection='column'>
+                    <VStack spacing='12px' justify='space-between' align='stretch' flex={1}>
+                        {recipes?.data?.slice(2).map((recipe, i) => (
                             <Box key={i}>
-                                <VegeterianKitchenCompactCard icon={it.icon} title={it.title} />
+                                <VegeterianKitchenCompactCard recipe={recipe} />
                             </Box>
                         ))}
                     </VStack>
@@ -68,25 +87,3 @@ export default function SectionRandomCategory() {
         </Box>
     );
 }
-
-type Dish = {
-    title: string;
-    description: string;
-    subcategory: string;
-    badgeIcon: string;
-    likes?: number;
-    bookmarks?: number;
-    persons?: number;
-};
-
-type CompactItem = {
-    icon: string;
-    title: string;
-};
-
-export type CategoryData = {
-    title: string;
-    description: string;
-    base: Dish[];
-    compact: CompactItem[];
-};

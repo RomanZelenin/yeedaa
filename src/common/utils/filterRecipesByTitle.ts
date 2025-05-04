@@ -1,4 +1,4 @@
-import { Recipe } from '../mocks/types/type_defenitions';
+import { Recipe } from '~/app/mocks/types/type_defenitions';
 
 export function filterRecipesByTitleOrIngridient(recipes: Recipe[], title: string) {
     const reg = new RegExp(title, 'ig');

@@ -2,7 +2,6 @@ import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import {
     Button,
     Checkbox,
-    CheckboxGroup,
     Menu,
     MenuButton,
     MenuItem,
@@ -13,22 +12,23 @@ import {
     Wrap,
 } from '@chakra-ui/react';
 
+import { SelectItem } from '~/app/features/filters/filtersSlice';
+
 import { useResource } from '../ResourceContext/ResourceContext';
 
 export const MultiSelectDropdown = ({
     id,
     onChange,
-    selectedItems,
     items,
     placeholder,
 }: {
     id?: string;
-    selectedItems: string[];
     placeholder: string;
-    items: { title: string; selected: boolean }[];
+    items: SelectItem[];
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
     const { getString } = useResource();
+
     return (
         <Menu closeOnSelect={false}>
             {({ isOpen }) => (
@@ -45,13 +45,14 @@ export const MultiSelectDropdown = ({
                         px='12px'
                         textAlign='start'
                     >
-                        {selectedItems.length === 0 ? (
+                        {items.filter((it) => it.selected).length === 0 ? (
                             placeholder
                         ) : (
                             <>
-                                {selectedItems.length > 0 && (
-                                    <Wrap>
-                                        {selectedItems.map((item, i) => (
+                                <Wrap>
+                                    {items
+                                        .filter((it) => it.selected)
+                                        .map((item, i) => (
                                             <Tag
                                                 key={i}
                                                 color='lime.600'
@@ -59,39 +60,36 @@ export const MultiSelectDropdown = ({
                                                 bgColor='transparent'
                                                 borderRadius='6px'
                                             >
-                                                <TagLabel>{getString(item)}</TagLabel>
+                                                <TagLabel>{getString(item.title)}</TagLabel>
                                             </Tag>
                                         ))}
-                                    </Wrap>
-                                )}
+                                </Wrap>
                             </>
                         )}
                     </MenuButton>
 
                     <MenuList flex={1} zIndex='popover' py='4px'>
-                        <CheckboxGroup value={selectedItems}>
-                            {items.map((it, i) => (
-                                <MenuItem
-                                    h='32px'
-                                    py='6px'
-                                    px='16px'
-                                    key={i}
+                        {items.map((it, i) => (
+                            <MenuItem
+                                h='32px'
+                                py='6px'
+                                px='16px'
+                                key={i}
+                                value={it.title}
+                                bgColor={i % 2 == 0 ? 'blackAlpha.100' : 'white'}
+                            >
+                                <Checkbox
+                                    data-test-id={`checkbox-${getString(it.title).toLocaleLowerCase()}`}
+                                    variant='lime'
                                     value={it.title}
-                                    bgColor={i % 2 == 0 ? 'blackAlpha.100' : 'white'}
+                                    isChecked={it.selected}
+                                    onChange={onChange}
+                                    mr={2}
                                 >
-                                    <Checkbox
-                                        data-test-id={`checkbox-${getString(it.title).toLocaleLowerCase()}`}
-                                        variant='lime'
-                                        value={it.title}
-                                        isChecked={it.selected}
-                                        onChange={onChange}
-                                        mr={2}
-                                    >
-                                        <Text textStyle='textSmLh5'>{getString(it.title)}</Text>
-                                    </Checkbox>
-                                </MenuItem>
-                            ))}
-                        </CheckboxGroup>
+                                    <Text textStyle='textSmLh5'>{getString(it.title)}</Text>
+                                </Checkbox>
+                            </MenuItem>
+                        ))}
                     </MenuList>
                 </>
             )}

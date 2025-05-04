@@ -1,16 +1,16 @@
 import { HStack, Image, Text } from '@chakra-ui/react';
 
-interface ThreeButtonsProps {
-    bookmarksCount?: number;
-    likesCount?: number;
-    personsCount?: number;
-}
+type ThreeButtonsProps = {
+    bookmarks?: number;
+    likes?: number;
+    views?: number;
+};
 
-export const ThreeButtons = ({ bookmarksCount, likesCount, personsCount }: ThreeButtonsProps) => {
+export const ThreeButtons = ({ bookmarks, likes, views }: ThreeButtonsProps) => {
     const buttonsData = [
-        { type: 'bookmarks', count: bookmarksCount, icon: '/src/assets/icons/bookmark.svg' },
-        { type: 'likes', count: likesCount, icon: '/src/assets/icons/like.svg' },
-        { type: 'persons', count: personsCount, icon: '/src/assets/icons/persons.svg' },
+        { type: 'bookmarks', count: bookmarks, icon: '/src/assets/icons/bookmark.svg' },
+        { type: 'likes', count: likes, icon: '/src/assets/icons/like.svg' },
+        { type: 'persons', count: views, icon: '/src/assets/icons/persons.svg' },
     ];
 
     return (
@@ -26,7 +26,7 @@ export const ThreeButtons = ({ bookmarksCount, likesCount, personsCount }: Three
 
 const ButtonItem = ({ iconSrc, count }: { iconSrc: string; count: number }) => (
     <HStack spacing='6px' p='4px'>
-        <Image src={iconSrc} boxSize='12px' alt='' />
+        <Image src={iconSrc} boxSize='12px' alt='icon' />
         <Text textStyle='textXsLh4Semibold' color='lime.600'>
             {count}
         </Text>

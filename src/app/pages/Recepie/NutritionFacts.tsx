@@ -26,9 +26,10 @@ export const NutritionFacts = ({ nutrition }: { nutrition: NutritionValue }) => 
                                     value: it[1],
                                     unit: getString('kcal'),
                                 };
+                            case 'protein':
                             case 'proteins':
                                 return {
-                                    title: getString('proteins'),
+                                    title: getString('protein'),
                                     value: it[1],
                                     unit: getString('gram'),
                                 };

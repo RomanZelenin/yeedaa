@@ -13,12 +13,18 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
+import { useGetCategoriesQuery } from '~/query/create-api';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
 
-export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
-    const { getString, getPicture } = useResource();
+export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
+    const { getString } = useResource();
+
+    const allCategories = useGetCategoriesQuery().data;
+    const categories = allCategories?.filter((it) =>
+        it.subCategories?.some((it) => recipe.categoriesIds?.includes(it._id)),
+    );
 
     return (
         <>
@@ -30,32 +36,33 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
             >
                 <Image
                     objectFit='cover'
-                    src={recepie.image}
+                    src={recipe.image}
                     borderRadius='8px'
                     w={{ base: '328px', md: '232px', lg: '353px', xl: '553px' }}
                     h={{ base: '224px', lg: '410px', xl: '410px' }}
+                    alt={recipe.title}
                 />
                 <VStack w='100%' alignSelf={{ md: 'stretch' }}>
                     <HStack w='100%' justify='space-between' align='start'>
                         <Wrap flex={1}>
-                            {recepie.category.map((category) => (
+                            {categories?.map((category) => (
                                 <WrapItem>
                                     <Tag layerStyle='categoryTag'>
                                         <Image
-                                            src={getPicture(category)}
+                                            src={category.icon}
                                             boxSize='16px'
                                             alignSelf='center'
+                                            alt={category.title}
                                         />
-                                        <TagLabel textStyle='textSmLh5'>
-                                            {getString(category)}
-                                        </TagLabel>
+                                        <TagLabel textStyle='textSmLh5'>{category.title}</TagLabel>
                                     </Tag>
                                 </WrapItem>
                             ))}
                         </Wrap>
                         <ThreeButtons
-                            bookmarksCount={recepie.bookmarks}
-                            likesCount={recepie.likes}
+                            bookmarks={recipe.bookmarks}
+                            likes={recipe.likes}
+                            views={recipe.views}
                         />
                     </HStack>
                     <Stack alignSelf='start' width='100%'>
@@ -65,7 +72,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                             noOfLines={{ base: 2, md: 1, lg: 2 }}
                             mt={{ base: '16px' }}
                         >
-                            {recepie.title}
+                            {recipe.title}
                         </Text>
                         <Text
                             maxW='510px'
@@ -73,7 +80,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                             mt={{ base: '16px', lg: '24px' }}
                             noOfLines={{ base: 3, md: 2, lg: 3 }}
                         >
-                            {recepie.description}
+                            {recipe.description}
                         </Text>
                     </Stack>
                     <Wrap mt={{ base: '24px', md: 'auto' }} width='100%' justify='space-between'>
@@ -84,7 +91,9 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                                     boxSize='16px'
                                     alignSelf='center'
                                 />
-                                <TagLabel textStyle='textSmLh5'>{recepie.time}</TagLabel>
+                                <TagLabel textStyle='textSmLh5'>
+                                    {recipe.time} {getString('min').toLocaleLowerCase()}
+                                </TagLabel>
                             </Tag>
                         </WrapItem>
                         <WrapItem>
@@ -98,6 +107,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                                         <Image
                                             src='/src/assets/icons/like.svg'
                                             boxSize={{ xl: '16px' }}
+                                            alt='like'
                                         />
                                     }
                                     h={{ base: '24px', lg: '32px', xl: '48px' }}
@@ -122,6 +132,7 @@ export const RecipeCard = ({ recepie }: { recepie: Recipe }) => {
                                         <Image
                                             src='/src/assets/icons/bookmark.svg'
                                             boxSize={{ xl: '16px' }}
+                                            alt='bookmark'
                                         />
                                     }
                                     h={{ base: '24px', lg: '32px', xl: '48px' }}

@@ -14,27 +14,17 @@ import {
     WrapItem,
 } from '@chakra-ui/react';
 
-import { useResource } from '../ResourceContext/ResourceContext';
+import { Recipe } from '~/app/mocks/types/type_defenitions';
+import { useGetCategoriesQuery } from '~/query/create-api';
+
 import { ThreeButtons } from './ThreeButtons';
 
-export const NewRecepieCard = ({
-    categories,
-    title,
-    cover,
-    description,
-    bookmarksCount,
-    likesCount,
-    personsCount,
-}: {
-    categories: string[];
-    title: string;
-    cover: string;
-    description?: string;
-    bookmarksCount?: number;
-    likesCount?: number;
-    personsCount?: number;
-}) => {
-    const { getString, getPicture } = useResource();
+export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
+    const subcategoriesIds = recipe.categoriesIds?.map((id) => id);
+    const categories = useGetCategoriesQuery().data?.filter((it) =>
+        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
+    );
+
     return (
         <Card
             w={{ base: '158px', lg: '279px', xl: '322px' }}
@@ -46,10 +36,11 @@ export const NewRecepieCard = ({
         >
             <CardBody p={0} display='flex' flexDir='column' justifyContent='stretch'>
                 <Image
-                    src={cover}
+                    src={recipe.image}
                     objectFit='cover'
                     w={{ base: '158px', lg: '277px', xl: '322px' }}
                     h={{ base: '128px', lg: '230px' }}
+                    alt={recipe.title}
                 />
                 <Wrap
                     display={{ base: 'inline-flex', lg: 'none' }}
@@ -58,11 +49,11 @@ export const NewRecepieCard = ({
                     left='6px'
                     right='6px'
                 >
-                    {categories.map((category, i) => (
+                    {categories?.map((category, i) => (
                         <WrapItem key={i}>
                             <Tag layerStyle='categoryTag' bgColor=' lime.150'>
-                                <Image src={getPicture(category)} boxSize='16px' />
-                                <TagLabel textStyle='textSmLh5'>{getString(category)}</TagLabel>
+                                <Image src={category.icon} boxSize='16px' alt='' />
+                                <TagLabel textStyle='textSmLh5'>{category.title}</TagLabel>
                             </Tag>
                         </WrapItem>
                     ))}
@@ -82,35 +73,37 @@ export const NewRecepieCard = ({
                         }}
                         noOfLines={{ base: 2, lg: 1 }}
                     >
-                        {title}
+                        {recipe.title}
                     </Text>
 
                     <Box display={{ base: 'none', lg: 'inline-block' }} mb='16px'>
                         <Text textStyle={{ base: 'textSmLh5' }} noOfLines={3}>
-                            {description}
+                            {recipe.description}
                         </Text>
                     </Box>
                     <Hide above='lg'>
                         <Flex flex={1} alignItems='end'>
                             <ThreeButtons
-                                bookmarksCount={bookmarksCount}
-                                likesCount={likesCount}
-                                personsCount={personsCount}
+                                bookmarks={recipe.bookmarks}
+                                likes={recipe.likes}
+                                views={recipe.views}
                             />
                         </Flex>
                     </Hide>
                     <Show above='lg'>
                         <Flex justify='space-between' flex={1} alignItems='end'>
-                            {categories.slice(0, 1).map((category, i) => (
-                                <Tag key={i} layerStyle='categoryTag' bgColor=' lime.150'>
-                                    <Image src={getPicture(category)} boxSize='16px' />
-                                    <TagLabel textStyle='textSmLh5'>{getString(category)}</TagLabel>
-                                </Tag>
+                            {categories?.map((category, i) => (
+                                <WrapItem key={i}>
+                                    <Tag layerStyle='categoryTag' bgColor=' lime.150'>
+                                        <Image src={category.icon} boxSize='16px' alt='' />
+                                        <TagLabel textStyle='textSmLh5'>{category.title}</TagLabel>
+                                    </Tag>
+                                </WrapItem>
                             ))}
                             <ThreeButtons
-                                bookmarksCount={bookmarksCount}
-                                likesCount={likesCount}
-                                personsCount={personsCount}
+                                bookmarks={recipe.bookmarks}
+                                likes={recipe.likes}
+                                views={recipe.views}
                             />
                         </Flex>
                     </Show>

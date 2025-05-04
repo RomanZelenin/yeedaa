@@ -2,7 +2,6 @@ import { ChevronDownIcon, ChevronUpIcon, CloseIcon } from '@chakra-ui/icons';
 import {
     Button,
     Checkbox,
-    CheckboxGroup,
     Drawer,
     DrawerBody,
     DrawerContent,
@@ -28,15 +27,11 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import {
-    allergensSelector,
-    DEFAULT_AUTHORS,
-    DEFAULT_CATEGORIES,
-    DEFAULT_GLOBAL_FILTER,
-    GlobalFilter,
-    globalFilterSelector,
-    setAppGlobalFilter,
-    setAppIsFiltered,
-} from '~/store/app-slice';
+    DEFAULT_FILTER,
+    filterSelector,
+    SelectItem,
+    setFilter,
+} from '~/app/features/filters/filtersSlice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { PlusIcon } from '../Icons/PlusIcon';
@@ -46,50 +41,50 @@ import { CustomCheckboxGroup } from './CustomCheckboxGroup';
 import { FilterTag } from './FilterTag';
 import { MultiSelectDropdown } from './MultiSelectDropdown';
 
-const meat = ['chiken', 'pork', 'beef', 'turkey', 'duck'];
-const garnish = [
-    'potatoes',
-    'buckwheat',
-    'paste',
-    'spaghetti',
-    'rice',
-    'cabbage',
-    'beans',
-    'other vegetables',
-];
-
 export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
     const dispatcher = useAppDispatch();
-    const globalFilter = useAppSelector(globalFilterSelector);
-    const [filter, setFilter] = useState<GlobalFilter>(globalFilter);
-    const { getString } = useResource();
 
+    const filter = useAppSelector(filterSelector);
+    const [_filter, _setFilter] = useState(useAppSelector(filterSelector));
+
+    useEffect(() => {
+        _setFilter(filter);
+    }, [filter]);
+
+    const { getString } = useResource();
     const onChangeCheckboxGroup = (
         e: React.ChangeEvent<HTMLInputElement>,
-        groupName: 'allergens' | 'categories' | 'meat' | 'side_dish' | 'authors',
+        groupName: 'allergens' | 'categories' | 'meat' | 'side' | 'authors',
     ) => {
-        e.target.checked
-            ? setFilter({
-                  ...filter,
-                  [`${groupName}`]: [...filter[`${groupName}`], e.target.value],
-              })
-            : setFilter({
-                  ...filter,
-                  [`${groupName}`]: [
-                      ...filter[`${groupName}`].filter((it) => it !== e.target.value),
-                  ],
-              });
+        _setFilter({
+            ..._filter,
+            [`${groupName}`]: _filter[`${groupName}`].map((it) => {
+                if (it.title === e.target.value) {
+                    return { ...it, selected: !it.selected };
+                } else {
+                    return it;
+                }
+            }),
+        });
     };
 
-    const isSearchAcitve =
-        filter.allergens.length !== 0 ||
-        filter.categories.length !== 0 ||
-        filter.meat.length !== 0 ||
-        filter.side_dish.length !== 0;
+    const isFilterAcitve =
+        _filter.allergens.filter((it) => it.selected).length !== 0 ||
+        _filter.categories.filter((it) => it.selected).length !== 0 ||
+        _filter.meat.filter((it) => it.selected).length !== 0 ||
+        _filter.side.filter((it) => it.selected).length !== 0;
 
     return (
         <>
-            <Drawer isOpen={isOpen} placement='right' onClose={onClose} size='md'>
+            <Drawer
+                isOpen={isOpen}
+                placement='right'
+                onClose={() => {
+                    _setFilter(filter);
+                    onClose();
+                }}
+                size='md'
+            >
                 <DrawerOverlay />
                 <DrawerContent
                     maxW='450px'
@@ -121,54 +116,67 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             <MultiSelectDropdown
                                 id='категория'
                                 placeholder={getString('categories')}
-                                items={DEFAULT_CATEGORIES}
-                                selectedItems={filter.categories}
+                                items={_filter.categories}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'categories')}
                             />
                             <MultiSelectDropdown
                                 placeholder={getString('search-by-author')}
-                                items={DEFAULT_AUTHORS}
-                                selectedItems={filter.authors}
+                                items={_filter.authors}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'authors')}
                             />
                             <CustomCheckboxGroup
                                 title={`${getString('type-of-meat')}:`}
-                                items={meat}
-                                selectedItems={filter.meat}
+                                items={_filter.meat}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'meat')}
                             />
                             <CustomCheckboxGroup
                                 title={`${getString('type-of-garnish')}:`}
-                                items={garnish}
-                                selectedItems={filter.side_dish}
-                                onChange={(e) => onChangeCheckboxGroup(e, 'side_dish')}
+                                items={_filter.side}
+                                onChange={(e) => onChangeCheckboxGroup(e, 'side')}
                             />
 
                             <AllergySelectorFilterWithSwitcher
-                                selectedItems={filter.allergens}
+                                isExcludeAllergens={_filter.isExcludeAllergens}
+                                items={_filter.allergens}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'allergens')}
+                                onChangeExcludeAllergens={(isExclude) => {
+                                    _setFilter({ ..._filter, isExcludeAllergens: isExclude });
+                                }}
                             />
 
                             <Wrap display='flex' spacing='8px' flex={1} alignItems='end'>
-                                {Object.entries(filter).map((filterName) =>
-                                    filterName[1].map((title) => (
-                                        <WrapItem>
-                                            <FilterTag
-                                                label={getString(title)}
-                                                onClose={() => {
-                                                    setFilter({
-                                                        ...filter,
-                                                        [`${filterName[0]}`]: [
-                                                            ...filterName[1].filter(
-                                                                (it) => it !== title,
-                                                            ),
-                                                        ],
-                                                    });
-                                                }}
-                                            />
-                                        </WrapItem>
-                                    )),
-                                )}
+                                {Object.entries(_filter)
+                                    .filter((it) => it[0] !== 'isExcludeAllergens')
+                                    .map(([key, value]) =>
+                                        (value as SelectItem[])
+                                            .filter((it) => it.selected)
+                                            .map((it) => (
+                                                <>
+                                                    <WrapItem>
+                                                        <FilterTag
+                                                            label={getString(it.title)}
+                                                            onClose={() => {
+                                                                _setFilter({
+                                                                    ..._filter,
+                                                                    [`${key}`]: [
+                                                                        ..._filter[`${key}`].map(
+                                                                            (e) =>
+                                                                                e.title === it.title
+                                                                                    ? {
+                                                                                          ...e,
+                                                                                          selected:
+                                                                                              false,
+                                                                                      }
+                                                                                    : e,
+                                                                        ),
+                                                                    ],
+                                                                });
+                                                            }}
+                                                        />
+                                                    </WrapItem>
+                                                </>
+                                            )),
+                                    )}
                             </Wrap>
                         </Stack>
                     </DrawerBody>
@@ -179,8 +187,8 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             mr={3}
                             data-test-id='clear-filter-button'
                             onClick={() => {
-                                dispatcher(setAppIsFiltered(false));
-                                setFilter(DEFAULT_GLOBAL_FILTER);
+                                dispatcher(setFilter(DEFAULT_FILTER));
+                                _setFilter(DEFAULT_FILTER);
                             }}
                         >
                             <Text
@@ -191,15 +199,13 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                         </Button>
                         <Button
                             variant='solid'
-                            pointerEvents={!isSearchAcitve ? 'none' : 'auto'}
-                            bgColor={isSearchAcitve ? 'black' : '#c2c2c2'}
+                            pointerEvents={!isFilterAcitve ? 'none' : 'auto'}
+                            bgColor={isFilterAcitve ? 'black' : '#c2c2c2'}
                             color='white'
                             data-test-id='find-recipe-button'
-                            disabled={!isSearchAcitve}
+                            disabled={!isFilterAcitve}
                             onClick={() => {
-                                dispatcher(setAppGlobalFilter(filter));
-                                dispatcher(setAppIsFiltered(true));
-                                setFilter(DEFAULT_GLOBAL_FILTER);
+                                dispatcher(setFilter(_filter));
                                 onClose();
                             }}
                         >
@@ -218,29 +224,25 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
 
 const AllergySelectorFilterWithSwitcher = ({
     onChange,
-    selectedItems,
+    items,
+    isExcludeAllergens,
+    onChangeExcludeAllergens,
 }: {
-    selectedItems: string[];
+    items: SelectItem[];
+    isExcludeAllergens: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChangeExcludeAllergens: (isExclude: boolean) => void;
 }) => {
     const { getString } = useResource();
-    const [isExcludeAllergens, setIsExcludeAllergens] = useState(false);
-    const [allergens, setAllergens] = useState(useAppSelector(allergensSelector));
-    const countSelectedAllergens = allergens.filter((item) => item.selected === true).length;
-
-    useEffect(() => {
-        if (!isExcludeAllergens)
-            setAllergens(allergens.map((allergen) => ({ ...allergen, selected: false })));
-    }, [isExcludeAllergens]);
-
+    const countSelectedAllergens = items.filter((item) => item.selected === true).length;
     const [customAllergen, setCustomAllergen] = useState('');
 
-    const onAddCustomItem = (customAllergen: string) => {
+    /* const onAddCustomItem = (customAllergen: string) => {
         let formattedItem = customAllergen.trim().toLocaleLowerCase();
         if (!formattedItem) return;
         formattedItem = formattedItem[0].toLocaleUpperCase() + formattedItem.substring(1);
 
-        const i = allergens.findIndex((allergen) => allergen.title === formattedItem);
+        const i = items.findIndex((allergen) => allergen.title === formattedItem);
 
         if (i == -1) {
             setAllergens([...allergens, { title: formattedItem, selected: true }]);
@@ -252,7 +254,7 @@ const AllergySelectorFilterWithSwitcher = ({
             ]);
         }
         onChange({ target: { checked: true, value: formattedItem } });
-    };
+    }; */
 
     const refInput = useRef(null);
     return (
@@ -265,7 +267,7 @@ const AllergySelectorFilterWithSwitcher = ({
                     <Switch
                         data-test-id='allergens-switcher-filter'
                         isChecked={isExcludeAllergens}
-                        onChange={() => setIsExcludeAllergens(!isExcludeAllergens)}
+                        onChange={() => onChangeExcludeAllergens(!isExcludeAllergens)}
                     />
                 </HStack>
 
@@ -292,7 +294,7 @@ const AllergySelectorFilterWithSwitcher = ({
                                     <>
                                         {countSelectedAllergens > 0 && (
                                             <Wrap>
-                                                {allergens
+                                                {items
                                                     .filter((item) => item.selected === true)
                                                     .map((item, i) => (
                                                         <Tag
@@ -317,36 +319,35 @@ const AllergySelectorFilterWithSwitcher = ({
                                 py='4px'
                                 data-test-id='allergens-menu'
                             >
-                                <CheckboxGroup value={selectedItems}>
-                                    {allergens.map((item, i) => (
-                                        <MenuItem
-                                            h='32px'
-                                            py='6px'
-                                            px='16px'
-                                            key={i}
+                                {items.map((item, i) => (
+                                    <MenuItem
+                                        h='32px'
+                                        py='6px'
+                                        px='16px'
+                                        key={i}
+                                        value={item.title}
+                                        bgColor={i % 2 == 0 ? 'blackAlpha.100' : 'white'}
+                                    >
+                                        <Checkbox
                                             value={item.title}
-                                            bgColor={i % 2 == 0 ? 'blackAlpha.100' : 'white'}
+                                            data-test-id={`allergen-${i}`}
+                                            variant='lime'
+                                            isChecked={item.selected}
+                                            onChange={(e) => {
+                                                onChange(e);
+                                                /*  setAllergens([
+                                                     ...allergens.slice(0, i),
+                                                     { ...item, selected: !item.selected },
+                                                     ...allergens.slice(i + 1),
+                                                 ]); */
+                                            }}
+                                            mr={2}
                                         >
-                                            <Checkbox
-                                                value={item.title}
-                                                data-test-id={`allergen-${i}`}
-                                                variant='lime'
-                                                isChecked={item.selected}
-                                                onChange={(e) => {
-                                                    onChange(e);
-                                                    setAllergens([
-                                                        ...allergens.slice(0, i),
-                                                        { ...item, selected: !item.selected },
-                                                        ...allergens.slice(i + 1),
-                                                    ]);
-                                                }}
-                                                mr={2}
-                                            >
-                                                <Text textStyle='textSmLh5'>{item.title}</Text>
-                                            </Checkbox>
-                                        </MenuItem>
-                                    ))}
-                                </CheckboxGroup>
+                                            <Text textStyle='textSmLh5'>{item.title}</Text>
+                                        </Checkbox>
+                                    </MenuItem>
+                                ))}
+
                                 <HStack spacing='8px' p='8px'>
                                     <Input
                                         ref={refInput}
@@ -375,7 +376,7 @@ const AllergySelectorFilterWithSwitcher = ({
                                         onChange={(e) => setCustomAllergen(e.target.value)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
-                                                onAddCustomItem(customAllergen);
+                                                //onAddCustomItem(customAllergen);
                                                 setCustomAllergen('');
                                             }
                                         }}
@@ -389,7 +390,7 @@ const AllergySelectorFilterWithSwitcher = ({
                                         aria-label='Add allergen'
                                         icon={<PlusIcon boxSize='12px' />}
                                         onClick={() => {
-                                            onAddCustomItem(customAllergen);
+                                            //onAddCustomItem(customAllergen);
                                             setCustomAllergen('');
                                         }}
                                         isDisabled={!customAllergen.trim()}

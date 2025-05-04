@@ -1,10 +1,9 @@
 import { VStack } from '@chakra-ui/react';
 
+import { filterSelector } from '~/app/features/filters/filtersSlice';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { filterRecipesByAllergens } from '~/common/utils/filterRecipesByAllergens';
-import { filterRecipesByTitleOrIngridient } from '~/common/utils/filterRecipesByTitle';
-import { allergensSelector, querySelector, recipesSelector } from '~/store/app-slice';
+import { querySelector, recipesSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import ContentContainer from '../common/Containers/ContentContainer';
@@ -14,23 +13,20 @@ import SectionNewRecipes from './Sections/SectionNewRecepies';
 
 export default function HomePage() {
     const { getString } = useResource();
-    let recipes = useAppSelector(recipesSelector);
-
+    const recipes = useAppSelector(recipesSelector);
     const query = useAppSelector(querySelector);
-    const allergens = useAppSelector(allergensSelector).filter((item) => item.selected === true);
-    if (query.length > 0) {
-        recipes = filterRecipesByTitleOrIngridient(recipes, query);
-    }
-    if (allergens.length > 0) {
-        recipes = filterRecipesByAllergens(
-            recipes,
-            allergens.map((it) => it.title),
-        );
-    }
+    const filter = useAppSelector(filterSelector);
+
+    const isFilterAcitve =
+        filter.allergens.filter((it) => it.selected).length !== 0 ||
+        filter.categories.filter((it) => it.selected).length !== 0 ||
+        filter.meat.filter((it) => it.selected).length !== 0 ||
+        filter.side.filter((it) => it.selected).length !== 0;
+
     return (
         <ContentContainer title={getString('bon-appetit')}>
             <>
-                {query.length == 0 && allergens.length == 0 ? (
+                {query.length == 0 && !isFilterAcitve ? (
                     <>
                         <SectionNewRecipes />
                         <SectionJuiciest />
