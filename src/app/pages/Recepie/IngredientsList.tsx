@@ -20,9 +20,23 @@ import { useState } from 'react';
 import { Ingredient } from '~/app/mocks/types/type_defenitions';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 
-export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) => {
-    const [numServings, setNumServings] = useState(1);
+export const IngredientsList = ({
+    ingredients,
+    portions,
+}: {
+    ingredients: Ingredient[];
+    portions: number;
+}) => {
+    const [numPortions, setNumServings] = useState(portions);
+    const [ingredientsPerPortion] = useState(
+        () =>
+            ingredients.map((ingridient) => ({
+                ...ingridient,
+                count: (parseFloat(ingridient.count) / portions).toString(),
+            })) as Ingredient[],
+    );
     const { getString } = useResource();
+
     return (
         <>
             <TableContainer whiteSpace='none' overflowX='clip'>
@@ -48,11 +62,11 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                                         {getString('portions')}
                                     </Text>
                                     <NumberInput
-                                        value={numServings}
+                                        value={numPortions}
                                         onChange={(_valueString, valueNumber) =>
                                             setNumServings(valueNumber)
                                         }
-                                        step={0.25}
+                                        step={1}
                                         min={0}
                                         w='90px'
                                         h='40px'
@@ -68,7 +82,7 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {ingredients.map((it, idx) => (
+                        {ingredientsPerPortion.map((it, idx) => (
                             <Tr>
                                 <Td px='8px' py='10px' textStyle='textSmLh5Medium'>
                                     {it.title}
@@ -76,7 +90,7 @@ export const IngredientsList = ({ ingredients }: { ingredients: Ingredient[] }) 
                                 <Td py='10px' px={0}>
                                     <Text mr='8px' textStyle='textSmLh5' textAlign='end'>
                                         <Box as='span' data-test-id={`ingredient-quantity-${idx}`}>
-                                            {parseInt(it.count) * numServings}
+                                            {(numPortions * parseFloat(it.count)).toFixed(2)}
                                         </Box>{' '}
                                         {it.measureUnit}
                                     </Text>

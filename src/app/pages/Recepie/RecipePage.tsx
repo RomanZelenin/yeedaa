@@ -32,7 +32,6 @@ export const RecipePage = () => {
     }
 
     if (isSuccess) {
-        console.log(recipe);
         return (
             <>
                 <GridItem
@@ -56,7 +55,10 @@ export const RecipePage = () => {
                             rowGap={{ base: '24px' }}
                         >
                             <NutritionFacts nutrition={recipe.nutritionValue} />
-                            <IngredientsList ingredients={recipe.ingredients} />
+                            <IngredientsList
+                                ingredients={recipe.ingredients}
+                                portions={recipe.portions}
+                            />
                             <CookingSteps steps={recipe.steps} />
                             <AuthorRecipeCard person={mockAuthor} />
                         </Flex>
