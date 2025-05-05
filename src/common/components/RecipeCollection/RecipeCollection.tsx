@@ -7,7 +7,7 @@ import { FoodCard, FoodCardCompact } from '../Cards/FoodCard';
 export function RecipeCollection({ recipes }: { recipes?: Recipe[] }) {
     return (
         <>
-            <Hide key={1} below='lg'>
+            <Show above='lg'>
                 <VStack align='stretch'>
                     <SimpleGrid
                         columns={{ base: 1, xl: 2 }}
@@ -19,8 +19,8 @@ export function RecipeCollection({ recipes }: { recipes?: Recipe[] }) {
                         ))}
                     </SimpleGrid>
                 </VStack>
-            </Hide>
-            <Show key={2} below='lg'>
+            </Show>
+            <Hide above='lg'>
                 <VStack alignItems='stretch' px='16px'>
                     <SimpleGrid
                         columns={{ base: 1, md: 2 }}
@@ -32,7 +32,7 @@ export function RecipeCollection({ recipes }: { recipes?: Recipe[] }) {
                         ))}
                     </SimpleGrid>
                 </VStack>
-            </Show>
+            </Hide>
         </>
     );
 }

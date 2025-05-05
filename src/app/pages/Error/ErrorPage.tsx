@@ -23,10 +23,16 @@ export const ErrorPage = () => {
                         width={{ base: '252px', lg: '332px' }}
                         textAlign='center'
                     >
-                        <Text textStyle='text2xlLh8Bold'>{getString('no-such-page')}</Text>
+                        <Text as='h1' textStyle='text2xlLh8Bold'>
+                            {getString('no-such-page')}
+                        </Text>
                         <Text as='span' textStyle='textMdLh6Normal' color='blackAlpha.700'>
                             {getString('you-can-look-another-recipe')}{' '}
-                            <Link href='/' textDecoration='underline'>
+                            <Link
+                                data-test-id='error-page-go-home'
+                                href='/'
+                                textDecoration='underline'
+                            >
                                 {getString('here').toLocaleLowerCase()}
                             </Link>
                         </Text>

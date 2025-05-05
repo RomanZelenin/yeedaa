@@ -32,66 +32,66 @@ export default function SectionNewRecipes() {
             >
                 {getString('new-recepies')}
             </Text>
-
-            <Swiper
-                loopPreventsSliding={false}
-                data-test-id='carousel'
-                modules={[Navigation, Keyboard]}
-                loop={true}
-                navigation={{
-                    nextEl: '.swiper-custom-button-next',
-                    prevEl: '.swiper-custom-button-prev',
-                }}
-                keyboard={{
-                    enabled: true,
-                    onlyInViewport: true,
-                }}
-                breakpoints={{
-                    360: {
-                        slidesPerView: 2.18,
-                        spaceBetween: '12px',
-                        navigation: {
-                            enabled: false,
+            <Box position='relative'>
+                <Swiper
+                    loopPreventsSliding={false}
+                    data-test-id='carousel'
+                    modules={[Navigation, Keyboard]}
+                    loop={true}
+                    navigation={{
+                        nextEl: '.swiper-custom-button-next',
+                        prevEl: '.swiper-custom-button-prev',
+                    }}
+                    keyboard={{
+                        enabled: true,
+                        onlyInViewport: true,
+                    }}
+                    breakpoints={{
+                        360: {
+                            slidesPerView: 2.18,
+                            spaceBetween: '12px',
+                            navigation: {
+                                enabled: false,
+                            },
                         },
-                    },
-                    768: {
-                        slidesPerView: 4.4,
-                        spaceBetween: '12px',
-                        navigation: {
-                            enabled: false,
+                        768: {
+                            slidesPerView: 4.4,
+                            spaceBetween: '12px',
+                            navigation: {
+                                enabled: false,
+                            },
                         },
-                    },
-                    1440: {
-                        slidesPerView: 3,
-                        spaceBetween: '12px',
-                        navigation: {
-                            enabled: true,
+                        1440: {
+                            slidesPerView: 3.1,
+                            spaceBetween: '12px',
+                            navigation: {
+                                enabled: true,
+                            },
                         },
-                    },
-                    1920: {
-                        slidesPerView: 4,
-                        spaceBetween: '24px',
-                        navigation: {
-                            enabled: true,
+                        1920: {
+                            slidesPerView: 4,
+                            spaceBetween: '24px',
+                            navigation: {
+                                enabled: true,
+                            },
                         },
-                    },
-                }}
-            >
-                {recipes?.data
-                    .map((recipe) => ({ ...recipe, path: `/the-juiciest/${recipe._id}` }))
-                    .map((recipe, i) => (
-                        <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
-                            <ChakraLink
-                                _hover={{
-                                    textDecoration: 'none',
-                                }}
-                                href={`${recipe.path}`}
-                            >
-                                <NewRecepieCard key={i} recipe={recipe} />
-                            </ChakraLink>
-                        </SwiperSlide>
-                    ))}
-
+                    }}
+                >
+                    {recipes?.data
+                        .map((recipe) => ({ ...recipe, path: `/the-juiciest/${recipe._id}` }))
+                        .map((recipe, i) => (
+                            <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
+                                <ChakraLink
+                                    _hover={{
+                                        textDecoration: 'none',
+                                    }}
+                                    href={`${recipe.path}`}
+                                >
+                                    <NewRecepieCard key={i} recipe={recipe} />
+                                </ChakraLink>
+                            </SwiperSlide>
+                        ))}
+                </Swiper>
                 <Center
                     visibility={{ base: 'hidden', lg: 'visible' }}
                     className='swiper-custom-button-prev'
@@ -106,7 +106,7 @@ export default function SectionNewRecipes() {
                 >
                     <Image src='/src/assets/icons/right-arrow.svg' boxSize='24px' />
                 </Center>
-            </Swiper>
+            </Box>
         </Box>
     );
 }

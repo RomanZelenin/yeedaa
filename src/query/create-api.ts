@@ -131,15 +131,15 @@ export const apiSlice = createApi({
             query: (q) => ({
                 url: ApiEndpoints.RECIPE,
                 method: 'GET',
-                params: {
-                    limit: q.limit,
-                    page: q.page,
-                    allergens: q.allergens,
-                    searchString: q.searchString,
-                    sortBy: q.sortBy,
-                    subcategoriesIds: q.subcategoriesIds,
-                },
+                params: { ...q },
             }),
+            transformResponse: (response) => {
+                const data = (response as RecipesResponse).data.map((it) => ({
+                    ...it,
+                    image: IMAGE_BASE_URL + it.image,
+                }));
+                return { ...(response as RecipesResponse), data: data };
+            },
         }),
         getRecipeById: build.query<Recipe, string>({
             query: (id) => ({
