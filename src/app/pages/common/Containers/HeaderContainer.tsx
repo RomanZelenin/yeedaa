@@ -218,9 +218,11 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                         </InputRightElement>
                     </InputGroup>
                 </Flex>
-                <HStack display={{ base: 'none', lg: 'flex' }} spacing='16px' mt='16px' w='33em'>
-                    <AllergySelectorWithSwitcher />
-                </HStack>
+                <Show above='lg'>
+                    <HStack spacing='16px' mt='16px' w='33em'>
+                        <AllergySelectorWithSwitcher />
+                    </HStack>
+                </Show>
             </VStack>
             <Center
                 data-test-id='loader-search-block'

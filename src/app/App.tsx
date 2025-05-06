@@ -3,20 +3,22 @@ import { useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router';
 
 import profile from '~/app/mocks/profile.json';
+import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { AsidePanel } from '~/common/components/AsidePanel/AsidePanel';
 import { Header } from '~/common/components/Header/Header';
 import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useGetCategoriesQuery, useGetRecipeByIdQuery } from '~/query/create-api';
-import { loadingSelector, setAppBreadcrumb } from '~/store/app-slice';
+import { ERR_SERVER, errorSelector, loadingSelector, setAppBreadcrumb } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function App() {
     const { category: categoryName, subcategory: subcategoryName, id: recipeId } = useParams();
     const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
-    const { getString } = useResource();
     const isLoading = useAppSelector(loadingSelector);
+    const error = useAppSelector(errorSelector);
+    const { getString } = useResource();
     const dispatcher = useAppDispatch();
     const location = useLocation();
 
@@ -107,6 +109,11 @@ export default function App() {
                 <GridItem area='footer' hideFrom='lg'>
                     <BottomMenu avatar={profile.avatar} />
                 </GridItem>
+                {error === ERR_SERVER ? (
+                    <ErrorAlert message='Попробуйте поискать снова попозже' />
+                ) : (
+                    <></>
+                )}
             </Grid>
             <Box
                 display={isLoading ? 'flex' : 'none'}

@@ -7,15 +7,12 @@ import {
     VegeterianKitchenCompactCard,
 } from '~/common/components/Cards/VegeterianKitchenCard';
 import { getRandomNumber } from '~/common/utils/getRandomNumber';
-import {
-    useGetCategoriesQuery,
-    useGetRecipeByCategoryQuery,
-    useGetRecipeQuery,
-} from '~/query/create-api';
-import { setRelevantLoader } from '~/store/app-slice';
+import { useGetCategoriesQuery, useGetRecipeByCategoryQuery } from '~/query/create-api';
+import { ERR_SERVER, setAppError, setRelevantLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionRelevantKitchen() {
+    const dispatcher = useAppDispatch();
     const { category: categoryId } = useParams();
     const { data: categories } = useGetCategoriesQuery();
 
@@ -26,23 +23,16 @@ export default function SectionRelevantKitchen() {
     }, [categoryId, categories]);
 
     const subcategoriesIds = category?.subCategories?.map((subcategory) => subcategory._id);
-    //   .join(',');
 
-    /* const { data: recipes } = */ useGetRecipeByCategoryQuery(
-        { id: subcategoriesIds?.[0], limit: 5 },
-        { skip: !subcategoriesIds?.[0] },
-    );
     const {
         data: recipes,
         isLoading,
         isSuccess,
         isError,
-    } = useGetRecipeQuery(
-        { limit: 5, subcategoriesIds: subcategoriesIds?.join(',') },
-        { skip: !subcategoriesIds },
+    } = useGetRecipeByCategoryQuery(
+        { id: subcategoriesIds?.[0], limit: 5 },
+        { skip: !subcategoriesIds?.[0] },
     );
-
-    const dispatcher = useAppDispatch();
 
     if (isLoading) {
         dispatcher(setRelevantLoader(true));
@@ -50,7 +40,10 @@ export default function SectionRelevantKitchen() {
     }
     if (isError || isSuccess) {
         dispatcher(setRelevantLoader(false));
-        if (isError) return <Text>Error</Text>;
+        if (isError) {
+            dispatcher(setAppError(ERR_SERVER));
+            return <></>;
+        }
     }
 
     return (
