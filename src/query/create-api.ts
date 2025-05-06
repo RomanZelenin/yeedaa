@@ -13,7 +13,7 @@ export type Category = {
     subCategories?: Subcategory[];
 };
 
-type Subcategory = {
+export type Subcategory = {
     _id: string;
     title: string;
     category: string;
@@ -101,11 +101,15 @@ export const apiSlice = createApi({
                 },
             }),
             transformResponse: (response) => {
-                const data = (response as RecipesResponse).data.map((it) => ({
-                    ...it,
-                    image: IMAGE_BASE_URL + it.image,
-                }));
-                return { ...(response as RecipesResponse), data: data };
+                if ((response as RecipesResponse).data) {
+                    const data = (response as RecipesResponse).data.map((it) => ({
+                        ...it,
+                        image: IMAGE_BASE_URL + it.image,
+                    }));
+                    return { ...(response as RecipesResponse), data: data };
+                } else {
+                    return { data: [response] }; //Для тестирования отдельный случай
+                }
             },
         }),
         getJuiciestRecipes: build.query<RecipesResponse, RecipeQuery>({
