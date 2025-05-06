@@ -1,29 +1,35 @@
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { filterRecipesByTitleOrIngridient } from '~/common/utils/filterRecipesByTitle';
 import { useGetCategoriesQuery, useGetRecipeByCategoryQuery } from '~/query/create-api';
+import { querySelector } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 import ContentContainer from '../common/Containers/ContentContainer';
 
 export default function CategoryPage() {
-    const { category: categoryId, subcategory: subcategoryId } = useParams();
     const navigate = useNavigate();
+    const { data: categories, isSuccess, isError } = useGetCategoriesQuery();
+    const { category: categoryName, subcategory: subcategoryName } = useParams();
+    const category = useMemo(
+        () => categories?.find((it) => it.category === categoryName),
+        [categories, categoryName],
+    );
 
     const [tabIndex, setTabIndex] = useState(0);
-    /*  const query = useAppSelector(querySelector);
-    const allergens = useAppSelector(allergensSelector).filter((item) => item.selected === true); */
-
-    const { data: categories, isSuccess, isError } = useGetCategoriesQuery();
-    const category = categories?.find((it) => it.category === categoryId);
-
-    useEffect(() => {
-        setTabIndex(category?.subCategories?.findIndex((it) => it.category === subcategoryId) ?? 0);
-    }, [category, subcategoryId]);
+    useEffect(
+        () =>
+            setTabIndex(
+                category?.subCategories?.findIndex((it) => it.category === subcategoryName) ?? 0,
+            ),
+        [category, subcategoryName],
+    );
 
     if (isSuccess || isError) {
-        if (!category || !category!.subCategories?.find((it) => it.category === subcategoryId)) {
+        if (!category || !category.subCategories?.find((it) => it.category === subcategoryName)) {
             return <Navigate to='/not-found' replace />;
         }
     }
@@ -63,7 +69,7 @@ export default function CategoryPage() {
                                 <CategoryTabPanel
                                     key={subcategory._id}
                                     subcategoryId={subcategory._id}
-                                    isActive={subcategory.category === subcategoryId}
+                                    isActive={subcategory.category === subcategoryName}
                                 />
                             ))}
                         </TabPanels>
@@ -82,12 +88,11 @@ function CategoryTabPanel({
     isActive: boolean;
 }) {
     const { category, subcategory } = useParams();
-    const {
-        data: recipes,
-        isLoading,
-        isError,
-        isSuccess,
-    } = useGetRecipeByCategoryQuery({ limit: 10, id: subcategoryId }, { skip: !isActive });
+    const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
+        { limit: 10, id: subcategoryId },
+        { skip: !isActive },
+    );
+    const query = useAppSelector(querySelector);
     if (isLoading) {
         return <TabPanel p={0}>Loading...</TabPanel>;
     }
@@ -95,12 +100,16 @@ function CategoryTabPanel({
         return <TabPanel p={0}>Error loading</TabPanel>;
     }
     if (isSuccess) {
+        let recipes = data.data;
+
+        if (query.length > 0) recipes = filterRecipesByTitleOrIngridient(recipes, query);
+
         return (
             <TabPanel p={0}>
                 <VStack spacing='12px' px='0px'>
                     <Box px='0px' textAlign='start'>
                         <RecipeCollection
-                            recipes={recipes!.data.map((recipe) => ({
+                            recipes={recipes.map((recipe) => ({
                                 ...recipe,
                                 path: `/${category}/${subcategory}/${recipe._id}`,
                             }))}

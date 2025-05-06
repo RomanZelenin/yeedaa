@@ -12,6 +12,8 @@ import {
     useGetRecipeByCategoryQuery,
     useGetRecipeQuery,
 } from '~/query/create-api';
+import { setRelevantLoader } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionRelevantKitchen() {
     const { category: categoryId } = useParams();
@@ -30,10 +32,26 @@ export default function SectionRelevantKitchen() {
         { id: subcategoriesIds?.[0], limit: 5 },
         { skip: !subcategoriesIds?.[0] },
     );
-    const { data: recipes } = useGetRecipeQuery(
+    const {
+        data: recipes,
+        isLoading,
+        isSuccess,
+        isError,
+    } = useGetRecipeQuery(
         { limit: 5, subcategoriesIds: subcategoriesIds?.join(',') },
         { skip: !subcategoriesIds },
     );
+
+    const dispatcher = useAppDispatch();
+
+    if (isLoading) {
+        dispatcher(setRelevantLoader(true));
+        return <Text>Loading...</Text>;
+    }
+    if (isError || isSuccess) {
+        dispatcher(setRelevantLoader(false));
+        if (isError) return <Text>Error</Text>;
+    }
 
     return (
         <Box px={{ base: '16px', lg: '0px' }}>

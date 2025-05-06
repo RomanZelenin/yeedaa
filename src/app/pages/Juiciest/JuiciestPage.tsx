@@ -12,7 +12,7 @@ export default function JuiciestPage() {
     const { getString } = useResource();
 
     const [page, setPage] = useState(1);
-    const { data, isSuccess } = useGetJuiciestRecipesQuery({ limit: 8, page: page });
+    const { data, isSuccess, isLoading } = useGetJuiciestRecipesQuery({ limit: 8, page: page });
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
     useEffect(() => {
@@ -30,40 +30,42 @@ export default function JuiciestPage() {
              allergens.map((it) => it.title),
          );
      } */
-    if (isSuccess)
-        return (
-            <ContentContainer title={getString('juiciest')}>
-                <VStack spacing='32px'>
-                    <VStack spacing='12px'>
-                        <RecipeCollection
-                            recipes={recipes.map((recipe) => ({
-                                ...recipe,
-                                path: `/the-juiciest/${recipe._id}`,
-                            }))}
-                        />
-                        {page < data!.meta.totalPages ? (
-                            <Button
-                                textAlign='center'
-                                display='inline-flex'
-                                onClick={() => {
-                                    setPage(page + 1);
-                                }}
-                                bgColor='lime.300'
-                                alignSelf='center'
-                                fontSize='16px'
-                                color='black'
-                                variant='ghost'
-                                flex={1}
-                                px='16px'
-                                py='8px'
-                            >
-                                {getString('load-more')}
-                            </Button>
-                        ) : (
-                            <></>
-                        )}
-                    </VStack>
+
+    return (
+        <ContentContainer title={getString('juiciest')}>
+            <VStack spacing='32px'>
+                <VStack spacing='12px'>
+                    <RecipeCollection
+                        recipes={recipes.map((recipe) => ({
+                            ...recipe,
+                            path: `/the-juiciest/${recipe._id}`,
+                        }))}
+                    />
+
+                    {isLoading || (isSuccess && page < data!.meta.totalPages) ? (
+                        <Button
+                            data-test-id='load-more-button'
+                            textAlign='center'
+                            display='inline-flex'
+                            onClick={() => {
+                                setPage(page + 1);
+                            }}
+                            bgColor='lime.300'
+                            alignSelf='center'
+                            fontSize='16px'
+                            color='black'
+                            variant='ghost'
+                            flex={1}
+                            px='16px'
+                            py='8px'
+                        >
+                            {isSuccess ? getString('load-more') : getString('load')}
+                        </Button>
+                    ) : (
+                        <></>
+                    )}
                 </VStack>
-            </ContentContainer>
-        );
+            </VStack>
+        </ContentContainer>
+    );
 }

@@ -7,16 +7,26 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { NewRecepieCard } from '~/common/components/Cards/NewRecepieCard';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useGetNewestRecipesQuery } from '~/query/create-api';
+import { setNewestRecipesLoader } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionNewRecipes() {
     const { getString } = useResource();
-    const { data: recipes, isLoading, isError } = useGetNewestRecipesQuery({ limit: 10 });
+    const dispatcher = useAppDispatch();
+    const {
+        data: recipes,
+        isLoading,
+        isError,
+        isSuccess,
+    } = useGetNewestRecipesQuery({ limit: 10 });
 
     if (isLoading) {
+        dispatcher(setNewestRecipesLoader(true));
         return <Text>Loading...</Text>;
     }
-    if (isError) {
-        return <Text>Error</Text>;
+    if (isError || isSuccess) {
+        dispatcher(setNewestRecipesLoader(false));
+        if (isError) return <Text>Error</Text>;
     }
 
     return (
