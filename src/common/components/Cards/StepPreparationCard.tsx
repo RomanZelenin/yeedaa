@@ -18,9 +18,11 @@ export const StepPreparationCard = ({
         <Card direction='row' overflow='clip' flex={1}>
             {cover ? (
                 <Image
+                    objectFit='cover'
                     src={cover}
                     w={{ base: '158px', lg: '346px' }}
-                    h={{ base: '128px', lg: '244px' }}
+                    /*  h={{ base: '128px', lg: '244px' }} */
+                    alt={`step ${step}`}
                 />
             ) : (
                 <></>

@@ -32,7 +32,9 @@ export const IngredientsList = ({
         () =>
             ingredients.map((ingridient) => ({
                 ...ingridient,
-                count: (parseFloat(ingridient.count) / portions).toString(),
+                count: !Number.isNaN(parseFloat(ingridient.count))
+                    ? (parseFloat(ingridient.count) / portions).toString()
+                    : ingridient.count,
             })) as Ingredient[],
     );
     const { getString } = useResource();
@@ -90,7 +92,13 @@ export const IngredientsList = ({
                                 <Td py='10px' px={0}>
                                     <Text mr='8px' textStyle='textSmLh5' textAlign='end'>
                                         <Box as='span' data-test-id={`ingredient-quantity-${idx}`}>
-                                            {(numPortions * parseFloat(it.count)).toFixed(2)}
+                                            {!Number.isNaN(parseFloat(it.count))
+                                                ? parseFloat(
+                                                      (numPortions * parseFloat(it.count)).toFixed(
+                                                          2,
+                                                      ),
+                                                  )
+                                                : it.count}
                                         </Box>{' '}
                                         {it.measureUnit}
                                     </Text>

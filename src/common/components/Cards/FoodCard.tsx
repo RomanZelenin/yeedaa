@@ -32,7 +32,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
 
     const subcategoriesIds = recipe.categoriesIds?.map((categoryId) => categoryId);
     const categories = useGetCategoriesQuery().data?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds!.includes(it._id)),
+        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
     );
 
     return (
@@ -43,7 +43,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
             overflow='clip'
             minH='244px'
         >
-            <Image src={recipe.image} w='346px' alt={recipe.title} />
+            <Image objectFit='cover' src={recipe.image} w='346px' alt={recipe.title} />
             {recipe.recommendation?.slice(0, 1).map((profile, i) => (
                 <>
                     <Tag
@@ -96,7 +96,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                 </CardHeader>
                 <CardBody py={0}>
                     <Text textStyle='textXlLh7Medium' mb='8px' noOfLines={1}>
-                        <Highlight query={query} styles={{ color: 'lime.600' }}>
+                        <Highlight query={query ?? ''} styles={{ color: 'lime.600' }}>
                             {recipe.title}
                         </Highlight>
                     </Text>
@@ -148,7 +148,7 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
     const subcategoriesIds = recipe.categoriesIds?.map((categoryId) => categoryId);
     const allCategories = useGetCategoriesQuery().data;
     const categories = allCategories?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds!.includes(it._id)),
+        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
     );
 
     return (
@@ -181,7 +181,7 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                 </CardHeader>
                 <CardBody p={0}>
                     <Text textStyle='textMdLh6Medium' noOfLines={2}>
-                        <Highlight query={query} styles={{ color: 'lime.600' }}>
+                        <Highlight query={query ?? ''} styles={{ color: 'lime.600' }}>
                             {recipe.title}
                         </Highlight>
                     </Text>
