@@ -8,19 +8,21 @@ import {
     Input,
     InputGroup,
     InputRightElement,
+    Show,
     Spinner,
     Text,
     useDisclosure,
     VStack,
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 
 import { filterSelector } from '~/app/features/filters/filtersSlice';
 import { FilterDrawer } from '~/common/components/Drawer/FilterDrawer';
 import { FilterIcon } from '~/common/components/Icons/FilterIcon';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { AllergySelectorWithSwitcher } from '~/common/components/Selector /AllergySelectorWithSwitcher';
-import { useGetRecipeQuery } from '~/query/create-api';
+import { useGetCategoriesQuery, useGetRecipeQuery } from '~/query/create-api';
 import {
     ERR_DEFAULT,
     ERR_NONE,
@@ -51,6 +53,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
         () => filter.allergens.filter((it) => it.selected).length,
         [filter],
     );
+
     useEffect(() => {
         if (inputQuery.length >= 3 || countSelectedAllergens > 0) {
             setSearchIsActive(true);
@@ -59,13 +62,32 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
         }
     }, [inputQuery, countSelectedAllergens]);
 
+    const { data: categories } = useGetCategoriesQuery();
+    const { category: categoryName } = useParams();
+    const category = useMemo(
+        () => categories?.find((it) => it.category === categoryName),
+        [categories, categoryName],
+    );
+
     const {
         data: recipes,
         isError,
         isLoading,
         isSuccess,
     } = useGetRecipeQuery(
-        { page: 1, limit: 8, searchString: inputQuery },
+        {
+            page: 1,
+            limit: 8,
+            searchString: inputQuery.length > 0 ? inputQuery : undefined,
+            allergens:
+                countSelectedAllergens > 0
+                    ? filter.allergens
+                          .filter((allergen) => allergen.selected)
+                          .map((allergen) => allergen.title)
+                          .join(',')
+                    : undefined,
+            subcategoriesIds: category?.subCategories?.map((it) => it._id)?.join(',') ?? undefined,
+        },
         { skip: !searchIsClicked },
     );
 

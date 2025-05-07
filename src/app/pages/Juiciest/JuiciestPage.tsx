@@ -10,7 +10,6 @@ import ContentContainer from '../common/Containers/ContentContainer';
 
 export default function JuiciestPage() {
     const { getString } = useResource();
-
     const [page, setPage] = useState(1);
     const { data, isSuccess, isLoading } = useGetJuiciestRecipesQuery({ limit: 8, page: page });
     const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -18,18 +17,6 @@ export default function JuiciestPage() {
     useEffect(() => {
         if (data?.data) setRecipes([...recipes, ...data.data]);
     }, [data]);
-
-    /*  const query = useAppSelector(querySelector);
-     const allergens = useAppSelector(allergensSelector).filter((item) => item.selected === true);
-     if (query.length > 0) {
-         recipes = filterRecipesByTitleOrIngridient(recipes, query);
-     }
-     if (allergens.length > 0) {
-         recipes = filterRecipesByAllergens(
-             recipes,
-             allergens.map((it) => it.title),
-         );
-     } */
 
     return (
         <ContentContainer title={getString('juiciest')}>
@@ -59,7 +46,7 @@ export default function JuiciestPage() {
                             px='16px'
                             py='8px'
                         >
-                            {isSuccess ? getString('load-more') : getString('load')}
+                            {isLoading ? getString('load') : getString('load-more')}
                         </Button>
                     ) : (
                         <></>

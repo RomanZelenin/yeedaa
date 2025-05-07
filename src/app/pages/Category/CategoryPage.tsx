@@ -2,8 +2,8 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 
+import { filterSelector } from '~/app/features/filters/filtersSlice';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
-import { filterRecipesByTitleOrIngridient } from '~/common/utils/filterRecipesByTitle';
 import { useGetCategoriesQuery, useGetRecipeByCategoryQuery } from '~/query/create-api';
 import { querySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
@@ -88,11 +88,29 @@ function CategoryTabPanel({
     isActive: boolean;
 }) {
     const { category, subcategory } = useParams();
-    const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
-        { limit: 10, id: subcategoryId },
-        { skip: !isActive },
+    const filter = useAppSelector(filterSelector);
+    const countSelectedAllergens = useMemo(
+        () => filter.allergens.filter((it) => it.selected).length,
+        [filter],
     );
     const query = useAppSelector(querySelector);
+
+    const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
+        {
+            limit: 10,
+            id: subcategoryId,
+            allergens:
+                countSelectedAllergens > 0
+                    ? filter.allergens
+                          .filter((allergen) => allergen.selected)
+                          .map((allergen) => allergen.title)
+                          .join(',')
+                    : undefined,
+            searchString: query.length > 0 ? query : undefined,
+        },
+        { skip: !isActive },
+    );
+
     if (isLoading) {
         return <TabPanel p={0}>Loading...</TabPanel>;
     }
@@ -100,10 +118,7 @@ function CategoryTabPanel({
         return <TabPanel p={0}>Error loading</TabPanel>;
     }
     if (isSuccess) {
-        let recipes = data.data;
-
-        if (query.length > 0) recipes = filterRecipesByTitleOrIngridient(recipes, query);
-
+        const recipes = data.data;
         return (
             <TabPanel p={0}>
                 <VStack spacing='12px' px='0px'>

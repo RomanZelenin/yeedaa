@@ -1,6 +1,10 @@
 import { Box, GridItem, VStack } from '@chakra-ui/react';
 import { JSX } from '@emotion/react/jsx-runtime';
 
+import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { recipesSelector } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
+
 import SectionRelevantKitchen from '../../Home/Sections/SectionRelevantKitchen';
 import HeaderContainer from './HeaderContainer';
 
@@ -13,6 +17,7 @@ export default function ContentContainer({
     subtitle?: string;
     children: JSX.Element;
 }) {
+    const recipes = useAppSelector(recipesSelector);
     return (
         <>
             <GridItem
@@ -32,9 +37,15 @@ export default function ContentContainer({
                 colStart={1}
                 colEnd={{ lg: 13 }}
             >
-                <VStack align='stretch' spacing='32px'>
-                    {children}
-                </VStack>
+                {recipes.length === 0 ? (
+                    <VStack align='stretch' spacing='32px'>
+                        {children}
+                    </VStack>
+                ) : (
+                    <VStack spacing='12px'>
+                        <RecipeCollection recipes={recipes} />
+                    </VStack>
+                )}
                 <Box mt={{ base: '32px', lg: '40px' }}>
                     <SectionRelevantKitchen />
                 </Box>
