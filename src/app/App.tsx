@@ -122,7 +122,7 @@ export default function App() {
                 left={0}
                 width='100%'
                 height='100%'
-                zIndex={100}
+                zIndex={1}
             >
                 <Center
                     position='fixed'

@@ -12,11 +12,15 @@ import {
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 
+import { DEFAULT_FILTER, setFilter } from '~/app/features/filters/filtersSlice';
 import { useGetCategoriesQuery } from '~/query/create-api';
+import { Error, setAppError, setAppQuery, setRecepies } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 export const MenuItems = () => {
     const { category, subcategory } = useParams();
     const navigate = useNavigate();
+    const dispatcher = useAppDispatch();
 
     const { data: categories, isLoading, isError } = useGetCategoriesQuery();
     const [selectedItem, setSelectedItem] = useState(-1);
@@ -39,6 +43,10 @@ export const MenuItems = () => {
         setSelectedItem(idx);
         if (selectedItem != idx) {
             setSelectedSubmenuIdx(0);
+            dispatcher(setAppQuery(''));
+            dispatcher(setAppError({ value: Error.NONE }));
+            dispatcher(setRecepies([]));
+            dispatcher(setFilter(DEFAULT_FILTER));
             navigate(path);
         }
     };

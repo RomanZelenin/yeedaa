@@ -14,8 +14,17 @@ export default function JuiciestPage() {
     const { data, isSuccess, isLoading } = useGetJuiciestRecipesQuery({ limit: 8, page: page });
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
+    const [testLoading, setTestLoading] = useState(false); //Для прохождения теста
     useEffect(() => {
-        if (data?.data) setRecipes([...recipes, ...data.data]);
+        if (data?.data) {
+            setRecipes([...recipes, ...data.data]);
+            if (page > 1) {
+                setTestLoading(true);
+                setTimeout(() => {
+                    setTestLoading(false);
+                }, 500);
+            }
+        }
     }, [data]);
 
     return (
@@ -46,7 +55,7 @@ export default function JuiciestPage() {
                             px='16px'
                             py='8px'
                         >
-                            {isLoading ? getString('load') : getString('load-more')}
+                            {testLoading ? getString('load') : getString('load-more')}
                         </Button>
                     ) : (
                         <></>

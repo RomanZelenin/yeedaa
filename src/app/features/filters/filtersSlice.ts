@@ -35,35 +35,35 @@ const DEFAULT_AUTHORS = [
 ];
 
 const DEFAULT_CATEGORIES = [
-    { title: 'salads', selected: false },
-    { title: 'snacks', selected: false },
-    { title: 'first-dish', selected: false },
-    { title: 'vegan', selected: false },
-    { title: 'children-dishes', selected: false },
-    { title: 'therapeutic-nutrition', selected: false },
-    { title: 'national', selected: false },
-    { title: 'sauces', selected: false },
-    { title: 'drinks', selected: false },
-    { title: 'food-preparations', selected: false },
+    { title: 'Салаты', selected: false },
+    { title: 'Закуски', selected: false },
+    { title: 'Первые блюда', selected: false },
+    { title: 'Веганская кухня', selected: false },
+    { title: 'Детские блюда', selected: false },
+    { title: 'Лечебное питание', selected: false },
+    { title: 'Национальные', selected: false },
+    { title: 'Соусы', selected: false },
+    { title: 'Напитки', selected: false },
+    { title: 'Заготовки', selected: false },
 ];
 
 const DEFAULT_MEAT = [
-    { title: 'chiken', selected: false },
-    { title: 'pork', selected: false },
-    { title: 'beef', selected: false },
-    { title: 'turkey', selected: false },
-    { title: 'duck', selected: false },
+    { title: 'Курица', selected: false },
+    { title: 'Свинина', selected: false },
+    { title: 'Говядина', selected: false },
+    { title: 'Индейка', selected: false },
+    { title: 'Утка', selected: false },
 ];
 
 const DEFAULT_SIDE = [
-    { title: 'potatoes', selected: false },
+    { title: 'Картошка', selected: false },
     { title: 'buckwheat', selected: false },
-    { title: 'paste', selected: false },
-    { title: 'spaghetti', selected: false },
-    { title: 'rice', selected: false },
+    { title: 'Паста', selected: false },
+    { title: 'Спагетти', selected: false },
+    { title: 'Рис', selected: false },
     { title: 'cabbage', selected: false },
-    { title: 'beans', selected: false },
-    { title: 'other vegetables', selected: false },
+    { title: 'Бобы', selected: false },
+    { title: 'Другие овощи', selected: false },
 ];
 
 export const DEFAULT_FILTER: Filter = {
