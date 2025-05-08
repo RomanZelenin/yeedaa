@@ -21,17 +21,19 @@ export type Subcategory = {
 };
 
 type RecipeQuery = {
-    id?: string;
-    page?: number;
-    limit?: number;
-    allergens?: string;
-    searchString?: string;
-    meat?: string;
-    garnish?: string;
-    subcategoriesIds?: string;
-    sortBy?: string;
-    sortOrder?: 'asc' | 'desc' | undefined;
+    id: string;
+    page: number;
+    limit: number;
+    allergens: string;
+    searchString: string;
+    meat: string;
+    garnish: string;
+    subcategoriesIds: string;
+    sortBy: 'createdAt' | 'likes';
+    sortOrder: 'asc' | 'desc';
 };
+
+export type PartialRecipeQuery = Partial<RecipeQuery>;
 
 type RecipesResponse = {
     data: Recipe[];
@@ -71,7 +73,7 @@ export const apiSlice = createApi({
                 icon: IMAGE_BASE_URL + (response as Category).icon,
             }),
         }),
-        getRecipeByCategory: build.query<RecipesResponse, RecipeQuery>({
+        getRecipeByCategory: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
                 url: `${ApiEndpoints.RECIPE_BY_CATEGORY}/${q.id}`,
                 method: 'GET',
@@ -90,7 +92,7 @@ export const apiSlice = createApi({
                 return { ...(response as RecipesResponse), data: data };
             },
         }),
-        getNewestRecipes: build.query<RecipesResponse, RecipeQuery>({
+        getNewestRecipes: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
                 url: ApiEndpoints.RECIPE,
                 method: 'GET',
@@ -112,7 +114,7 @@ export const apiSlice = createApi({
                 }
             },
         }),
-        getJuiciestRecipes: build.query<RecipesResponse, RecipeQuery>({
+        getJuiciestRecipes: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
                 url: ApiEndpoints.RECIPE,
                 method: 'GET',
@@ -131,7 +133,7 @@ export const apiSlice = createApi({
                 return { ...(response as RecipesResponse), data: data };
             },
         }),
-        getRecipe: build.query<RecipesResponse, RecipeQuery>({
+        getRecipe: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
                 url: ApiEndpoints.RECIPE,
                 method: 'GET',

@@ -1,15 +1,58 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
-import { breadcrumbSelector } from '~/store/app-slice';
-import { useAppSelector } from '~/store/hooks';
+import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
+import { useGetRecipeByIdQuery } from '~/query/create-api';
 
-interface BreadcrumbItem {
+import { useResource } from '../ResourceContext/ResourceContext';
+
+type BreadcrumbItem = {
     title: string;
     path: string;
-}
+};
 
 export const NavigationBreadcrumb = () => {
-    const breadcrumbs = useAppSelector(breadcrumbSelector);
+    const { getString } = useResource();
+    const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
+    const { category: categoryName, subcategory: subcategoryName, id: recipeId } = useParams();
+
+    const { category, subcategory } = useCurrentCategory({ categoryName, subcategoryName });
+    const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
+
+    useEffect(() => {
+        const breadcrumbs = [{ title: getString('home'), path: '/' }];
+        if (category) {
+            breadcrumbs.push({
+                title: `${category.title}`,
+                path: `/${category.category}/${category.subCategories?.[0].category}`,
+            });
+            if (subcategory) {
+                breadcrumbs.push({
+                    title: `${subcategory.title}`,
+                    path: `/${category.category}/${subcategory.category}`,
+                });
+                if (recipeId && recipe) {
+                    breadcrumbs.push({
+                        title: `${recipe.title}`,
+                        path: `/${category.category}/${subcategory.category}/${recipeId}#`,
+                    });
+                }
+            }
+        } else {
+            if (location.pathname.startsWith('/the-juiciest')) {
+                breadcrumbs.push({ title: getString('juiciest'), path: '/the-juiciest' });
+                if (recipeId && recipe) {
+                    breadcrumbs.push({
+                        title: `${recipe.title}`,
+                        path: `/the-juiciest/${recipeId}#`,
+                    });
+                }
+            }
+        }
+        setBreadcrumbs(breadcrumbs);
+    }, [category, subcategory, recipe, recipeId]);
+
     return (
         <Breadcrumb
             data-test-id='breadcrumbs'

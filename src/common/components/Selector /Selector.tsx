@@ -23,10 +23,10 @@ type SelectProps = {
     placeholder?: string;
     addItemPlaceholder?: string;
     isShowAddItemInput?: boolean;
-    onClickClearAll: () => undefined;
-    onAddCustomItem?: (item: string) => undefined;
+    onClickClearAll: () => void;
+    onAddCustomItem?: (item: string) => void;
     isDisabled: boolean;
-    onSelect: (item: { title: string; selected: boolean }) => undefined;
+    onSelect: (item: { title: string; selected: boolean }) => void;
 };
 
 export const Selector = ({

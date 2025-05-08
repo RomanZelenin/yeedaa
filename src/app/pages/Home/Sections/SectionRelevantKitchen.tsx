@@ -1,27 +1,18 @@
 import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useMemo } from 'react';
-import { useParams } from 'react-router';
 
 import {
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
 } from '~/common/components/Cards/VegeterianKitchenCard';
-import { getRandomNumber } from '~/common/utils/getRandomNumber';
-import { useGetCategoriesQuery, useGetRecipeByCategoryQuery } from '~/query/create-api';
+import { useRandomCategory } from '~/common/hooks/useRandomCategory';
+import { useGetRecipeByCategoryQuery } from '~/query/create-api';
 import { Error, setAppError, setRelevantLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionRelevantKitchen() {
     const dispatcher = useAppDispatch();
-    const { category: categoryId } = useParams();
-    const { data: categories } = useGetCategoriesQuery();
 
-    const category = useMemo(() => {
-        const mainCategories = categories?.filter((it) => !!it.subCategories);
-        const randomIdx = getRandomNumber(1, mainCategories?.length ?? 1) - 1;
-        return mainCategories?.at(randomIdx);
-    }, [categoryId, categories]);
-
+    const category = useRandomCategory();
     const subcategoriesIds = category?.subCategories?.map((subcategory) => subcategory._id);
 
     const {

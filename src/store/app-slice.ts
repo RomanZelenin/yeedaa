@@ -59,12 +59,6 @@ export const appSlice = createSlice({
         setAppQuery(state, { payload: query }: PayloadAction<string>) {
             state.query = query;
         },
-        setAppBreadcrumb(
-            state,
-            { payload: breadcrumb }: PayloadAction<{ title: string; path: string }[]>,
-        ) {
-            state.breadcrumb = breadcrumb;
-        },
         setRecepies(state, { payload: recipes }: PayloadAction<Recipe[] | undefined>) {
             state.recipes = recipes ?? [];
         },
@@ -83,14 +77,12 @@ export const errorSelector = (state: ApplicationState) => state.app.error;
 export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
 export const blogsSelector = (state: ApplicationState) => state.app.blogs;
-export const breadcrumbSelector = (state: ApplicationState) => state.app.breadcrumb;
 export const isSearchSelector = (state: ApplicationState) => state.app.isSearch;
 
 export const {
     setAppError,
     setAppLoader,
     setAppQuery,
-    setAppBreadcrumb,
     setRecepies,
     setNewestRecipesLoader,
     setJuiciestRecipesLoader,

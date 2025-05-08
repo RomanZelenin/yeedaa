@@ -15,10 +15,11 @@ import {
     Thead,
     Tr,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Ingredient } from '~/app/mocks/types/type_defenitions';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
+import { getIngredientsPerPortion } from '~/common/utils/getIngredientsPerPortion';
 
 export const IngredientsList = ({
     ingredients,
@@ -28,14 +29,9 @@ export const IngredientsList = ({
     portions: number;
 }) => {
     const [numPortions, setNumServings] = useState(portions);
-    const [ingredientsPerPortion] = useState(
-        () =>
-            ingredients.map((ingridient) => ({
-                ...ingridient,
-                count: !Number.isNaN(parseFloat(ingridient.count))
-                    ? (parseFloat(ingridient.count) / portions).toString()
-                    : ingridient.count,
-            })) as Ingredient[],
+    const ingredientsPerPortion = useMemo(
+        () => getIngredientsPerPortion(ingredients, portions),
+        [ingredients, portions],
     );
     const { getString } = useResource();
 
@@ -92,15 +88,15 @@ export const IngredientsList = ({
                                 <Td py='10px' px={0}>
                                     <Text mr='8px' textStyle='textSmLh5' textAlign='end'>
                                         <Box as='span' data-test-id={`ingredient-quantity-${idx}`}>
-                                            {!Number.isNaN(parseFloat(it.count))
-                                                ? parseFloat(
+                                            {isNaN(parseFloat(it.count))
+                                                ? it.count
+                                                : parseFloat(
                                                       (numPortions * parseFloat(it.count)).toFixed(
                                                           2,
                                                       ),
-                                                  )
-                                                : it.count}
-                                        </Box>{' '}
-                                        {it.measureUnit}
+                                                  )}
+                                        </Box>
+                                        {` ${it.measureUnit}`}
                                     </Text>
                                 </Td>
                             </Tr>

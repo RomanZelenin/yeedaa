@@ -28,7 +28,7 @@ export const RecipePage = () => {
     const { data: recipe, isSuccess, isLoading } = useGetRecipeByIdQuery(id!, { skip: !id });
 
     if (isLoading) {
-        return <></>;
+        return null;
     }
 
     if (isSuccess) {

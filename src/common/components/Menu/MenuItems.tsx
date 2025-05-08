@@ -124,9 +124,7 @@ export const MenuItems = () => {
                                             <ListItem
                                                 key={`${subCategory.title}-${i}`}
                                                 mb='12px'
-                                                aria-selected={
-                                                    selectedSubmenuIdx === i ? true : false
-                                                }
+                                                aria-selected={selectedSubmenuIdx === i}
                                                 data-test-id={
                                                     selectedSubmenuIdx === i
                                                         ? `${subCategory.category}-active`

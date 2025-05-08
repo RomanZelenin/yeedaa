@@ -14,14 +14,14 @@ export default function SectionJuiciest() {
         isSuccess,
     } = useGetJuiciestRecipesQuery({ limit: 4, sortBy: 'likes', sortOrder: 'desc' });
 
-    const dispatcher = useAppDispatch();
+    const dispatch = useAppDispatch();
 
     if (isLoading) {
-        dispatcher(setJuiciestRecipesLoader(true));
+        dispatch(setJuiciestRecipesLoader(true));
         return <Text>Loading...</Text>;
     }
     if (isError || isSuccess) {
-        dispatcher(setJuiciestRecipesLoader(false));
+        dispatch(setJuiciestRecipesLoader(false));
         if (isError) return <Text>Error</Text>;
     }
 
@@ -77,7 +77,7 @@ export default function SectionJuiciest() {
             >
                 Вся подборка
             </Button>
-            {breakpoint === 'md' ? (
+            {breakpoint === 'md' && (
                 <Button
                     as='a'
                     href='/the-juiciest'
@@ -94,8 +94,6 @@ export default function SectionJuiciest() {
                 >
                     Вся подборка
                 </Button>
-            ) : (
-                <></>
             )}
         </VStack>
     );
