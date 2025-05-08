@@ -10,7 +10,7 @@ import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useGetCategoriesQuery, useGetRecipeByIdQuery } from '~/query/create-api';
-import { ERR_SERVER, errorSelector, loadingSelector, setAppBreadcrumb } from '~/store/app-slice';
+import { Error, errorSelector, loadingSelector, setAppBreadcrumb } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function App() {
@@ -109,8 +109,8 @@ export default function App() {
                 <GridItem area='footer' hideFrom='lg'>
                     <BottomMenu avatar={profile.avatar} />
                 </GridItem>
-                {error === ERR_SERVER ? (
-                    <ErrorAlert message='Попробуйте поискать снова попозже' />
+                {error.value === Error.SERVER ? (
+                    <ErrorAlert message={error.message ?? ''} />
                 ) : (
                     <></>
                 )}

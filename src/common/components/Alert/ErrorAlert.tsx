@@ -8,7 +8,10 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 
+import { useResource } from '../ResourceContext/ResourceContext';
+
 export const ErrorAlert = ({ message }: { message: string }) => {
+    const { getString } = useResource();
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
 
     return isVisible ? (
@@ -26,7 +29,7 @@ export const ErrorAlert = ({ message }: { message: string }) => {
         >
             <AlertIcon />
             <Box>
-                <AlertTitle>Ошибка сервера</AlertTitle>
+                <AlertTitle>{getString('server-error')}</AlertTitle>
                 <AlertDescription>{message}</AlertDescription>
             </Box>
             <CloseButton

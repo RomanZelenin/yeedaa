@@ -182,7 +182,7 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                 <CardBody p={0}>
                     <Text textStyle='textMdLh6Medium' noOfLines={2}>
                         <Highlight query={query ?? ''} styles={{ color: 'lime.600' }}>
-                            {recipe.title}
+                            {recipe.title ?? ''}
                         </Highlight>
                     </Text>
                 </CardBody>

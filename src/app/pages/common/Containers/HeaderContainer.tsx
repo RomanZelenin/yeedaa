@@ -14,6 +14,7 @@ import {
     useDisclosure,
     VStack,
 } from '@chakra-ui/react';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 
@@ -24,49 +25,57 @@ import { useResource } from '~/common/components/ResourceContext/ResourceContext
 import { AllergySelectorWithSwitcher } from '~/common/components/Selector /AllergySelectorWithSwitcher';
 import { useGetCategoriesQuery, useGetRecipeQuery } from '~/query/create-api';
 import {
-    ERR_DEFAULT,
-    ERR_NONE,
-    ERR_RECEPIES_NOT_FOUND,
-    ERR_SERVER,
+    Error,
     errorSelector,
+    isSearchSelector,
     recipesSelector,
     setAppError,
     setAppQuery,
+    setIsSearch,
     setRecepies,
 } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string }) {
-    const dispatch = useAppDispatch();
+    const dispatcher = useAppDispatch();
     const { getString } = useResource();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const {
+        isOpen: filterDrawerIsOpen,
+        onOpen: filterDrawerOnOpen,
+        onClose: filterDrawerOnClose,
+    } = useDisclosure();
 
     const [isSearchInputInFocus, setIsSearchInputActive] = useState(false);
-    const [inputQuery, setInputQuery] = useState('');
+    const countRecipes = useAppSelector(recipesSelector).length;
+    const isSearch = useAppSelector(isSearchSelector);
     const [searchIsActive, setSearchIsActive] = useState(false);
-    const [searchIsClicked, setSearchIsClicked] = useState(false);
+    const [inputQuery, setInputQuery] = useState('');
 
     const error = useAppSelector(errorSelector);
     const filter = useAppSelector(filterSelector);
-
-    const countSelectedAllergens = useMemo(
-        () => filter.allergens.filter((it) => it.selected).length,
-        [filter],
-    );
-
-    useEffect(() => {
-        if (inputQuery.length >= 3 || countSelectedAllergens > 0) {
-            setSearchIsActive(true);
-        } else {
-            setSearchIsActive(false);
-        }
-    }, [inputQuery, countSelectedAllergens]);
-
-    const { data: categories } = useGetCategoriesQuery();
     const { category: categoryName } = useParams();
-    const category = useMemo(
-        () => categories?.find((it) => it.category === categoryName),
-        [categories, categoryName],
+    const { data: categories } = useGetCategoriesQuery(categoryName ? undefined : skipToken);
+    const { subcategoriesIds, allergens, garnish, meat } = useMemo(
+        () => ({
+            subcategoriesIds:
+                categories
+                    ?.find((it) => it.category === categoryName)
+                    ?.subCategories?.map((it) => it._id)
+                    ?.join(',') ?? '',
+            allergens: filter.allergens
+                .filter((allergen) => allergen.selected)
+                .map((allergen) => allergen.title)
+                .join(','),
+            garnish: filter.side
+                .filter((it) => it.selected)
+                .map((garnish) => garnish.title)
+                .join(','),
+            meat: filter.meat
+                .filter((it) => it.selected)
+                .map((meat) => meat.title)
+                .join(','),
+        }),
+        [categories, filter, categoryName],
     );
 
     const {
@@ -79,37 +88,43 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             page: 1,
             limit: 8,
             searchString: inputQuery.length > 0 ? inputQuery : undefined,
-            allergens:
-                countSelectedAllergens > 0
-                    ? filter.allergens
-                          .filter((allergen) => allergen.selected)
-                          .map((allergen) => allergen.title)
-                          .join(',')
-                    : undefined,
-            subcategoriesIds: category?.subCategories?.map((it) => it._id)?.join(',') ?? undefined,
+            allergens: allergens.length > 0 ? allergens : undefined,
+            subcategoriesIds: subcategoriesIds.length > 0 ? subcategoriesIds : undefined,
+            garnish: garnish.length > 0 ? garnish : undefined,
+            meat: meat.length > 0 ? meat : undefined,
         },
-        { skip: !searchIsClicked },
+        { skip: !isSearch },
     );
 
-    const countRecipes = useAppSelector(recipesSelector).length;
-    if (isSuccess || isError) {
-        if (isSuccess) {
-            if ((recipes?.data ?? []).length === 0) {
-                dispatch(setAppError(ERR_RECEPIES_NOT_FOUND));
-                dispatch(setAppQuery(''));
-                setInputQuery('');
-            } else {
-                dispatch(setAppError(ERR_NONE));
-                dispatch(setAppQuery(inputQuery));
-            }
-        } else if (isError) {
-            dispatch(setAppError(ERR_SERVER));
-            dispatch(setAppQuery(''));
-            setInputQuery('');
+    useEffect(() => {
+        if (inputQuery.length >= 3 || allergens.length > 0) {
+            setSearchIsActive(true);
+        } else {
+            setSearchIsActive(false);
         }
+    }, [inputQuery, allergens]);
 
-        dispatch(setRecepies(recipes?.data ?? []));
-        setSearchIsClicked(false);
+    if (isError) {
+        dispatcher(
+            setAppError({ value: Error.SERVER, message: 'Попробуйте поискать снова попозже' }),
+        );
+        dispatcher(setAppQuery(''));
+        setInputQuery('');
+        dispatcher(setRecepies([]));
+        dispatcher(setIsSearch(false));
+    }
+
+    if (isSuccess) {
+        if (recipes.data.length === 0) {
+            dispatcher(setAppError({ value: Error.RECEPIES_NOT_FOUND }));
+            dispatcher(setAppQuery(''));
+            setInputQuery('');
+        } else {
+            dispatcher(setAppError({ value: Error.NONE }));
+            dispatcher(setAppQuery(inputQuery));
+        }
+        dispatcher(setRecepies(recipes.data));
+        dispatcher(setIsSearch(false));
     }
 
     return (
@@ -125,7 +140,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             }
         >
             <Box textAlign='center'>
-                {error === ERR_RECEPIES_NOT_FOUND ? (
+                {error.value === Error.RECEPIES_NOT_FOUND ? (
                     <>
                         <Text textStyle='textMdLh6Semibold'>
                             По вашему запросу ничего не найдено.
@@ -162,7 +177,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                         icon={<FilterIcon boxSize={{ base: '14px', lg: '24px' }} />}
                         aria-label='Filter'
                         bgColor='transparent'
-                        onClick={onOpen}
+                        onClick={filterDrawerOnOpen}
                     />
 
                     <InputGroup flex={{ base: 1, md: 0.7, lg: 1 }}>
@@ -171,22 +186,12 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             data-test-id='search-input'
                             borderRadius='4px'
                             border='1px solid'
-                            borderColor={
-                                error === ERR_NONE && countRecipes > 0
-                                    ? 'lime.600'
-                                    : 'blackAlpha.600'
-                            }
+                            borderColor={countRecipes > 0 ? 'lime.600' : 'blackAlpha.600'}
                             _hover={{
-                                borderColor:
-                                    error === ERR_NONE && countRecipes > 0
-                                        ? 'lime.600'
-                                        : 'blackAlpha.600',
+                                borderColor: countRecipes > 0 ? 'lime.600' : 'blackAlpha.600',
                             }}
                             _focusVisible={{
-                                borderColor:
-                                    error === ERR_NONE && countRecipes > 0
-                                        ? 'lime.600'
-                                        : 'blackAlpha.600',
+                                borderColor: countRecipes > 0 ? 'lime.600' : 'blackAlpha.600',
                             }}
                             textStyle='searchInput'
                             placeholder={`${getString('name_or_ingredient')}...`}
@@ -196,7 +201,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             onInput={(e) => setInputQuery((e.target as HTMLInputElement).value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && inputQuery.length >= 3) {
-                                    setSearchIsClicked(true);
+                                    dispatcher(setIsSearch(true));
                                 }
                             }}
                             h='100%'
@@ -212,9 +217,9 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                                 minW={0}
                                 onClick={() => {
                                     setInputQuery('');
-                                    dispatch(setAppQuery(''));
-                                    dispatch(setAppError(ERR_DEFAULT));
-                                    dispatch(setRecepies([]));
+                                    dispatcher(setAppQuery(''));
+                                    dispatcher(setAppError({ value: Error.NONE }));
+                                    dispatcher(setRecepies([]));
                                 }}
                                 flex={1}
                                 icon={<CloseIcon boxSize={{ base: '8px', lg: '10px' }} />}
@@ -235,7 +240,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                                 }
                                 aria-label='Search'
                                 isDisabled={!searchIsActive}
-                                onClick={() => setSearchIsClicked(true)}
+                                onClick={() => dispatcher(setIsSearch(true))}
                             />
                         </InputRightElement>
                     </InputGroup>
@@ -254,7 +259,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             >
                 <Spinner size='lg' boxSize='24px' minW={0} />
             </Center>
-            <FilterDrawer isOpen={isOpen} onClose={onClose} />
+            <FilterDrawer isOpen={filterDrawerIsOpen} onClose={filterDrawerOnClose} />
         </VStack>
     );
 }

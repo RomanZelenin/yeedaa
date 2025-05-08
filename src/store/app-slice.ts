@@ -13,23 +13,35 @@ export const ERR_NONE = 'none';
 export const ERR_SERVER = 'server error';
 export const ERR_DEFAULT = null;
 
+export const enum Error {
+    NONE,
+    RECEPIES_NOT_FOUND,
+    SERVER,
+}
+
+export type ResponseError = {
+    value: Error;
+    message?: string;
+};
+
 const initialState = {
     isLoading: false,
     isNewestRecipesLoading: false,
     isJuiciestRecipesLoading: false,
     isRelevantLoading: false,
-    error: ERR_DEFAULT as string | null,
+    error: { value: Error.NONE } as ResponseError,
     query: '' as string,
     recipes: [] as Recipe[],
     blogs: blogs as { person: Profile; comment: string }[],
     breadcrumb: [] as { title: string; path: string }[],
+    isSearch: false,
 };
 
 export const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        setAppError(state, { payload: error }: PayloadAction<string | null>) {
+        setAppError(state, { payload: error }: PayloadAction<ResponseError>) {
             state.error = error;
         },
         setAppLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
@@ -56,6 +68,9 @@ export const appSlice = createSlice({
         setRecepies(state, { payload: recipes }: PayloadAction<Recipe[] | undefined>) {
             state.recipes = recipes ?? [];
         },
+        setIsSearch(state, { payload: isSearch }: PayloadAction<boolean>) {
+            state.isSearch = isSearch;
+        },
     },
 });
 
@@ -69,6 +84,7 @@ export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
 export const blogsSelector = (state: ApplicationState) => state.app.blogs;
 export const breadcrumbSelector = (state: ApplicationState) => state.app.breadcrumb;
+export const isSearchSelector = (state: ApplicationState) => state.app.isSearch;
 
 export const {
     setAppError,
@@ -79,5 +95,6 @@ export const {
     setNewestRecipesLoader,
     setJuiciestRecipesLoader,
     setRelevantLoader,
+    setIsSearch,
 } = appSlice.actions;
 export default appSlice.reducer;
