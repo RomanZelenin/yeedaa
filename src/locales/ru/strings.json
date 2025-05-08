@@ -51,7 +51,7 @@
     "eliminate-allergens": "Исключить аллергены",
     "select-from-list-of-allergens": "Выберите из списка аллергенов",
     "calories": "Калорийность",
-    "proteins": "Белки",
+    "protein": "Белки",
     "fats": "Жиры",
     "carbohydrates": "Углеводы",
     "gram": "Грамм",
@@ -62,5 +62,13 @@
     "portions": "Порций",
     "load-more": "Загрузить ещё",
     "juiciest": "Самое сочное",
-    "bon-appetit": "Приятного аппетита!"
+    "bon-appetit": "Приятного аппетита!",
+    "home": "Главная",
+    "new-recepies": "Новые рецепты",
+    "no-such-page": "Упс! Такой страницы нет",
+    "you-can-look-another-recipe": "Можете поискать другой рецепт",
+    "here": "Здесь",
+    "min": "Мин",
+    "load": "Загрузка",
+    "server-error": "Ошибка сервера"
 }

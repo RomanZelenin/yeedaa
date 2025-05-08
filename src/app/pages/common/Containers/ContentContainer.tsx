@@ -1,22 +1,25 @@
-import { Box, Button, GridItem, VStack } from '@chakra-ui/react';
+import { Box, GridItem, VStack } from '@chakra-ui/react';
 import { JSX } from '@emotion/react/jsx-runtime';
-import { Link } from 'react-router';
+import { useMemo } from 'react';
 
-import { filterRecipesByTitleOrIngridient } from '~/app/Utils/filterRecipesByTitle';
-import { RecipeCollection } from '~/components/RecipeCollection/RecipeCollection';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { filterSelector } from '~/app/features/filters/filtersSlice';
+import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { useMapRecipesToCategoryPaths } from '~/common/hooks/useMapRecipesToCategoryPaths';
+import { joinSelected } from '~/common/utils/joinSelected';
+import { useGetRecipeQuery } from '~/query/create-api';
 import {
-    ERR_RECEPIES_NOT_FOUND,
-    errorSelector,
-    globalFilterSelector,
-    isFilteredSelector,
+    Error,
+    isSearchSelector,
     querySelector,
     recipesSelector,
     setAppError,
+    setAppQuery,
+    setIsSearch,
+    setRecepies,
 } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
-import SectionRandomCategory from '../Sections/SectionRandomCategory';
+import SectionRelevantKitchen from '../../Home/Sections/SectionRelevantKitchen';
 import HeaderContainer from './HeaderContainer';
 
 export default function ContentContainer({
@@ -28,49 +31,57 @@ export default function ContentContainer({
     subtitle?: string;
     children: JSX.Element;
 }) {
-    const dispatcher = useAppDispatch();
-    const error = useAppSelector(errorSelector);
-    const isGlobalFiltered = useAppSelector(isFilteredSelector);
-    const globalFilter = useAppSelector(globalFilterSelector);
-    const { getString } = useResource();
-
     let recipes = useAppSelector(recipesSelector);
-
-    if (globalFilter.allergens.length > 0) {
-        recipes = recipes.filter(
-            (recepie) =>
-                !recepie.ingredients
-                    .map((it) => it.title)
-                    .some((it) =>
-                        globalFilter.allergens.map((it) => it.toLocaleLowerCase()).includes(it),
-                    ),
-        );
-    }
-    if (globalFilter.categories.length > 0) {
-        recipes = recipes.filter((recepie) =>
-            recepie.category.some((it) => globalFilter.categories.includes(it)),
-        );
-    }
-    if (globalFilter.meat.length > 0) {
-        recipes = recipes.filter((recepie) =>
-            recepie.meat ? globalFilter.meat.includes(recepie.meat) : false,
-        );
-    }
-    if (globalFilter.side_dish.length > 0) {
-        recipes = recipes.filter((recepie) =>
-            recepie.side ? globalFilter.side_dish.includes(recepie.side) : false,
-        );
-    }
-
     const query = useAppSelector(querySelector);
-    if (query.length > 0) {
-        recipes = filterRecipesByTitleOrIngridient(recipes, query);
-        if (recipes.length === 0) {
-            dispatcher(setAppError(ERR_RECEPIES_NOT_FOUND));
-        } else {
-            dispatcher(setAppError(null));
-        }
+    const filter = useAppSelector(filterSelector);
+    const isSearch = useAppSelector(isSearchSelector);
+    const dispatch = useAppDispatch();
+
+    const { subcategoriesIds, allergens, garnish, meat } = useMemo(
+        () => ({
+            subcategoriesIds: joinSelected(filter.categories),
+            allergens: joinSelected(filter.allergens),
+            garnish: joinSelected(filter.side),
+            meat: joinSelected(filter.meat),
+        }),
+        [filter.allergens, filter.side, filter.meat, filter.categories],
+    );
+
+    const { data, isError, isSuccess } = useGetRecipeQuery(
+        {
+            page: 1,
+            limit: 8,
+            searchString: query,
+            allergens: allergens.length > 0 ? allergens : undefined,
+            subcategoriesIds: subcategoriesIds,
+            garnish: garnish,
+            meat: meat,
+        },
+        { skip: !isSearch },
+    );
+
+    if (isError) {
+        dispatch(
+            setAppError({ value: Error.SERVER, message: 'Попробуйте поискать снова попозже' }),
+        );
+        dispatch(setAppQuery(''));
+        dispatch(setRecepies([]));
+        dispatch(setIsSearch(false));
     }
+
+    if (isSuccess) {
+        recipes = data.data;
+        if (recipes.length === 0) {
+            dispatch(setAppError({ value: Error.RECEPIES_NOT_FOUND }));
+            dispatch(setAppQuery(''));
+        } else {
+            dispatch(setAppError({ value: Error.NONE }));
+        }
+        dispatch(setRecepies(recipes));
+        dispatch(setIsSearch(false));
+    }
+
+    recipes = useMapRecipesToCategoryPaths(recipes);
 
     return (
         <>
@@ -91,41 +102,17 @@ export default function ContentContainer({
                 colStart={1}
                 colEnd={{ lg: 13 }}
             >
-                {!isGlobalFiltered ? (
+                {recipes.length === 0 ? (
                     <VStack align='stretch' spacing='32px'>
                         {children}
                     </VStack>
                 ) : (
-                    <>
-                        <VStack spacing='12px'>
-                            <RecipeCollection recipes={recipes} />
-                        </VStack>
-                    </>
-                )}
-                {error !== ERR_RECEPIES_NOT_FOUND ? (
-                    <VStack mt='12px'>
-                        <Button
-                            textAlign='center'
-                            display='inline-flex'
-                            as={Link}
-                            to='#'
-                            bgColor='lime.300'
-                            alignSelf='center'
-                            fontSize='16px'
-                            color='black'
-                            variant='ghost'
-                            flex={1}
-                            px='16px'
-                            py='8px'
-                        >
-                            {getString('load-more')}
-                        </Button>
+                    <VStack spacing='12px'>
+                        <RecipeCollection recipes={recipes} />
                     </VStack>
-                ) : (
-                    <></>
                 )}
                 <Box mt={{ base: '32px', lg: '40px' }}>
-                    <SectionRandomCategory />
+                    <SectionRelevantKitchen />
                 </Box>
             </GridItem>
         </>

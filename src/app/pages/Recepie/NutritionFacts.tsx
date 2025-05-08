@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react';
 
 import { NutritionValue } from '~/app/mocks/types/type_defenitions';
-import { useResource } from '~/components/ResourceContext/ResourceContext';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 
 export const NutritionFacts = ({ nutrition }: { nutrition: NutritionValue }) => {
     const { getString } = useResource();
@@ -26,9 +26,10 @@ export const NutritionFacts = ({ nutrition }: { nutrition: NutritionValue }) => 
                                     value: it[1],
                                     unit: getString('kcal'),
                                 };
+                            case 'protein':
                             case 'proteins':
                                 return {
-                                    title: getString('proteins'),
+                                    title: getString('protein'),
                                     value: it[1],
                                     unit: getString('gram'),
                                 };

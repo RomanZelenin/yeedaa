@@ -1,7 +1,7 @@
-import { Profile } from '~/components/Header/ProfileInfo';
+import { Profile } from '~/common/components/Header/ProfileInfo';
 
 export type Recipe = {
-    id: string;
+    _id: string;
     title: string;
     description: string;
     category: string[];
@@ -9,6 +9,7 @@ export type Recipe = {
     image: string;
     bookmarks: number;
     likes: number;
+    views: number;
     date: string;
     time: string;
     portions?: number;
@@ -18,6 +19,10 @@ export type Recipe = {
     meat?: string;
     side?: string;
     recommendation?: Profile[];
+    categoriesIds?: string[];
+    createdAt: string;
+    authorId: string;
+    path?: string;
 };
 
 export type NutritionValue = {
