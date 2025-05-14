@@ -8,15 +8,12 @@ import { ApplicationState } from './configure-store';
 
 export type AppState = typeof initialState;
 
-export const ERR_RECEPIES_NOT_FOUND = 'recepies not found';
-export const ERR_NONE = 'none';
-export const ERR_SERVER = 'server error';
-export const ERR_DEFAULT = null;
-
 export const enum Error {
-    NONE,
-    RECEPIES_NOT_FOUND,
-    SERVER,
+    NONE = 'none',
+    RECEPIES_NOT_FOUND = 'Рецепты не найдены',
+    SERVER = 'Ошибка сервера',
+    INCORRECT_LOGIN_OR_PASSWORD = 'Неверный логин или пароль',
+    EMAIL_NOT_VERIFED = 'E-mail не верефицирован',
 }
 
 export type ResponseError = {
@@ -68,10 +65,10 @@ export const appSlice = createSlice({
     },
 });
 
-export const loadingSelector = (state: ApplicationState) =>
-    state.app.isNewestRecipesLoading ||
+export const loadingSelector = (state: ApplicationState) => state.app.isLoading;
+/* state.app.isNewestRecipesLoading ||
     state.app.isJuiciestRecipesLoading ||
-    state.app.isRelevantLoading;
+    state.app.isRelevantLoading; */
 
 export const errorSelector = (state: ApplicationState) => state.app.error;
 export const querySelector = (state: ApplicationState) => state.app.query;
