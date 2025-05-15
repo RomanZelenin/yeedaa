@@ -5,6 +5,7 @@ import { Form, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
+import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
 import { LoginResponse, useLoginMutation } from '~/query/create-api';
 import { Error, errorSelector, setAppError, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
@@ -36,6 +37,7 @@ export const LoginForm = () => {
         formState: { errors, isSubmitting },
     } = useForm({
         resolver: yupResolver(schema),
+        mode: 'onChange',
     });
     const loginInputRef = useRef<HTMLInputElement>(null);
 
@@ -146,7 +148,8 @@ export const LoginForm = () => {
                     <label htmlFor='password'>
                         <Text textStyle='textMdLh6Normal'>Пароль</Text>
                     </label>
-                    <Input
+                    <PasswordInput
+                        placeholder='Пароль для сайта'
                         borderRadius='6px'
                         borderColor={
                             errors.password || error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
@@ -162,16 +165,14 @@ export const LoginForm = () => {
                                     : 'lime.150',
                         }}
                         _focus={{
+                            boxShadow: 'none',
                             bgColor: 'white',
                             borderColor:
                                 errors.password || error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
                                     ? 'red'
                                     : 'lime.150',
                         }}
-                        placeholder='Пароль для сайта'
-                        variant='filled'
                         id='password'
-                        type='password'
                         {...register('password')}
                         onInput={(e) => {
                             dispatch(setAppError({ value: Error.NONE }));
