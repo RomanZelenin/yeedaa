@@ -10,6 +10,7 @@ import {
     Text,
     VStack,
 } from '@chakra-ui/react';
+import { useLocation, useNavigate } from 'react-router';
 
 import { AppLoader } from '~/common/components/Loader/AppLoader';
 import { loadingSelector } from '~/store/app-slice';
@@ -19,7 +20,11 @@ import { LoginForm } from './LoginForm';
 import { RegistrationForm } from './RegistrationForm';
 
 export const LoginPage = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
     const isLoading = useAppSelector(loadingSelector);
+    const paths = ['/login', '/registration'];
+
     return (
         <>
             <AppLoader isLoading={isLoading}>
@@ -51,6 +56,8 @@ export const LoginPage = () => {
                             flex={1}
                             display='flex'
                             flexDirection='column'
+                            index={paths.indexOf(location.pathname)}
+                            onChange={(i) => navigate(paths[i])}
                         >
                             <TabList borderColor='blackAlpha.200'>
                                 <Tab color='lime.800'>Вход на сайт</Tab>
