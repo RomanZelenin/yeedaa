@@ -3,4 +3,5 @@ export enum ApiEndpoints {
     RECIPE_BY_CATEGORY = '/recipe/category',
     RECIPE = '/recipe',
     LOGIN = '/auth/login',
+    SIGNUP = '/auth/signup',
 }

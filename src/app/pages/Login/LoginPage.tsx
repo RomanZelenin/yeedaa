@@ -51,6 +51,8 @@ export const LoginPage = () => {
                         />
 
                         <Tabs
+                            isLazy
+                            lazyBehavior='unmount'
                             w={{ base: '100%', md: '355px', lg: '451px', xl: '461px' }}
                             isFitted
                             flex={1}

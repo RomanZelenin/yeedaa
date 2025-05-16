@@ -1,14 +1,14 @@
 import { Box, Button, Input, Link, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
 import { LoginResponse, useLoginMutation } from '~/query/create-api';
-import { Error, errorSelector, setAppError, setAppLoader } from '~/store/app-slice';
-import { useAppDispatch, useAppSelector } from '~/store/hooks';
+import { Error, ResponseError, setAppError, setAppLoader } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 import { LoginFailedModal } from './LoginFailedModal';
 
@@ -19,7 +19,7 @@ export type LoginFormData = {
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
-    const error = useAppSelector(errorSelector);
+    const [error, setError] = useState<ResponseError>({ value: Error.NONE });
     const schema: yup.ObjectSchema<LoginFormData> = yup
         .object({
             login: yup.string().required('Введите логин').max(50, 'Максимальная длина 50 символов'),
@@ -43,37 +43,28 @@ export const LoginForm = () => {
 
     const [login] = useLoginMutation();
 
-    const handleOnError = useCallback(
-        (response?: LoginResponse) => {
-            switch (response?.status) {
-                case 401:
-                    dispatch(
-                        setAppError({
-                            value: Error.INCORRECT_LOGIN_OR_PASSWORD,
-                            message: 'Попробуйте снова.',
-                        }),
-                    );
-                    break;
-                case 403:
-                    dispatch(
-                        setAppError({
-                            value: Error.EMAIL_NOT_VERIFED,
-                            message: 'Проверьте почту и перейдите по ссылке.',
-                        }),
-                    );
-                    break;
-                case 500:
-                default:
-                    dispatch(
-                        setAppError({
-                            value: Error.SERVER,
-                            message: 'Попробуйте немного позже',
-                        }),
-                    );
-            }
-        },
-        [dispatch],
-    );
+    const handleOnError = useCallback((response?: LoginResponse) => {
+        switch (response?.status) {
+            case 401:
+                setError({
+                    value: Error.INCORRECT_LOGIN_OR_PASSWORD,
+                    message: 'Попробуйте снова.',
+                });
+                break;
+            case 403:
+                setError({
+                    value: Error.EMAIL_NOT_VERIFED,
+                    message: 'Проверьте почту и перейдите по ссылке.',
+                });
+                break;
+            case 500:
+            default:
+                setAppError({
+                    value: Error.SERVER,
+                    message: 'Попробуйте немного позже',
+                });
+        }
+    }, []);
 
     const onSubmit = useCallback(
         async ({
@@ -85,7 +76,7 @@ export const LoginForm = () => {
             event?: React.BaseSyntheticEvent;
         }) => {
             try {
-                dispatch(setAppError({ value: Error.NONE }));
+                setError({ value: Error.NONE });
                 dispatch(setAppLoader(true));
                 await login(data as LoginFormData).unwrap();
             } catch (e) {

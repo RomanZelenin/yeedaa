@@ -1,12 +1,18 @@
 import { Button, Input, Progress, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, Form, useForm, UseFormRegister } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
+import { LoginResponse, useSignupMutation } from '~/query/create-api';
+import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
-type RegistrationFormData = {
+import { VerificationEmailModal } from './VerificationEmailModal';
+
+export type RegistrationFormData = {
     firstName: string;
     lastName: string;
     email: string;
@@ -21,6 +27,12 @@ const enum Step {
 }
 
 export const RegistrationForm = () => {
+    const dispatch = useAppDispatch();
+    const [error, setError] = useState<ResponseError>({ value: Error.NONE });
+    const [isShowSuccessModalDialog, setIsShoeSuccessModalDialog] = useState(false);
+    const [currentStep, setCurrentStep] = useState<Step>(Step.ONE);
+    const [singnup] = useSignupMutation();
+
     const schema: yup.ObjectSchema<RegistrationFormData> = yup
         .object({
             firstName: yup
@@ -140,9 +152,51 @@ export const RegistrationForm = () => {
             .filter((it) => !Object.keys(errors).includes(it)).length;
         return (100 / numFields) * numValidFields;
     };
+    const handleOnError = useCallback(
+        (response?: LoginResponse) => {
+            switch (response?.status) {
+                case 400:
+                    setError({
+                        value: response.data.message,
+                        message: '',
+                    });
+                    break;
+                case 500:
+                default:
+                    setError({
+                        value: Error.SERVER,
+                        message: 'Попробуйте немного позже',
+                    });
+            }
+        },
+        [dispatch],
+    );
+    const onSubmit = useCallback(
+        async ({
+            data,
+        }: {
+            formData?: FormData;
+            data: RegistrationFormData;
+            formDataJson?: string;
+            event?: React.BaseSyntheticEvent;
+        }) => {
+            try {
+                setError({ value: Error.NONE });
+                dispatch(setAppLoader(true));
+                const payload = await singnup(data as RegistrationFormData).unwrap();
+                if (payload.status === 200) {
+                    setIsShoeSuccessModalDialog(true);
+                }
+            } catch (e) {
+                handleOnError(e as LoginResponse);
+            } finally {
+                dispatch(setAppLoader(false));
+            }
+        },
+        [dispatch, singnup],
+    );
 
-    const [currentStep, setCurrentStep] = useState<Step>(Step.ONE);
-
+    const progress = getProgress();
     return (
         <Form control={control}>
             <Stack spacing={{ base: '24px' }}>
@@ -151,17 +205,17 @@ export const RegistrationForm = () => {
                         <Text textStyle='textMdLh6Normal'>{currentStep}</Text>
                     </label>
                     <Progress
-                        aria-valuenow={getProgress()}
+                        aria-valuenow={progress}
                         colorScheme='green'
                         hasStripe
-                        value={getProgress()}
+                        value={progress}
                         width='100%'
                     />
                 </Stack>
                 {currentStep === Step.ONE && (
                     <StepOne
                         onClickNext={() => {
-                            if (getProgress() === 50) {
+                            if (progress === 50) {
                                 clearErrors();
                                 setCurrentStep(Step.TWO);
                             }
@@ -173,9 +227,8 @@ export const RegistrationForm = () => {
                 {currentStep === Step.TWO && (
                     <StepTwo
                         onClickNext={() => {
-                            if (getProgress() === 100) {
-                                console.log(getValues());
-                                alert('Finish\n' + Object.entries(getValues()));
+                            if (progress === 100) {
+                                onSubmit({ data: getValues() });
                             }
                         }}
                         register={register}
@@ -183,6 +236,15 @@ export const RegistrationForm = () => {
                     />
                 )}
             </Stack>
+            {error.value !== Error.NONE && (
+                <ErrorAlert
+                    bottom='20px'
+                    title={error.value}
+                    message={error.message ?? ''}
+                    position='absolute'
+                />
+            )}
+            {isShowSuccessModalDialog ? <VerificationEmailModal email={getValues().email} /> : null}
         </Form>
     );
 };

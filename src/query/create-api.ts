@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { LoginFormData } from '~/app/pages/Login/LoginForm';
+import { RegistrationFormData } from '~/app/pages/Login/RegistrationForm';
 
 import { ApiEndpoints } from './constants/api';
 
@@ -56,7 +57,7 @@ export type LoginResponse = {
 };
 
 const IMAGE_BASE_URL = 'https://training-api.clevertec.ru';
-export const API_BASE_URL = 'https://marathon-api.clevertec.ru/';
+const API_BASE_URL = 'https://marathon-api.clevertec.ru/';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
@@ -186,6 +187,17 @@ export const apiSlice = createApi({
                 return response;
             },
         }),
+        signup: build.mutation<LoginResponse, RegistrationFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.SIGNUP}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response /* , meta */) => {
+                console.log(response);
+                return response;
+            },
+        }),
     }),
 });
 
@@ -198,4 +210,5 @@ export const {
     useGetJuiciestRecipesQuery,
     useGetRecipeByCategoryQuery,
     useLoginMutation,
+    useSignupMutation,
 } = apiSlice;
