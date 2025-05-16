@@ -5,8 +5,8 @@ export const VerificationPage = () => {
     const emailVerified = searchParams.get('emailVerified') === 'true';
 
     return emailVerified ? (
-        <Navigate to='/login?emailVerified=true' replace />
+        <Navigate to='/login' state={{ emailVerified }} replace />
     ) : (
-        <Navigate to='/registration?emailVerified=false' replace />
+        <Navigate to='/registration' state={{ emailVerified }} replace />
     );
 };

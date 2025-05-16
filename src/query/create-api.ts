@@ -1,8 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { LoginFormData } from '~/app/pages/Login/LoginForm';
-import { RegistrationFormData } from '~/app/pages/Login/RegistrationForm';
+import { LoginFormData } from '~/app/pages/Login/LoginForm/LoginForm';
+import { AccountFormData } from '~/app/pages/Login/Modal/Recovery/AccountRecovery';
+import { OTPFormData } from '~/app/pages/Login/Modal/Recovery/OTPRecovery';
+import { RecoveryFormData } from '~/app/pages/Login/Modal/Recovery/RecoveryModal';
+import { RegistrationFormData } from '~/app/pages/Login/RegistrationForm/RegistrationForm';
 
 import { ApiEndpoints } from './constants/api';
 
@@ -198,6 +201,39 @@ export const apiSlice = createApi({
                 return response;
             },
         }),
+        forgotPassword: build.mutation<LoginResponse, RecoveryFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.FORGOT_PASSWORD}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response /* , meta */) => {
+                console.log(response);
+                return response;
+            },
+        }),
+        verifyOTP: build.mutation<LoginResponse, OTPFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.VERIFY_OTP}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response /* , meta */) => {
+                console.log(response);
+                return response;
+            },
+        }),
+        resetPassword: build.mutation<LoginResponse, AccountFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.RESET_PASSWORD}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response /* , meta */) => {
+                console.log(response);
+                return response;
+            },
+        }),
     }),
 });
 
@@ -211,4 +247,7 @@ export const {
     useGetRecipeByCategoryQuery,
     useLoginMutation,
     useSignupMutation,
+    useForgotPasswordMutation,
+    useVerifyOTPMutation,
+    useResetPasswordMutation,
 } = apiSlice;
