@@ -188,18 +188,24 @@ export const LoginForm = () => {
                 </Button>
                 <Link textStyle='textMdLh6Semibold'>Забыли логин и пароль?</Link>
             </VStack>
-            {error.value !== Error.NONE ? (
-                error.value === Error.SERVER ? (
-                    <LoginFailedModal onClickRepeat={() => onSubmit({ data: getValues() })} />
-                ) : (
-                    <ErrorAlert
-                        bottom='20px'
-                        title={error.value}
-                        message={error.message ?? ''}
-                        position='absolute'
-                    />
-                )
-            ) : null}
+            <ErrorHandler error={error} onRetry={() => onSubmit({ data: getValues() })} />
         </Form>
+    );
+};
+
+const ErrorHandler = ({ error, onRetry }: { error: ResponseError; onRetry: () => void }) => {
+    if (error.value === Error.NONE) {
+        return null;
+    }
+
+    return error.value === Error.SERVER ? (
+        <LoginFailedModal onClickRepeat={onRetry} />
+    ) : (
+        <ErrorAlert
+            bottom='20px'
+            title={error.value}
+            message={error.message ?? ''}
+            position='absolute'
+        />
     );
 };

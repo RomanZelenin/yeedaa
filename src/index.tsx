@@ -15,6 +15,7 @@ import HomePage from './app/pages/Home/HomePage';
 import JuiciestPage from './app/pages/Juiciest/JuiciestPage';
 import { LoginPage } from './app/pages/Login/LoginPage';
 import { RecipePage } from './app/pages/Recepie/RecipePage';
+import { VerificationPage } from './app/pages/Verification/VerificationPage';
 import { ResourceProvider } from './common/components/ResourceContext/ResourceContext';
 import theme from './theme';
 
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
                         <Routes>
                             <Route path='login' element={<LoginPage />}></Route>
                             <Route path='registration' element={<LoginPage />}></Route>
+                            <Route path='verification' element={<VerificationPage />}></Route>
                             <Route path='/' element={<App />}>
                                 <Route index element={<HomePage />} />
                                 <Route path='the-juiciest/' element={<JuiciestPage />} />

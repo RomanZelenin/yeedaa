@@ -29,7 +29,7 @@ const enum Step {
 export const RegistrationForm = () => {
     const dispatch = useAppDispatch();
     const [error, setError] = useState<ResponseError>({ value: Error.NONE });
-    const [isShowSuccessModalDialog, setIsShoeSuccessModalDialog] = useState(false);
+    const [isShowSuccessModalDialog, setIsShowSuccessModalDialog] = useState(false);
     const [currentStep, setCurrentStep] = useState<Step>(Step.ONE);
     const [singnup] = useSignupMutation();
 
@@ -183,10 +183,8 @@ export const RegistrationForm = () => {
             try {
                 setError({ value: Error.NONE });
                 dispatch(setAppLoader(true));
-                const payload = await singnup(data as RegistrationFormData).unwrap();
-                if (payload.status === 200) {
-                    setIsShoeSuccessModalDialog(true);
-                }
+                await singnup(data as RegistrationFormData).unwrap();
+                setIsShowSuccessModalDialog(true);
             } catch (e) {
                 handleOnError(e as LoginResponse);
             } finally {
@@ -236,18 +234,37 @@ export const RegistrationForm = () => {
                     />
                 )}
             </Stack>
-            {error.value !== Error.NONE && (
-                <ErrorAlert
-                    bottom='20px'
-                    title={error.value}
-                    message={error.message ?? ''}
-                    position='absolute'
-                />
-            )}
-            {isShowSuccessModalDialog ? <VerificationEmailModal email={getValues().email} /> : null}
+            <NotificationHandler
+                error={error}
+                isShowSuccessModalDialog={isShowSuccessModalDialog}
+                email={getValues().email}
+            />
         </Form>
     );
 };
+
+const NotificationHandler = ({
+    error,
+    isShowSuccessModalDialog,
+    email,
+}: {
+    error: ResponseError;
+    isShowSuccessModalDialog: boolean;
+    email: string;
+}) => (
+    <>
+        {error.value !== Error.NONE && (
+            <ErrorAlert
+                bottom='20px'
+                title={error.value}
+                message={error.message ?? ''}
+                position='absolute'
+            />
+        )}
+
+        {isShowSuccessModalDialog && <VerificationEmailModal email={email} />}
+    </>
+);
 
 const StepOne = ({
     register,

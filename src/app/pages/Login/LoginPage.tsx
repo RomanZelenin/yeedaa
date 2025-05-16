@@ -10,20 +10,25 @@ import {
     Text,
     VStack,
 } from '@chakra-ui/react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 
+import { SuccessAlert } from '~/common/components/Alert/SuccessAlert';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
 import { loadingSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import { LoginForm } from './LoginForm';
 import { RegistrationForm } from './RegistrationForm';
+import { VerificationFailedModal } from './VerificationFailedModal';
 
 export const LoginPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isLoading = useAppSelector(loadingSelector);
     const paths = ['/login', '/registration'];
+
+    const [searchParams] = useSearchParams();
+    const emailVerified = searchParams.get('emailVerified');
 
     return (
         <>
@@ -74,6 +79,7 @@ export const LoginPage = () => {
                                     <RegistrationForm />
                                 </TabPanel>
                             </TabPanels>
+                            <VerificationStatus emailVerified={emailVerified} />
                         </Tabs>
                         <Text
                             bgColor='transparent'
@@ -102,5 +108,22 @@ export const LoginPage = () => {
                 </HStack>
             </AppLoader>
         </>
+    );
+};
+
+const VerificationStatus = ({ emailVerified }: { emailVerified?: string | null }) => {
+    if (emailVerified === null) {
+        return null;
+    }
+
+    return emailVerified === 'true' ? (
+        <SuccessAlert
+            position='absolute'
+            bottom='20px'
+            title='Верификация прошла успешно'
+            message=''
+        />
+    ) : (
+        <VerificationFailedModal />
     );
 };
