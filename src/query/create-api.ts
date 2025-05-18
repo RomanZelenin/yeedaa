@@ -2,9 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { LoginFormData } from '~/app/pages/Login/LoginForm/LoginForm';
-import { AccountFormData } from '~/app/pages/Login/Modal/Recovery/AccountRecovery';
-import { OTPFormData } from '~/app/pages/Login/Modal/Recovery/OTPRecovery';
-import { RecoveryFormData } from '~/app/pages/Login/Modal/Recovery/RecoveryModal';
+import { EmailRecoveryFormData } from '~/app/pages/Login/Modal/Recovery/EmailRecoveryForm';
+import { OTPFormData } from '~/app/pages/Login/Modal/Recovery/OTPRecoveryForm';
 import { RegistrationFormData } from '~/app/pages/Login/RegistrationForm/RegistrationForm';
 
 import { ApiEndpoints } from './constants/api';
@@ -201,7 +200,7 @@ export const apiSlice = createApi({
                 return response;
             },
         }),
-        forgotPassword: build.mutation<LoginResponse, RecoveryFormData>({
+        forgotPassword: build.mutation<LoginResponse, EmailRecoveryFormData>({
             query: (body) => ({
                 url: `${ApiEndpoints.FORGOT_PASSWORD}`,
                 method: 'post',
@@ -223,7 +222,7 @@ export const apiSlice = createApi({
                 return response;
             },
         }),
-        resetPassword: build.mutation<LoginResponse, AccountFormData>({
+        resetPassword: build.mutation<LoginResponse, EmailRecoveryFormData>({
             query: (body) => ({
                 url: `${ApiEndpoints.RESET_PASSWORD}`,
                 method: 'post',

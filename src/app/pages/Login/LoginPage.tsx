@@ -34,6 +34,7 @@ export const LoginPage = () => {
         [],
     );
     const emailVerified: boolean | undefined = location.state?.emailVerified;
+    const successfulRecovery: boolean | undefined = location.state?.successfulRecovery;
 
     return (
         <AppLoader isLoading={isLoading}>
@@ -86,6 +87,14 @@ export const LoginPage = () => {
                         </TabPanels>
                         {emailVerified !== undefined && (
                             <VerificationStatus emailVerified={emailVerified} />
+                        )}
+                        {successfulRecovery !== undefined && (
+                            <SuccessAlert
+                                position='absolute'
+                                bottom='20px'
+                                title='Восстановление данных успешно'
+                                message=''
+                            />
                         )}
                     </Tabs>
                     <Text
