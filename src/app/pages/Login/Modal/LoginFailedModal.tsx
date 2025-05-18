@@ -27,9 +27,14 @@ export const LoginFailedModal = ({ onClickRepeat }: { onClickRepeat: () => void 
     return (
         <Modal onClose={handleOnClickClose} isOpen={isVisible} isCentered>
             <ModalOverlay />
-            <ModalContent borderRadius='16px' width={{ base: '316px', lg: '396px' }}>
+            <ModalContent
+                borderRadius='16px'
+                width={{ base: '316px', lg: '396px' }}
+                data-test-id='sign-in-error-modal'
+            >
                 <ModalBody display='flex' flexDirection='column' p={0}>
                     <IconButton
+                        data-test-id='close-button'
                         m='24px'
                         boxSize='24px'
                         alignSelf='end'
@@ -52,10 +57,11 @@ export const LoginFailedModal = ({ onClickRepeat }: { onClickRepeat: () => void 
                                 Что-то пошло не так.
                             </Text>
                             <Text textStyle='textMdLh6Normal' color='blackAlpha.700'>
-                                Попробуйте ещё раз
+                                Попробуйте еще раз
                             </Text>
                         </VStack>
                         <Button
+                            data-test-id='repeat-button'
                             width='100%'
                             bgColor='black'
                             color='white'

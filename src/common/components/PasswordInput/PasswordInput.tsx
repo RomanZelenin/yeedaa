@@ -11,6 +11,7 @@ export const PasswordInput = (props: InputProps) => {
             <Input {...props} borderWidth='2px' type={show ? 'text' : 'password'} />
             <InputRightElement>
                 <IconButton
+                    data-test-id='password-visibility-button'
                     _active={{
                         bgColor: 'transparent',
                     }}
@@ -23,7 +24,8 @@ export const PasswordInput = (props: InputProps) => {
                     backgroundColor='transparent'
                     icon={show ? <ViewOffIcon /> : <ViewIcon />}
                     aria-label=''
-                    onClick={handleClick}
+                    onMouseDown={handleClick}
+                    onMouseUp={handleClick}
                 />
             </InputRightElement>
         </InputGroup>

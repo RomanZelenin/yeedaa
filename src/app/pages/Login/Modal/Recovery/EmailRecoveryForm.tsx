@@ -113,6 +113,7 @@ export const EmailRecoveryForm = ({
                             </Text>
                         </label>
                         <Input
+                            data-test-id='email-input'
                             {...register('email')}
                             type='email'
                             borderRadius='6px'
@@ -137,6 +138,7 @@ export const EmailRecoveryForm = ({
                     </Stack>
                     <VStack spacing='24px'>
                         <Button
+                            data-test-id='submit-button'
                             type='submit'
                             width='100%'
                             bgColor='black'

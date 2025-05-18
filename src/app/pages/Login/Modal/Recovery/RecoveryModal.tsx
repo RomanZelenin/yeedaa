@@ -33,28 +33,46 @@ export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) =>
 
     const [email, setEmail] = useState('');
     const steps = [
-        <EmailRecoveryForm
-            onSuccess={(data) => {
-                setEmail(data.email);
-                nextStep();
-            }}
-        />,
-        <OTPRecoveryFrom email={email} onSuccess={() => nextStep()} />,
-        <AccountRecoveryForm
-            email={email}
-            onSuccess={() => {
-                onClickClose();
-                navigate('/login', { state: { successfulRecovery: true } });
-            }}
-        />,
+        {
+            testId: 'send-email-modal',
+            content: (
+                <EmailRecoveryForm
+                    onSuccess={(data) => {
+                        setEmail(data.email);
+                        nextStep();
+                    }}
+                />
+            ),
+        },
+        {
+            testId: 'verification-code-modal',
+            content: <OTPRecoveryFrom email={email} onSuccess={() => nextStep()} />,
+        },
+        {
+            testId: 'reset-credentials-modal',
+            content: (
+                <AccountRecoveryForm
+                    email={email}
+                    onSuccess={() => {
+                        onClickClose();
+                        navigate('/login', { state: { successfulRecovery: true } });
+                    }}
+                />
+            ),
+        },
     ];
 
     return (
         <Modal onClose={handleOnClickClose} isOpen={isVisible} isCentered>
             <ModalOverlay />
-            <ModalContent borderRadius='16px' width={{ base: '316px', lg: '396px' }}>
+            <ModalContent
+                data-test-id={steps[currentStep].testId}
+                borderRadius='16px'
+                width={{ base: '316px', lg: '396px' }}
+            >
                 <ModalBody display='flex' flexDirection='column' p={0}>
                     <IconButton
+                        data-test-id='close-button'
                         m='24px'
                         boxSize='24px'
                         alignSelf='end'
@@ -64,7 +82,7 @@ export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) =>
                         icon={<CloseInCircleIcon boxSize='24px' />}
                         aria-label='close'
                     />
-                    {steps[currentStep]}
+                    {steps[currentStep].content}
                 </ModalBody>
 
                 {/*  <ErrorHandler error={error} /> */}

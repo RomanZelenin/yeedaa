@@ -23,9 +23,14 @@ export const VerificationEmailModal = ({ email }: { email: string }) => {
     return (
         <Modal onClose={handleOnClickClose} isOpen={isVisible} isCentered>
             <ModalOverlay />
-            <ModalContent borderRadius='16px' width={{ base: '316px', lg: '396px' }}>
+            <ModalContent
+                borderRadius='16px'
+                width={{ base: '316px', lg: '396px' }}
+                data-test-id='sign-up-success-modal'
+            >
                 <ModalBody display='flex' flexDirection='column' p={0}>
                     <IconButton
+                        data-test-id='close-button'
                         m='24px'
                         boxSize='24px'
                         alignSelf='end'

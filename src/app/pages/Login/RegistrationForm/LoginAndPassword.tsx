@@ -21,6 +21,7 @@ export const LoginAndPassword = ({
             </label>
             <Stack gap='4px'>
                 <Input
+                    data-test-id='login-input'
                     {...register('login')}
                     borderRadius='6px'
                     borderColor={errors.login ? 'red' : 'lime.150'}
@@ -52,6 +53,7 @@ export const LoginAndPassword = ({
             </label>
             <Stack gap='4px'>
                 <PasswordInput
+                    data-test-id='password-input'
                     {...register('password')}
                     borderRadius='6px'
                     borderColor={errors.password ? 'red' : 'lime.150'}
@@ -80,6 +82,7 @@ export const LoginAndPassword = ({
                 <Text textStyle='textMdLh6Normal'>Повторите пароль</Text>
             </label>
             <PasswordInput
+                data-test-id='confirm-password-input'
                 {...register('confirmPassword')}
                 borderRadius='6px'
                 borderColor={errors.confirmPassword ? 'red' : 'lime.150'}
@@ -102,6 +105,7 @@ export const LoginAndPassword = ({
             </Text>
         </Stack>
         <Button
+            data-test-id='submit-button'
             onClick={onClickRegister}
             type='submit'
             bgColor='black'

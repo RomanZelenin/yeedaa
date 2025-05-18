@@ -225,13 +225,14 @@ export const RegistrationForm = () => {
     return (
         <>
             <ErrorHandler error={error}>
-                <Form control={control}>
+                <Form control={control} data-test-id='sign-up-form'>
                     <Stack spacing={{ base: '24px' }}>
                         <Stack>
                             <label>
                                 <Text textStyle='textMdLh6Normal'>{steps[currentStep].title}</Text>
                             </label>
                             <Progress
+                                data-test-id='sign-up-progress'
                                 aria-valuenow={progress}
                                 colorScheme='green'
                                 hasStripe

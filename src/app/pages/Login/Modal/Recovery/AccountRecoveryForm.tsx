@@ -139,6 +139,7 @@ export const AccountRecoveryForm = ({
                         </label>
                         <Stack gap='4px'>
                             <Input
+                                data-test-id='login-input'
                                 {...register('login')}
                                 borderRadius='6px'
                                 borderColor={errors.login ? 'red' : 'lime.150'}
@@ -170,6 +171,7 @@ export const AccountRecoveryForm = ({
                         </label>
                         <Stack gap='4px'>
                             <PasswordInput
+                                data-test-id='password-input'
                                 {...register('password')}
                                 borderRadius='6px'
                                 borderColor={errors.password ? 'red' : 'lime.150'}
@@ -198,6 +200,7 @@ export const AccountRecoveryForm = ({
                             <Text textStyle='textMdLh6Normal'>Повторите пароль</Text>
                         </label>
                         <PasswordInput
+                            data-test-id='confirm-password-input'
                             {...register('passwordConfirm')}
                             borderRadius='6px'
                             borderColor={errors.passwordConfirm ? 'red' : 'lime.150'}
@@ -220,6 +223,7 @@ export const AccountRecoveryForm = ({
                         </Text>
                     </Stack>
                     <Button
+                        data-test-id='submit-button'
                         onClick={() => {
                             onSubmit({
                                 data: {

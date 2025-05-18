@@ -35,7 +35,7 @@ export const LoginForm = () => {
         register,
         setValue,
         getValues,
-        formState: { errors: formErrors, isSubmitting },
+        formState: { errors: formErrors },
     } = useForm({
         resolver: yupResolver(loginFormSchema),
         mode: 'onChange',
@@ -89,13 +89,14 @@ export const LoginForm = () => {
     return (
         <>
             <ErrorHandler error={error} onRetry={() => onSubmit({ data: getValues() })}>
-                <Form onSubmit={onSubmit} control={control}>
+                <Form onSubmit={onSubmit} control={control} data-test-id='sign-in-form'>
                     <Stack spacing={{ base: '4px' }}>
                         <label htmlFor='login'>
                             <Text textStyle='textMdLh6Normal'>Логин для входа на сайт</Text>
                         </label>
                         <Box mb='24px'>
                             <Input
+                                data-test-id='login-input'
                                 borderRadius='6px'
                                 borderColor={
                                     formErrors.login ||
@@ -144,6 +145,7 @@ export const LoginForm = () => {
                                 <Text textStyle='textMdLh6Normal'>Пароль</Text>
                             </label>
                             <PasswordInput
+                                data-test-id='password-input'
                                 placeholder='Пароль для сайта'
                                 borderRadius='6px'
                                 borderColor={
@@ -185,7 +187,7 @@ export const LoginForm = () => {
                     </Stack>
                     <VStack mt={{ base: '112px' }} spacing='16px'>
                         <Button
-                            isLoading={isSubmitting}
+                            data-test-id='submit-button'
                             type='submit'
                             bgColor='black'
                             color='white'
@@ -194,6 +196,7 @@ export const LoginForm = () => {
                             Войти
                         </Button>
                         <Link
+                            data-test-id='forgot-password'
                             textStyle='textMdLh6Semibold'
                             onClick={() => {
                                 setIsShowRecoveryModal(true);

@@ -18,6 +18,7 @@ export const PersonalInformation = ({
                 <Text textStyle='textMdLh6Normal'>Ваше имя</Text>
             </label>
             <Input
+                data-test-id='first-name-input'
                 {...register('firstName')}
                 borderRadius='6px'
                 borderColor={errors.firstName ? 'red' : 'lime.150'}
@@ -43,6 +44,7 @@ export const PersonalInformation = ({
                 <Text textStyle='textMdLh6Normal'>Ваша фамилия</Text>
             </label>
             <Input
+                data-test-id='last-name-input'
                 {...register('lastName')}
                 borderRadius='6px'
                 borderColor={errors.lastName ? 'red' : 'lime.150'}
@@ -68,6 +70,7 @@ export const PersonalInformation = ({
                 <Text textStyle='textMdLh6Normal'>Ваш e-mail</Text>
             </label>
             <Input
+                data-test-id='email-input'
                 {...register('email')}
                 type='email'
                 borderRadius='6px'
@@ -90,6 +93,7 @@ export const PersonalInformation = ({
             </Text>
         </Stack>
         <Button
+            data-test-id='submit-button'
             onClick={onClickNext}
             type='submit'
             bgColor='black'

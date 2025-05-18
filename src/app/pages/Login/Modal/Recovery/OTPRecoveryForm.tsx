@@ -116,6 +116,7 @@ export const OTPRecoveryFrom = ({
                             >
                                 {[1, 2, 3, 4, 5, 6].map((i) => (
                                     <PinInputField
+                                        data-test-id={`verification-code-input-${i}`}
                                         key={i}
                                         borderColor={error.value !== Error.NONE ? 'red' : 'inherit'}
                                     />
