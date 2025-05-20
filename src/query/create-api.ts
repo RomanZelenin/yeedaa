@@ -180,10 +180,12 @@ export const apiSlice = createApi({
                 method: 'post',
                 body,
             }),
-            transformResponse: (response /* , meta */) =>
-                //const headers = meta?.response?.headers;
-                // const token = headers?.get('Authentication-Access');
-                response as LoginResponse,
+            transformResponse: (response, meta) => {
+                const headers = meta?.response?.headers;
+                const token = headers?.get('Authentication-Access');
+                sessionStorage.setItem('access_token', token ?? '');
+                return response as LoginResponse;
+            },
             transformErrorResponse: (response /* , meta */) => {
                 console.log(response);
                 return response;

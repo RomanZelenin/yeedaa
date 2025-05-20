@@ -13,11 +13,13 @@ export const enum Error {
     RECEPIES_NOT_FOUND = 'Рецепты не найдены',
     SERVER = 'Ошибка сервера',
     INCORRECT_LOGIN_OR_PASSWORD = 'Неверный логин или пароль',
-    EMAIL_NOT_VERIFED = 'E-mail не верефицирован',
+    EMAIL_NOT_VERIFED = 'E-mail не верифицирован',
+    EMAIL_ALREADY_EXISTS = 'Пользователь с таким email уже существует.',
+    INVALID_CODE = 'Неверный код',
 }
 
 export type ResponseError = {
-    value: Error;
+    value: string;
     message?: string;
 };
 

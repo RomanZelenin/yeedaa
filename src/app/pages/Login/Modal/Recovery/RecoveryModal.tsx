@@ -9,9 +9,7 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
-import { Error, ResponseError } from '~/store/app-slice';
 
 import { AccountRecoveryForm } from './AccountRecoveryForm';
 import { EmailRecoveryForm } from './EmailRecoveryForm';
@@ -84,23 +82,7 @@ export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) =>
                     />
                     {steps[currentStep].content}
                 </ModalBody>
-
-                {/*  <ErrorHandler error={error} /> */}
             </ModalContent>
         </Modal>
-    );
-};
-
-export const ErrorHandler = ({ error }: { error: ResponseError }) => {
-    if (error.value === Error.NONE) {
-        return null;
-    }
-    return (
-        <ErrorAlert
-            bottom='20px'
-            title={error.value}
-            message={error.message ?? ''}
-            position='fixed'
-        />
     );
 };

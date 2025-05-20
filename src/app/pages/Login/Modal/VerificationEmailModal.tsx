@@ -13,10 +13,17 @@ import {
 
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
 
-export const VerificationEmailModal = ({ email }: { email: string }) => {
+export const VerificationEmailModal = ({
+    email,
+    onClickClose,
+}: {
+    email: string;
+    onClickClose: () => void;
+}) => {
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
 
     const handleOnClickClose = () => {
+        onClickClose();
         onClose();
     };
 

@@ -37,6 +37,10 @@ export const LoginAndPassword = ({
                     placeholder='Логин'
                     variant='filled'
                     id='login'
+                    onBlur={() => {
+                        const thisElement = document.getElementById('login') as HTMLInputElement;
+                        thisElement.value = thisElement.value.trim();
+                    }}
                 />
                 <Text textStyle='textXsLh4Normal' color='blackAlpha.700'>
                     Логин не менее 5 символов, только латиница и !@#$&_+-.

@@ -31,6 +31,10 @@ export const PersonalInformation = ({
                     bgColor: 'white',
                     borderColor: errors.firstName ? 'red' : 'lime.150',
                 }}
+                onBlur={() => {
+                    const thisElement = document.getElementById('firstName') as HTMLInputElement;
+                    thisElement.value = thisElement.value.trim();
+                }}
                 placeholder='Имя'
                 variant='filled'
                 id='firstName'
@@ -60,6 +64,10 @@ export const PersonalInformation = ({
                 placeholder='Фамилия'
                 variant='filled'
                 id='lastName'
+                onBlur={() => {
+                    const thisElement = document.getElementById('lastName') as HTMLInputElement;
+                    thisElement.value = thisElement.value.trim();
+                }}
             />
             <Text textStyle='textXsLh4Normal' color='red'>
                 {errors.lastName?.message}

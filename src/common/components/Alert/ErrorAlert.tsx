@@ -6,7 +6,6 @@ import {
     Box,
     CloseButton,
     ResponsiveValue,
-    useDisclosure,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
@@ -15,7 +14,11 @@ export const ErrorAlert = ({
     message,
     position,
     bottom,
+    isOpen,
+    onClose,
 }: {
+    isOpen: boolean;
+    onClose: () => void;
     title: string;
     message: string;
     position: 'fixed' | 'absolute';
@@ -33,16 +36,14 @@ export const ErrorAlert = ({
           >
         | undefined;
 }) => {
-    const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
-
     useEffect(() => {
         setTimeout(() => {
             onClose();
         }, 15000);
-    }, [isVisible]);
+    }, [isOpen]);
 
     return (
-        isVisible && (
+        isOpen && (
             <Alert
                 data-test-id='error-notification'
                 status='error'

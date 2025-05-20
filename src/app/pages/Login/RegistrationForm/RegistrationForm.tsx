@@ -1,10 +1,12 @@
-import { Progress, Stack, Text } from '@chakra-ui/react';
+import { Progress, Stack, Text, useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
+import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useSignupMutation } from '~/query/create-api';
 import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
@@ -26,6 +28,7 @@ const registrationFormSchema: yup.ObjectSchema<RegistrationFormData> = yup
     .object({
         firstName: yup
             .string()
+            .trim()
             .required('Введите имя')
             .max(50, 'Максимальная длина 50 символов')
             .test({
@@ -44,6 +47,7 @@ const registrationFormSchema: yup.ObjectSchema<RegistrationFormData> = yup
             }),
         lastName: yup
             .string()
+            .trim()
             .required('Введите фамилию')
             .max(50, 'Максимальная длина 50 символов')
             .test({
@@ -63,19 +67,20 @@ const registrationFormSchema: yup.ObjectSchema<RegistrationFormData> = yup
         email: yup
             .string()
             .required('Введите e-mail')
+            .max(50, 'Максимальная длина 50 символов')
             .test({
                 name: 'email',
                 test(value, ctx) {
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
                         return ctx.createError({ message: 'Введите корректный e-mail' });
                     }
 
                     return true;
                 },
-            })
-            .max(50, 'Максимальная длина 50 символов'),
+            }),
         login: yup
             .string()
+            .trim()
             .required('Введите логин')
             .max(50, 'Максимальная длина 50 символов')
             .min(5, 'Не соответствует формату')
@@ -115,7 +120,13 @@ const registrationFormSchema: yup.ObjectSchema<RegistrationFormData> = yup
 
 export const RegistrationForm = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [error, setError] = useState<ResponseError>({ value: Error.NONE });
+    const {
+        isOpen: isOpenErrorAlert,
+        onClose: onCloseErrorAlert,
+        onOpen: onOpenErrorAlert,
+    } = useDisclosure();
     const [isShowSuccessModalDialog, setIsShowSuccessModalDialog] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const nextStep = () => {
@@ -175,7 +186,7 @@ export const RegistrationForm = () => {
     const getProgress = () => {
         const numFields = 6;
         const numValidFields = Object.entries(watch())
-            .filter((it) => it[1].length !== 0)
+            .filter((it) => it[1] && it[1].length !== 0)
             .flatMap((it) => it[0])
             .filter((it) => !Object.keys(formErrors).includes(it)).length;
         return (100 / numFields) * numValidFields;
@@ -184,19 +195,25 @@ export const RegistrationForm = () => {
     const [singnup] = useSignupMutation();
     const handleOnError = useCallback((response?: LoginResponse) => {
         switch (response?.status) {
-            case 400:
+            case StatusCode.BadRequest:
                 setError({
                     value: response.data.message,
                     message: '',
                 });
                 break;
-            case 500:
-            default:
+            case StatusCode.InternalServerError:
                 setError({
                     value: Error.SERVER,
                     message: 'Попробуйте немного позже',
                 });
+                break;
+            default:
+                setError({
+                    value: response!.data.error,
+                    message: response!.data.message,
+                });
         }
+        onOpenErrorAlert();
     }, []);
     const onSubmit = useCallback(
         async ({
@@ -224,51 +241,40 @@ export const RegistrationForm = () => {
     const progress = getProgress();
     return (
         <>
-            <ErrorHandler error={error}>
-                <Form control={control} data-test-id='sign-up-form'>
-                    <Stack spacing={{ base: '24px' }}>
-                        <Stack>
-                            <label>
-                                <Text textStyle='textMdLh6Normal'>{steps[currentStep].title}</Text>
-                            </label>
-                            <Progress
-                                data-test-id='sign-up-progress'
-                                aria-valuenow={progress}
-                                colorScheme='green'
-                                hasStripe
-                                value={progress}
-                                width='100%'
-                            />
-                        </Stack>
-                        {steps[currentStep].content}
+            <Form control={control} data-test-id='sign-up-form'>
+                <Stack spacing={{ base: '24px' }}>
+                    <Stack>
+                        <label>
+                            <Text textStyle='textMdLh6Normal'>{steps[currentStep].title}</Text>
+                        </label>
+                        <Progress
+                            data-test-id='sign-up-progress'
+                            aria-valuenow={progress}
+                            colorScheme='green'
+                            hasStripe
+                            value={progress}
+                            width='100%'
+                        />
                     </Stack>
-                </Form>
-            </ErrorHandler>
-            {isShowSuccessModalDialog && <VerificationEmailModal email={getValues().email} />}
-        </>
-    );
-};
-
-const ErrorHandler = ({ children, error }: { children: ReactNode; error: ResponseError }) => {
-    let alert = null;
-    switch (error.value) {
-        case Error.NONE:
-            alert = null;
-            break;
-        default:
-            alert = (
-                <ErrorAlert
-                    bottom='20px'
-                    title={error.value}
-                    message={error.message ?? ''}
-                    position='absolute'
+                    {steps[currentStep].content}
+                </Stack>
+            </Form>
+            <ErrorAlert
+                isOpen={isOpenErrorAlert}
+                onClose={onCloseErrorAlert}
+                bottom='20px'
+                title={error.value}
+                message={error.message ?? ''}
+                position='absolute'
+            />
+            {isShowSuccessModalDialog && (
+                <VerificationEmailModal
+                    email={getValues().email}
+                    onClickClose={() => {
+                        navigate('/login', { replace: true });
+                    }}
                 />
-            );
-    }
-    return (
-        <>
-            {children}
-            {alert}
+            )}
         </>
     );
 };

@@ -26,6 +26,7 @@ export const PasswordInput = (props: InputProps) => {
                     aria-label=''
                     onMouseDown={handleClick}
                     onMouseUp={handleClick}
+                    onTouchStart={handleClick}
                 />
             </InputRightElement>
         </InputGroup>

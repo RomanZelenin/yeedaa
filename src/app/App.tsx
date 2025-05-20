@@ -1,5 +1,5 @@
-import { Grid, GridItem, Show } from '@chakra-ui/react';
-import { Outlet } from 'react-router';
+import { Grid, GridItem, Show, useDisclosure } from '@chakra-ui/react';
+import { Navigate, Outlet } from 'react-router';
 
 import profile from '~/app/mocks/profile.json';
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
@@ -14,6 +14,14 @@ import { useAppSelector } from '~/store/hooks';
 export default function App() {
     const isLoading = useAppSelector(loadingSelector);
     const error = useAppSelector(errorSelector);
+    const { isOpen, onClose, onOpen } = useDisclosure();
+    const accessToken = sessionStorage.getItem('access_token');
+
+    if (accessToken === null) return <Navigate to='/login' replace />;
+
+    if (error.value !== Error.NONE) {
+        onOpen();
+    }
 
     return (
         <>
@@ -64,6 +72,8 @@ export default function App() {
                     </GridItem>
                     {error.value !== Error.NONE && (
                         <ErrorAlert
+                            isOpen={isOpen}
+                            onClose={onClose}
                             bottom={{ base: '106px', md: '112px' }}
                             title={error.value}
                             message={error.message ?? ''}

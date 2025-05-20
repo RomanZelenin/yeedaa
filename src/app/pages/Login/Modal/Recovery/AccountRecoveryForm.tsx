@@ -1,15 +1,15 @@
-import { Button, Input, Stack, Text, VStack } from '@chakra-ui/react';
+import { Button, Input, Stack, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
+import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useResetPasswordMutation } from '~/query/create-api';
 import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
-
-import { ErrorHandler } from './RecoveryModal';
 
 export type AccountFormData = {
     login: string;
@@ -24,10 +24,11 @@ export type RecoveryFormData = {
     passwordConfirm: string;
 };
 
-const schema: yup.ObjectSchema<AccountFormData> = yup
+const accountRecoverySchema: yup.ObjectSchema<AccountFormData> = yup
     .object({
         login: yup
             .string()
+            .trim()
             .required('Введите логин')
             .max(50, 'Максимальная длина 50 символов')
             .min(5, 'Не соответствует формату')
@@ -74,27 +75,39 @@ export const AccountRecoveryForm = ({
 }) => {
     const dispatch = useAppDispatch();
     const [error, setError] = useState<ResponseError>({ value: Error.NONE });
+    const {
+        isOpen: isOpenErrorAlert,
+        onClose: onCloseErrorAlert,
+        onOpen: onOpenErrorAlert,
+    } = useDisclosure({ defaultIsOpen: error.value !== Error.NONE });
 
     const {
         getValues,
+        setValue,
         control,
         register,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(schema),
+        resolver: yupResolver(accountRecoverySchema),
         mode: 'onChange',
     });
 
     const [resetPassword] = useResetPasswordMutation();
     const handleOnError = useCallback((response?: LoginResponse) => {
         switch (response?.status) {
-            case 500:
-            default:
+            case StatusCode.InternalServerError:
                 setError({
                     value: Error.SERVER,
                     message: 'Попробуйте немного позже',
                 });
+                break;
+            default:
+                setError({
+                    value: response!.data.error,
+                    message: response!.data.message,
+                });
         }
+        onOpenErrorAlert();
     }, []);
 
     const onSubmit = useCallback(
@@ -131,7 +144,19 @@ export const AccountRecoveryForm = ({
             >
                 Восстановление аккаунта
             </Text>
-            <Form control={control}>
+            <Form
+                onSubmit={() => {
+                    onSubmit({
+                        data: {
+                            email: email,
+                            login: getValues().login,
+                            password: getValues().password,
+                            passwordConfirm: getValues().passwordConfirm,
+                        },
+                    });
+                }}
+                control={control}
+            >
                 <VStack spacing='16px' px='32px' pt='52px' pb='32px'>
                     <Stack>
                         <label htmlFor='login'>
@@ -154,7 +179,18 @@ export const AccountRecoveryForm = ({
                                 }}
                                 placeholder='Логин'
                                 variant='filled'
-                                id='login'
+                                id='recovery-login'
+                                onInput={(e) => {
+                                    setError({ value: Error.NONE });
+                                    setValue('login', (e.target as HTMLInputElement).value);
+                                }}
+                                onBlur={() => {
+                                    const thisElement = document.getElementById(
+                                        'recovery-login',
+                                    ) as HTMLInputElement;
+                                    thisElement.value = thisElement.value.trim();
+                                    setValue('login', thisElement.value);
+                                }}
                             />
                             <Text textStyle='textXsLh4Normal' color='blackAlpha.700'>
                                 Логин не менее 5 символов, только латиница и !@#$&_+-.
@@ -224,16 +260,6 @@ export const AccountRecoveryForm = ({
                     </Stack>
                     <Button
                         data-test-id='submit-button'
-                        onClick={() => {
-                            onSubmit({
-                                data: {
-                                    email: email,
-                                    login: getValues().login,
-                                    password: getValues().password,
-                                    passwordConfirm: getValues().passwordConfirm,
-                                },
-                            });
-                        }}
                         type='submit'
                         bgColor='black'
                         color='white'
@@ -244,7 +270,14 @@ export const AccountRecoveryForm = ({
                     </Button>
                 </VStack>
             </Form>
-            <ErrorHandler error={error} />
+            <ErrorAlert
+                isOpen={isOpenErrorAlert}
+                onClose={onCloseErrorAlert}
+                bottom='20px'
+                title={error.value}
+                message={error.message ?? ''}
+                position='fixed'
+            />
         </>
     );
 };
