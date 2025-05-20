@@ -68,15 +68,16 @@ export const appSlice = createSlice({
 });
 
 export const loadingSelector = (state: ApplicationState) => state.app.isLoading;
-/* state.app.isNewestRecipesLoading ||
-    state.app.isJuiciestRecipesLoading ||
-    state.app.isRelevantLoading; */
 
 export const errorSelector = (state: ApplicationState) => state.app.error;
 export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
 export const blogsSelector = (state: ApplicationState) => state.app.blogs;
 export const isSearchSelector = (state: ApplicationState) => state.app.isSearch;
+
+export const newestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
+export const juiciestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
+export const relevantLoading = (state: ApplicationState) => state.app.isRelevantLoading;
 
 export const {
     setAppError,
