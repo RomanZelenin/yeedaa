@@ -5,6 +5,7 @@ import {
     AlertTitle,
     Box,
     CloseButton,
+    HStack,
     ResponsiveValue,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
@@ -56,22 +57,29 @@ export const ErrorAlert = ({
                 bottom={bottom}
                 zIndex='toast'
             >
-                <AlertIcon />
-                <Box>
-                    <AlertTitle>{title}</AlertTitle>
-                    <AlertDescription>{message}</AlertDescription>
-                </Box>
-                <CloseButton
-                    boxSize='12px'
-                    data-test-id='close-alert-button'
-                    alignSelf='flex-start'
-                    position='relative'
-                    right={-1}
-                    top={1}
-                    onClick={() => {
-                        onClose();
-                    }}
-                />
+                <HStack>
+                    <AlertIcon justifySelf='start' />
+                    <Box>
+                        <HStack>
+                            <AlertTitle flex={1}>{title}</AlertTitle>
+                            <CloseButton
+                                boxSize='12px'
+                                data-test-id='close-alert-button'
+                                alignSelf='flex-start'
+                                position='relative'
+                                right={-1}
+                                top={1}
+                                onClick={() => {
+                                    onClose();
+                                }}
+                            />
+                        </HStack>
+
+                        <AlertDescription textStyle='textMdLh6Normal' whiteSpace='pre-wrap'>
+                            {message}
+                        </AlertDescription>
+                    </Box>
+                </HStack>
             </Alert>
         )
     );

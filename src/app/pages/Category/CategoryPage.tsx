@@ -26,7 +26,6 @@ export default function CategoryPage() {
             ),
         [category, subcategoryName],
     );
-
     return (
         <>
             <CategoryGuard category={category} subcategoryName={subcategoryName}>
@@ -62,12 +61,14 @@ export default function CategoryPage() {
                             </TabList>
 
                             <TabPanels mt='12px'>
-                                {category?.subCategories?.map((subcategory) => (
-                                    <CategoryTabPanel
-                                        key={subcategory._id}
-                                        subcategoryId={subcategory._id}
-                                        isActive={subcategory.category === subcategoryName}
-                                    />
+                                {category?.subCategories?.map((subcategory, i) => (
+                                    <TabPanel p={0} key={i}>
+                                        <CategoryTabPanel
+                                            key={subcategory._id}
+                                            subcategoryId={subcategory._id}
+                                            isActive={subcategory.category === subcategoryName}
+                                        />
+                                    </TabPanel>
                                 ))}
                             </TabPanels>
                         </Tabs>
@@ -93,7 +94,6 @@ function CategoryTabPanel({
         [filter],
     );
     const query = useAppSelector(querySelector);
-
     const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
         {
             limit: 10,
@@ -110,30 +110,35 @@ function CategoryTabPanel({
         { skip: !isActive },
     );
 
-    if (isLoading) {
-        dispatch(setAppLoader(true));
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setAppLoader(true));
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+        }
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
+        }
+    }, [isLoading, isError, isSuccess]);
+
+    if (isLoading || isError) {
         return null;
     }
-    if (isError) {
-        dispatch(setAppLoader(false));
-        return <TabPanel p={0}>Error loading</TabPanel>;
-    }
+
     if (isSuccess) {
-        dispatch(setAppLoader(false));
         const recipes = data.data;
         return (
-            <TabPanel p={0}>
-                <VStack spacing='12px' px='0px'>
-                    <Box px='0px' textAlign='start'>
-                        <RecipeCollection
-                            recipes={recipes.map((recipe) => ({
-                                ...recipe,
-                                path: `/${category}/${subcategory}/${recipe._id}`,
-                            }))}
-                        />
-                    </Box>
-                </VStack>
-            </TabPanel>
+            <VStack spacing='12px' px='0px'>
+                <Box px='0px' textAlign='start'>
+                    <RecipeCollection
+                        recipes={recipes.map((recipe) => ({
+                            ...recipe,
+                            path: `/${category}/${subcategory}/${recipe._id}`,
+                        }))}
+                    />
+                </Box>
+            </VStack>
         );
     }
 }

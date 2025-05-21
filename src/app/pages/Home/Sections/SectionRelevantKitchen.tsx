@@ -1,5 +1,5 @@
 import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
     VegeterianKitchenCard,
@@ -11,7 +11,7 @@ import { Error, setAppError, setRelevantLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionRelevantKitchen() {
-    const dispatcher = useAppDispatch();
+    const dispatch = useAppDispatch();
     const category = useRandomCategory();
     const subcategoriesIds = useMemo(
         () => category?.subCategories?.map((subcategory) => subcategory._id),
@@ -27,19 +27,26 @@ export default function SectionRelevantKitchen() {
         { skip: !subcategoriesIds?.[0] },
     );
 
-    if (isLoading) {
-        dispatcher(setRelevantLoader(true));
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setRelevantLoader(true));
+        }
+        if (isError) {
+            dispatch(setRelevantLoader(false));
+            dispatch(
+                setAppError({ value: Error.SERVER, message: 'Попробуйте поискать снова попозже' }),
+            );
+        }
+        if (isSuccess) {
+            dispatch(setRelevantLoader(false));
+        }
+    }, [isLoading, isError, isSuccess]);
+
+    if (isLoading || isError) {
         return null;
     }
-    if (isError) {
-        dispatcher(setRelevantLoader(false));
-        dispatcher(
-            setAppError({ value: Error.SERVER, message: 'Попробуйте поискать снова попозже' }),
-        );
-        return null;
-    }
+
     if (isSuccess) {
-        dispatcher(setRelevantLoader(false));
         return (
             <Box px={{ base: '16px', lg: '0px' }}>
                 <Divider mb={{ base: 0, lg: '24px' }} />
