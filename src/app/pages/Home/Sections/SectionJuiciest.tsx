@@ -1,4 +1,4 @@
-import { Button, HStack, Image, Show, Text, VStack } from '@chakra-ui/react';
+import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
 
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useGetJuiciestRecipesQuery } from '~/query/create-api';
@@ -36,23 +36,21 @@ export default function SectionJuiciest() {
                     >
                         Самое сочное
                     </Text>
-                    <Show above='lg'>
-                        <Button
-                            as='a'
-                            href='/the-juiciest'
-                            display={{ base: 'none', lg: 'inline-flex' }}
-                            bgColor='lime.300'
-                            fontSize='16px'
-                            color='black'
-                            variant='ghost'
-                            px='16px'
-                            py='8px'
-                            rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
-                            data-test-id='juiciest-link'
-                        >
-                            Вся подборка
-                        </Button>
-                    </Show>
+                    <Button
+                        visibility={{ base: 'hidden', lg: 'visible' }}
+                        as='a'
+                        href='/the-juiciest'
+                        bgColor='lime.300'
+                        fontSize='16px'
+                        color='black'
+                        variant='ghost'
+                        px='16px'
+                        py='8px'
+                        rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
+                        data-test-id='juiciest-link'
+                    >
+                        Вся подборка
+                    </Button>
                 </HStack>
                 <RecipeCollection
                     recipes={recipes!.data.map((recipe) => ({
@@ -61,7 +59,7 @@ export default function SectionJuiciest() {
                     }))}
                 />
                 <Button
-                    display={{ base: 'flex', lg: 'none' }}
+                    visibility={{ base: 'visible', lg: 'hidden' }}
                     as='a'
                     href='/the-juiciest'
                     bgColor='lime.300'
