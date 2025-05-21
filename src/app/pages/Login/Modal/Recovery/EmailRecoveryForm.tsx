@@ -69,7 +69,7 @@ export const EmailRecoveryForm = ({
                 setValue('email', '');
                 setError({
                     value: 'Такого e-mail нет',
-                    message: `Попробуйте другой e-mail или проверьте\u000Aправильность его написания`,
+                    message: `Попробуйте другой e-mail или проверьте правильность его написания`,
                 });
                 break;
             case StatusCode.InternalServerError:
@@ -178,6 +178,7 @@ export const EmailRecoveryForm = ({
                     </VStack>
                 </VStack>
             </Form>
+
             <ErrorAlert
                 isOpen={isOpenErrorAlert}
                 onClose={onCloseErrorAlert}
