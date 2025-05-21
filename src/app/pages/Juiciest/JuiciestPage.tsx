@@ -14,28 +14,27 @@ export default function JuiciestPage() {
     const dispatch = useAppDispatch();
     const { getString } = useResource();
     const [page, setPage] = useState(1);
-    const [isLoadingNextPage, setIsLoadingNextPage] = useState(false);
     const { data, isSuccess, isLoading, isError } = useGetJuiciestRecipesQuery({
         limit: 8,
         page: page,
     });
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
+    const [isLoadingNextPage, setTestLoading] = useState(false);
     const nextPage = () => {
-        setIsLoadingNextPage(true);
+        setTestLoading(true);
         setPage(page + 1);
     };
 
     useEffect(() => {
         if (data?.data) {
             setRecipes([...recipes, ...data.data]);
-            setIsLoadingNextPage(false);
+            setTestLoading(false);
         }
     }, [data]);
 
     if (isLoading) {
         dispatch(setAppLoader(true));
-        return null;
     }
     if (isError) {
         dispatch(setAppLoader(false));
