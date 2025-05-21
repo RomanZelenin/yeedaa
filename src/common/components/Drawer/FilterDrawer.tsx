@@ -81,14 +81,7 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
 
     return (
         <>
-            <Drawer
-                isOpen={isOpen}
-                placement='right'
-                onClose={() => {
-                    onClose();
-                }}
-                size='md'
-            >
+            <Drawer isOpen={isOpen} placement='right' onClose={onClose} size='md'>
                 <DrawerOverlay />
                 <DrawerContent
                     maxW='450px'
@@ -110,7 +103,7 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                                 minW={0}
                                 onClick={() => onClose()}
                                 icon={<CloseIcon bgColor='black' color='white' boxSize='10px' />}
-                                aria-label=''
+                                aria-label='close button'
                             />
                         </Flex>
                     </DrawerHeader>
@@ -176,30 +169,26 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                                         (value as SelectItem[])
                                             .filter((it) => it.selected)
                                             .map((it) => (
-                                                <>
-                                                    <WrapItem>
-                                                        <FilterTag
-                                                            label={getString(it.title)}
-                                                            onClose={() => {
-                                                                _setFilter({
-                                                                    ..._filter,
-                                                                    [`${key}`]: [
-                                                                        ..._filter[`${key}`].map(
-                                                                            (e) =>
-                                                                                e.title === it.title
-                                                                                    ? {
-                                                                                          ...e,
-                                                                                          selected:
-                                                                                              false,
-                                                                                      }
-                                                                                    : e,
-                                                                        ),
-                                                                    ],
-                                                                });
-                                                            }}
-                                                        />
-                                                    </WrapItem>
-                                                </>
+                                                <WrapItem>
+                                                    <FilterTag
+                                                        label={getString(it.title)}
+                                                        onClose={() => {
+                                                            _setFilter({
+                                                                ..._filter,
+                                                                [`${key}`]: [
+                                                                    ..._filter[`${key}`].map((e) =>
+                                                                        e.title === it.title
+                                                                            ? {
+                                                                                  ...e,
+                                                                                  selected: false,
+                                                                              }
+                                                                            : e,
+                                                                    ),
+                                                                ],
+                                                            });
+                                                        }}
+                                                    />
+                                                </WrapItem>
                                             )),
                                     )}
                             </Wrap>

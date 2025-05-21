@@ -248,9 +248,15 @@ export const RegistrationForm = () => {
                             <Text textStyle='textMdLh6Normal'>{steps[currentStep].title}</Text>
                         </label>
                         <Progress
+                            height='8px'
+                            backgroundColor='blackAlpha.100'
                             data-test-id='sign-up-progress'
                             aria-valuenow={progress}
-                            colorScheme='green'
+                            sx={{
+                                '& > div': {
+                                    backgroundColor: 'lime.300',
+                                },
+                            }}
                             hasStripe
                             value={progress}
                             width='100%'
