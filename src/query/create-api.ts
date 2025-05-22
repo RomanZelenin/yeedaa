@@ -186,7 +186,7 @@ export const apiSlice = createApi({
                 sessionStorage.setItem('access_token', token ?? '');
                 return response as LoginResponse;
             },
-            transformErrorResponse: (response /* , meta */) => {
+            transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },
@@ -197,7 +197,7 @@ export const apiSlice = createApi({
                 method: 'post',
                 body,
             }),
-            transformErrorResponse: (response /* , meta */) => {
+            transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },
@@ -208,7 +208,7 @@ export const apiSlice = createApi({
                 method: 'post',
                 body,
             }),
-            transformErrorResponse: (response /* , meta */) => {
+            transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },
@@ -219,7 +219,7 @@ export const apiSlice = createApi({
                 method: 'post',
                 body,
             }),
-            transformErrorResponse: (response /* , meta */) => {
+            transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },
@@ -230,7 +230,7 @@ export const apiSlice = createApi({
                 method: 'post',
                 body,
             }),
-            transformErrorResponse: (response /* , meta */) => {
+            transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },

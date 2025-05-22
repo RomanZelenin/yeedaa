@@ -68,8 +68,10 @@ export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) =>
                 borderRadius='16px'
                 width={{ base: '316px', lg: '396px' }}
             >
-                <ModalBody display='flex' flexDirection='column' p={0}>
+                <ModalBody p={0}>
                     <IconButton
+                        right={0}
+                        position='absolute'
                         data-test-id='close-button'
                         m='24px'
                         boxSize='24px'

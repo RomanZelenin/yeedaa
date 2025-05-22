@@ -10,12 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
-export const SuccessAlert = ({
-    title,
-    message,
-    position,
-    bottom,
-}: {
+export type AlertProps = {
     title: string;
     message: string;
     position: 'fixed' | 'absolute';
@@ -32,7 +27,9 @@ export const SuccessAlert = ({
               | 'auto'
           >
         | undefined;
-}) => {
+};
+
+export const SuccessAlert = ({ alertProps }: { alertProps: AlertProps }) => {
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
 
     useEffect(() => {
@@ -48,17 +45,17 @@ export const SuccessAlert = ({
                 status='success'
                 variant='solid'
                 width='fit-content'
-                position={position}
+                position={alertProps.position}
                 margin='auto'
                 right={0}
                 left={0}
-                bottom={bottom}
+                bottom={alertProps.bottom}
                 zIndex='toast'
             >
                 <AlertIcon />
                 <Box>
-                    <AlertTitle>{title}</AlertTitle>
-                    <AlertDescription>{message}</AlertDescription>
+                    <AlertTitle>{alertProps.title}</AlertTitle>
+                    <AlertDescription>{alertProps.message}</AlertDescription>
                 </Box>
                 <CloseButton
                     boxSize='12px'

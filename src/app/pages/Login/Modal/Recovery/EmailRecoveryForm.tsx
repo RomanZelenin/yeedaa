@@ -2,7 +2,6 @@ import { Button, Image, Input, Stack, Text, useDisclosure, VStack } from '@chakr
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
-import * as yup from 'yup';
 
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { StatusCode } from '~/query/constants/api';
@@ -10,28 +9,11 @@ import { LoginResponse, useForgotPasswordMutation } from '~/query/create-api';
 import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
+import { emailRecoverySchema } from '../../schemes';
+
 export type EmailRecoveryFormData = {
     email: string;
 };
-
-const emailRecoverySchema: yup.ObjectSchema<EmailRecoveryFormData> = yup
-    .object({
-        email: yup
-            .string()
-            .required('Введите e-mail')
-            .max(50, 'Максимальная длина 50 символов')
-            .test({
-                name: 'email',
-                test(value, ctx) {
-                    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-                        return ctx.createError({ message: 'Введите корректный e-mail' });
-                    }
-
-                    return true;
-                },
-            }),
-    })
-    .required();
 
 export const EmailRecoveryForm = ({
     onSuccess,
@@ -178,14 +160,15 @@ export const EmailRecoveryForm = ({
                     </VStack>
                 </VStack>
             </Form>
-
             <ErrorAlert
                 isOpen={isOpenErrorAlert}
                 onClose={onCloseErrorAlert}
-                bottom='20px'
-                title={error.value}
-                message={error.message ?? ''}
-                position='fixed'
+                alertProps={{
+                    bottom: '20px',
+                    title: error.value,
+                    message: error.message ?? '',
+                    position: 'fixed',
+                }}
             />
         </>
     );

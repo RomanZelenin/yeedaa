@@ -147,10 +147,12 @@ export const OTPRecoveryFrom = ({
             <ErrorAlert
                 isOpen={isOpenErrorAlert}
                 onClose={onCloseErrorAlert}
-                bottom='20px'
-                title={error.value}
-                message={error.message ?? ''}
-                position='fixed'
+                alertProps={{
+                    bottom: '20px',
+                    title: error.value,
+                    message: error.message ?? '',
+                    position: 'fixed',
+                }}
             />
         </>
     );

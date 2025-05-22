@@ -35,8 +35,10 @@ export const VerificationEmailModal = ({
                 width={{ base: '316px', lg: '396px' }}
                 data-test-id='sign-up-success-modal'
             >
-                <ModalBody display='flex' flexDirection='column' p={0}>
+                <ModalBody p={0}>
                     <IconButton
+                        position='absolute'
+                        right={0}
                         data-test-id='close-button'
                         m='24px'
                         boxSize='24px'

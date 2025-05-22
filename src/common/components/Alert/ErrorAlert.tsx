@@ -6,36 +6,19 @@ import {
     Box,
     CloseButton,
     HStack,
-    ResponsiveValue,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
+import { AlertProps } from './SuccessAlert';
+
 export const ErrorAlert = ({
-    title,
-    message,
-    position,
-    bottom,
+    alertProps,
     isOpen,
     onClose,
 }: {
     isOpen: boolean;
     onClose: () => void;
-    title: string;
-    message: string;
-    position: 'fixed' | 'absolute';
-    bottom?:
-        | ResponsiveValue<
-              | number
-              | string
-              | '-moz-initial'
-              | 'inherit'
-              | 'initial'
-              | 'revert'
-              | 'revert-layer'
-              | 'unset'
-              | 'auto'
-          >
-        | undefined;
+    alertProps: AlertProps;
 }) => {
     useEffect(() => {
         setTimeout(() => {
@@ -50,18 +33,19 @@ export const ErrorAlert = ({
                 status='error'
                 variant='solid'
                 maxW='355px'
-                position={position}
+                position={alertProps.position}
+                width='fit-content'
                 margin='auto'
                 right={0}
                 left={0}
-                bottom={bottom}
+                bottom={alertProps.bottom}
                 zIndex='toast'
             >
                 <HStack>
                     <AlertIcon justifySelf='start' />
                     <Box>
                         <HStack>
-                            <AlertTitle flex={1}>{title}</AlertTitle>
+                            <AlertTitle flex={1}>{alertProps.title}</AlertTitle>
                             <CloseButton
                                 boxSize='12px'
                                 data-test-id='close-alert-button'
@@ -76,7 +60,7 @@ export const ErrorAlert = ({
                         </HStack>
 
                         <AlertDescription textStyle='textMdLh6Normal' whiteSpace='pre-wrap'>
-                            {message}
+                            {alertProps.message}
                         </AlertDescription>
                     </Box>
                 </HStack>

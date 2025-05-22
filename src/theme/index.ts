@@ -330,7 +330,7 @@ const theme = extendTheme({
         },
         textMdLh6Medium: {
             fontStyle: 'normal',
-            fontWeight: 500,
+            fontWeight: 400,
             fontSize: '16px',
             lineHeight: '24px',
         },

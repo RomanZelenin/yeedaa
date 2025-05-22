@@ -1,47 +1,33 @@
-import { Box, Button, Input, Link, Stack, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Box, Button, Input, Link, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useRef, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import * as yup from 'yup';
 
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
 import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useLoginMutation } from '~/query/create-api';
-import { Error, ResponseError, setAppError, setAppLoader } from '~/store/app-slice';
-import { useAppDispatch } from '~/store/hooks';
+import { Error, errorSelector, setAppError, setAppLoader } from '~/store/app-slice';
+import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { LoginFailedModal } from '../Modal/LoginFailedModal';
 import { RecoveryModal } from '../Modal/Recovery/RecoveryModal';
+import { loginFormSchema } from '../schemes';
 
 export type LoginFormData = {
     login: string;
     password: string;
 };
 
-const loginFormSchema: yup.ObjectSchema<LoginFormData> = yup
-    .object({
-        login: yup
-            .string()
-            .trim()
-            .required('Введите логин')
-            .max(50, 'Максимальная длина 50 символов'),
-        password: yup.string().required('Введите пароль').max(50, 'Максимальная длина 50 символов'),
-    })
-    .required();
-
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const naviagate = useNavigate();
     const loginInputRef = useRef<HTMLInputElement>(null);
     const [isShowRecoveryModal, setIsShowRecoveryModal] = useState(false);
-    const [error, setError] = useState<ResponseError>({ value: Error.NONE });
-    const {
-        isOpen: isOpenErrorAlert,
-        onClose: onCloseErrorAlert,
-        onOpen: onOpenErrorAlert,
-    } = useDisclosure();
+
+    const error = useAppSelector(errorSelector);
+    const [isShowLoginFailed, setIsShowLoginFailed] = useState(false);
+
     const {
         control,
         register,
@@ -57,30 +43,32 @@ export const LoginForm = () => {
     const handleOnError = useCallback((response?: LoginResponse) => {
         switch (response?.status) {
             case StatusCode.Unauthorized:
-                setError({
-                    value: Error.INCORRECT_LOGIN_OR_PASSWORD,
-                    message: 'Попробуйте снова.',
-                });
+                dispatch(
+                    setAppError({
+                        value: Error.INCORRECT_LOGIN_OR_PASSWORD,
+                        message: 'Попробуйте снова.',
+                    }),
+                );
                 break;
             case StatusCode.Forbidden:
-                setError({
-                    value: Error.EMAIL_NOT_VERIFED,
-                    message: 'Проверьте почту и перейдите по ссылке.',
-                });
+                dispatch(
+                    setAppError({
+                        value: Error.EMAIL_NOT_VERIFED,
+                        message: 'Проверьте почту и перейдите по ссылке.',
+                    }),
+                );
                 break;
             case StatusCode.InternalServerError:
-                setError({
-                    value: Error.SERVER,
-                    message: 'Попробуйте немного позже',
-                });
+                setIsShowLoginFailed(true);
                 break;
             default:
-                setError({
-                    value: response!.data.error,
-                    message: response!.data.message,
-                });
+                dispatch(
+                    setAppError({
+                        value: response!.data.error,
+                        message: response!.data.message,
+                    }),
+                );
         }
-        onOpenErrorAlert();
     }, []);
     const onSubmit = useCallback(
         async ({
@@ -92,7 +80,7 @@ export const LoginForm = () => {
             event?: React.BaseSyntheticEvent;
         }) => {
             try {
-                setError({ value: Error.NONE });
+                setIsShowLoginFailed(false);
                 dispatch(setAppLoader(true));
                 await login(data as LoginFormData).unwrap();
                 naviagate('/', { replace: true });
@@ -105,6 +93,9 @@ export const LoginForm = () => {
         [dispatch, login],
     );
 
+    const isIncorrectLoginOrPassword =
+        formErrors.login || error.value === Error.INCORRECT_LOGIN_OR_PASSWORD;
+
     return (
         <>
             <Form onSubmit={onSubmit} control={control} data-test-id='sign-in-form'>
@@ -116,35 +107,22 @@ export const LoginForm = () => {
                         <Input
                             data-test-id='login-input'
                             borderRadius='6px'
-                            borderColor={
-                                formErrors.login ||
-                                error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
-                                    ? 'red'
-                                    : 'lime.150'
-                            }
+                            borderColor={isIncorrectLoginOrPassword ? 'red' : 'lime.150'}
                             bgColor='white'
                             _active={{
                                 bgColor: 'white',
-                                borderColor:
-                                    formErrors.login ||
-                                    error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
-                                        ? 'red'
-                                        : 'lime.150',
+                                borderColor: isIncorrectLoginOrPassword ? 'red' : 'lime.150',
                             }}
                             _focus={{
                                 bgColor: 'white',
-                                borderColor:
-                                    formErrors.login ||
-                                    error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
-                                        ? 'red'
-                                        : 'lime.150',
+                                borderColor: isIncorrectLoginOrPassword ? 'red' : 'lime.150',
                             }}
                             placeholder='Введите логин'
                             variant='filled'
                             id='login'
                             {...register('login')}
                             onInput={(e) => {
-                                setError({ value: Error.NONE });
+                                dispatch(setAppError({ value: Error.NONE }));
                                 setValue('login', (e.target as HTMLInputElement).value.trim());
                             }}
                             ref={loginInputRef}
@@ -168,29 +146,16 @@ export const LoginForm = () => {
                             data-test-id='password-input'
                             placeholder='Пароль для сайта'
                             borderRadius='6px'
-                            borderColor={
-                                formErrors.password ||
-                                error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
-                                    ? 'red'
-                                    : 'lime.150'
-                            }
+                            borderColor={isIncorrectLoginOrPassword ? 'red' : 'lime.150'}
                             bgColor='white'
                             _active={{
                                 bgColor: 'white',
-                                borderColor:
-                                    formErrors.password ||
-                                    error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
-                                        ? 'red'
-                                        : 'lime.150',
+                                borderColor: isIncorrectLoginOrPassword ? 'red' : 'lime.150',
                             }}
                             _focus={{
                                 boxShadow: 'none',
                                 bgColor: 'white',
-                                borderColor:
-                                    formErrors.password ||
-                                    error.value === Error.INCORRECT_LOGIN_OR_PASSWORD
-                                        ? 'red'
-                                        : 'lime.150',
+                                borderColor: isIncorrectLoginOrPassword ? 'red' : 'lime.150',
                             }}
                             id='password'
                             {...register('password')}
@@ -226,20 +191,9 @@ export const LoginForm = () => {
                     </Link>
                 </VStack>
             </Form>
-            {error.value !== Error.NONE ? (
-                error.value === Error.SERVER ? (
-                    <LoginFailedModal onClickRepeat={() => onSubmit({ data: getValues() })} />
-                ) : (
-                    <ErrorAlert
-                        isOpen={isOpenErrorAlert}
-                        onClose={onCloseErrorAlert}
-                        bottom='20px'
-                        title={error.value}
-                        message={error.message ?? ''}
-                        position='absolute'
-                    />
-                )
-            ) : null}
+            {isShowLoginFailed && (
+                <LoginFailedModal onClickRepeat={() => onSubmit({ data: getValues() })} />
+            )}
             {isShowRecoveryModal && (
                 <RecoveryModal
                     onClickClose={() => {

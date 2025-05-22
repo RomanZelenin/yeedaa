@@ -65,6 +65,44 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
         });
     };
 
+    const handleOnClickCloseTag = (key: string, item: SelectItem) => {
+        _setFilter({
+            ..._filter,
+            [`${key}`]: [
+                ..._filter[`${key}`].map((e) =>
+                    e.title === item.title
+                        ? {
+                              ...e,
+                              selected: false,
+                          }
+                        : e,
+                ),
+            ],
+        });
+    };
+
+    const handleOnAddCustomAllergen = (customAllergen: SelectItem) => {
+        const i = _filter.allergens.findIndex(
+            (allergen) => allergen.title === customAllergen.title,
+        );
+
+        if (i == -1) {
+            _setFilter({
+                ..._filter,
+                allergens: [..._filter.allergens, customAllergen],
+            });
+        } else {
+            _setFilter({
+                ..._filter,
+                allergens: [
+                    ..._filter.allergens.slice(0, i),
+                    customAllergen,
+                    ..._filter.allergens.slice(i + 1),
+                ],
+            });
+        }
+    };
+
     const isFilterAcitve =
         _filter.allergens.filter((it) => it.selected).length !== 0 ||
         _filter.categories.filter((it) => it.selected).length !== 0 ||
@@ -135,27 +173,7 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             <AllergySelectorFilterWithSwitcher
                                 isExcludeAllergens={_filter.isExcludeAllergens}
                                 items={_filter.allergens}
-                                onAddCustomAllergen={(customAllergen) => {
-                                    const i = _filter.allergens.findIndex(
-                                        (allergen) => allergen.title === customAllergen.title,
-                                    );
-
-                                    if (i == -1) {
-                                        _setFilter({
-                                            ..._filter,
-                                            allergens: [..._filter.allergens, customAllergen],
-                                        });
-                                    } else {
-                                        _setFilter({
-                                            ..._filter,
-                                            allergens: [
-                                                ..._filter.allergens.slice(0, i),
-                                                customAllergen,
-                                                ..._filter.allergens.slice(i + 1),
-                                            ],
-                                        });
-                                    }
-                                }}
+                                onAddCustomAllergen={handleOnAddCustomAllergen}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'allergens')}
                                 onChangeExcludeAllergens={(isExclude) => {
                                     _setFilter({ ..._filter, isExcludeAllergens: isExclude });
@@ -172,21 +190,9 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                                                 <WrapItem>
                                                     <FilterTag
                                                         label={getString(it.title)}
-                                                        onClose={() => {
-                                                            _setFilter({
-                                                                ..._filter,
-                                                                [`${key}`]: [
-                                                                    ..._filter[`${key}`].map((e) =>
-                                                                        e.title === it.title
-                                                                            ? {
-                                                                                  ...e,
-                                                                                  selected: false,
-                                                                              }
-                                                                            : e,
-                                                                    ),
-                                                                ],
-                                                            });
-                                                        }}
+                                                        onClose={() =>
+                                                            handleOnClickCloseTag(key, it)
+                                                        }
                                                     />
                                                 </WrapItem>
                                             )),

@@ -2,7 +2,6 @@ import { Button, Input, Stack, Text, useDisclosure, VStack } from '@chakra-ui/re
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
-import * as yup from 'yup';
 
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
@@ -10,6 +9,8 @@ import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useResetPasswordMutation } from '~/query/create-api';
 import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
+
+import { accountRecoverySchema } from '../../schemes';
 
 export type AccountFormData = {
     login: string;
@@ -23,48 +24,6 @@ export type RecoveryFormData = {
     password: string;
     passwordConfirm: string;
 };
-
-const accountRecoverySchema: yup.ObjectSchema<AccountFormData> = yup
-    .object({
-        login: yup
-            .string()
-            .trim()
-            .required('Введите логин')
-            .max(50, 'Максимальная длина 50 символов')
-            .min(5, 'Не соответствует формату')
-            .test({
-                name: 'valid-symbols',
-                test(value, ctx) {
-                    if (!/^[A-Za-z0-9!@#$&_+\-.]+$/.test(value)) {
-                        return ctx.createError({ message: 'Не соответствует формату' });
-                    }
-                    return true;
-                },
-            }),
-        password: yup
-            .string()
-            .required('Введите пароль')
-            .max(50, 'Максимальная длина 50 символов')
-            .min(8, 'Не соответствует формату')
-            .test({
-                name: 'valid-symbols',
-                test(value, ctx) {
-                    if (!/^(?=.*[A-Z])(?=.*\d)[A-Za-z0-9!@#$&_+\-.]+$/.test(value)) {
-                        return ctx.createError({ message: 'Не соответствует формату' });
-                    }
-                    return true;
-                },
-            }),
-        passwordConfirm: yup
-            .string()
-            .required('Повторите пароль')
-            .when('password', (password, schema) =>
-                password && password.length > 0
-                    ? schema.oneOf(password, 'Пароли должны совпадать')
-                    : schema,
-            ),
-    })
-    .required();
 
 export const AccountRecoveryForm = ({
     email,
@@ -141,6 +100,7 @@ export const AccountRecoveryForm = ({
                 top='42px'
                 textStyle='text2xlLh8Bold'
                 textAlign='center'
+                width='fit-content'
             >
                 Восстановление аккаунта
             </Text>
@@ -157,7 +117,7 @@ export const AccountRecoveryForm = ({
                 }}
                 control={control}
             >
-                <VStack spacing='16px' px='32px' pt='52px' pb='32px'>
+                <VStack spacing='16px' px='32px' pt='122px' pb='32px'>
                     <Stack>
                         <label htmlFor='login'>
                             <Text textStyle='textMdLh6Normal'>Логин для входа на сайт</Text>
@@ -273,10 +233,12 @@ export const AccountRecoveryForm = ({
             <ErrorAlert
                 isOpen={isOpenErrorAlert}
                 onClose={onCloseErrorAlert}
-                bottom='20px'
-                title={error.value}
-                message={error.message ?? ''}
-                position='fixed'
+                alertProps={{
+                    bottom: '20px',
+                    title: error.value,
+                    message: error.message ?? '',
+                    position: 'fixed',
+                }}
             />
         </>
     );

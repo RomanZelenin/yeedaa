@@ -28,8 +28,10 @@ export const VerificationFailedModal = () => {
                 width={{ base: '316px', lg: '396px' }}
                 data-test-id='email-verification-failed-modal'
             >
-                <ModalBody display='flex' flexDirection='column' p={0}>
+                <ModalBody p={0}>
                     <IconButton
+                        position='absolute'
+                        right={0}
                         data-test-id='close-button'
                         m='24px'
                         boxSize='24px'
@@ -49,7 +51,7 @@ export const VerificationFailedModal = () => {
                             <Text textStyle='text2xlLh8Bold' mb={{ base: '16px' }}>
                                 Упс! Что-то пошло не так
                             </Text>
-                            <Text textStyle='textMdLh6Semibold' color='blackAlpha.700'>
+                            <Text color='blackAlpha.700'>
                                 Ваша ссылка для верификации недействительна. Попробуйте
                                 зарегистрироваться снова.
                             </Text>

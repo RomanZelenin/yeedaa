@@ -33,7 +33,10 @@ export default function App() {
     return (
         <>
             <AppLoader isLoading={isLoading}>
+                <Header profile={profile} />
                 <Grid
+                    maxW='1920px'
+                    margin='auto'
                     templateAreas={{
                         base: `"header"
                             "main"
@@ -48,9 +51,7 @@ export default function App() {
                     }}
                     gridTemplateColumns={{ base: '1fr', lg: '256px 1fr 208px' }}
                 >
-                    <GridItem area='header'>
-                        <Header profile={profile} />
-                    </GridItem>
+                    <GridItem area='header'></GridItem>
                     <Show above='lg'>
                         <GridItem area='nav' data-test-id='nav'>
                             <SideMenu />
@@ -81,10 +82,12 @@ export default function App() {
                         <ErrorAlert
                             isOpen={isOpenErrorAlert}
                             onClose={onCloseErrorAlert}
-                            bottom={{ base: '106px', md: '112px' }}
-                            title={error.value}
-                            message={error.message ?? ''}
-                            position='fixed'
+                            alertProps={{
+                                bottom: { base: '106px', md: '112px' },
+                                title: error.value,
+                                message: error.message ?? '',
+                                position: 'fixed',
+                            }}
                         />
                     )}
                 </Grid>
