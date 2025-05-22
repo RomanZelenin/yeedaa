@@ -3,6 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
+import loginFailedImg from '~/assets/images/login-failed.svg';
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useForgotPasswordMutation } from '~/query/create-api';
@@ -96,10 +97,7 @@ export const EmailRecoveryForm = ({
         <>
             <Form onSubmit={onSubmit} control={control}>
                 <VStack spacing='32px' p='32px'>
-                    <Image
-                        boxSize={{ base: '108px', lg: '206px' }}
-                        src='/src/assets/images/login-failed.svg'
-                    />
+                    <Image boxSize={{ base: '108px', lg: '206px' }} src={loginFailedImg} />
                     <Stack spacing={0} textAlign='center'>
                         <Text textStyle='textMdLh6Normal' mb={{ base: '16px' }}>
                             {`Для восстановления входа введите ваш\u00A0e-mail, куда можно отправить уникальный код`}

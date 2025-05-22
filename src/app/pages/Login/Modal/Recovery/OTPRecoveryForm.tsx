@@ -11,6 +11,7 @@ import {
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
+import codeRecoveryImg from '~/assets/images/code-recovery.svg';
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useVerifyOTPMutation } from '~/query/create-api';
@@ -104,10 +105,7 @@ export const OTPRecoveryFrom = ({
         <>
             <Form control={control}>
                 <VStack spacing='32px' p='32px'>
-                    <Image
-                        boxSize={{ base: '108px', lg: '206px' }}
-                        src='/src/assets/images/code-recovery.svg'
-                    />
+                    <Image boxSize={{ base: '108px', lg: '206px' }} src={codeRecoveryImg} />
                     <VStack spacing='16px' textAlign='center'>
                         {error.value === Error.INVALID_CODE && (
                             <Text textStyle='text2xlLh8Bold'>Неверный код</Text>

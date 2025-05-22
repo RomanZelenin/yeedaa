@@ -15,18 +15,18 @@ import {
 import { useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
+import loginBgImg from '~/assets/images/auth-background-image.png';
+import logoImg from '~/assets/logo-md.svg';
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
 import { SuccessAlert } from '~/common/components/Alert/SuccessAlert';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
+import { ApplicationRoute } from '~/index';
 import { Error, errorSelector, loadingSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import { LoginForm } from './LoginForm/LoginForm';
 import { VerificationFailedModal } from './Modal/VerificationFailedModal';
 import { RegistrationForm } from './RegistrationForm/RegistrationForm';
-
-const LOGIN_PATH = '/login';
-const REGISTRATION_PATH = '/registration';
 
 export const LoginPage = () => {
     const location = useLocation();
@@ -40,17 +40,17 @@ export const LoginPage = () => {
     } = useDisclosure();
 
     useEffect(() => {
-        if (error.value !== Error.NONE) {
-            onOpenErrorAlert();
-        } else {
-            onCloseErrorAlert();
-        }
+        error.value !== Error.NONE ? onOpenErrorAlert() : onCloseErrorAlert();
     }, [error]);
 
     const tabs = useMemo(
         () => [
-            { title: 'Вход на сайт', path: LOGIN_PATH, content: <LoginForm /> },
-            { title: 'Регистрация', path: REGISTRATION_PATH, content: <RegistrationForm /> },
+            { title: 'Вход на сайт', path: ApplicationRoute.LOGIN, content: <LoginForm /> },
+            {
+                title: 'Регистрация',
+                path: ApplicationRoute.REGISTRATION,
+                content: <RegistrationForm />,
+            },
         ],
         [],
     );
@@ -78,7 +78,7 @@ export const LoginPage = () => {
                     <Image
                         width={{ base: '158px', lg: '271px' }}
                         height={{ base: '38px', lg: '64px' }}
-                        src='/src/assets/logo-md.svg'
+                        src={logoImg}
                         mb={{ base: '40px', lg: '80px' }}
                     />
                     <Tabs
@@ -116,6 +116,7 @@ export const LoginPage = () => {
                         />
                     )}
                     <ErrorAlert
+                        status='error'
                         isOpen={isOpenErrorAlert}
                         onClose={onCloseErrorAlert}
                         bottom='50px'
@@ -142,7 +143,7 @@ export const LoginPage = () => {
                     display={{ base: 'none', lg: 'flex' }}
                     width='50%'
                     h='100vh'
-                    backgroundImage='/src/assets/images/auth-background-image.png'
+                    backgroundImage={loginBgImg}
                 >
                     <Text p='10px' textStyle='textXsLh4Semibold'>
                         ̶ Лучший сервис для ваших кулинарных побед

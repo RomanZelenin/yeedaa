@@ -13,6 +13,9 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
+import alarmIcon from '~/assets/icons/alarm.svg';
+import bookmarkIcon from '~/assets/icons/bookmark.svg';
+import likeIcon from '~/assets/icons/like.svg';
 import { useGetCategoriesQuery } from '~/query/create-api';
 
 import { useResource } from '../ResourceContext/ResourceContext';
@@ -86,11 +89,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                     <Wrap mt={{ base: '24px', md: 'auto' }} width='100%' justify='space-between'>
                         <WrapItem>
                             <Tag layerStyle='timerTag' alignSelf={{ base: 'start', lg: 'end' }}>
-                                <Image
-                                    src='/src/assets/icons/alarm.svg'
-                                    boxSize='16px'
-                                    alignSelf='center'
-                                />
+                                <Image src={alarmIcon} boxSize='16px' alignSelf='center' />
                                 <TagLabel textStyle='textSmLh5'>
                                     {recipe.time} {getString('min').toLocaleLowerCase()}
                                 </TagLabel>
@@ -104,11 +103,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                     px='12px'
                                     py='6px'
                                     leftIcon={
-                                        <Image
-                                            src='/src/assets/icons/like.svg'
-                                            boxSize={{ xl: '16px' }}
-                                            alt='like'
-                                        />
+                                        <Image src={likeIcon} boxSize={{ xl: '16px' }} alt='like' />
                                     }
                                     h={{ base: '24px', lg: '32px', xl: '48px' }}
                                 >
@@ -130,7 +125,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                     py='6px'
                                     leftIcon={
                                         <Image
-                                            src='/src/assets/icons/bookmark.svg'
+                                            src={bookmarkIcon}
                                             boxSize={{ xl: '16px' }}
                                             alt='bookmark'
                                         />

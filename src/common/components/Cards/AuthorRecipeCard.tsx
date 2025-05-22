@@ -10,6 +10,8 @@ import {
     VStack,
 } from '@chakra-ui/react';
 
+import subscribeIcon from '~/assets/icons/subscribe.svg';
+
 import { Profile } from '../Header/ProfileInfo';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
@@ -44,10 +46,7 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                                     bgColor='blackAlpha.900'
                                     p='8px'
                                     leftIcon={
-                                        <Image
-                                            src='/src/assets/icons/subscribe.svg'
-                                            boxSize={{ xl: '16px' }}
-                                        />
+                                        <Image src={subscribeIcon} boxSize={{ xl: '16px' }} />
                                     }
                                     h={{ base: '24px', lg: '32px', xl: '48px' }}
                                 >

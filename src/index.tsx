@@ -19,24 +19,55 @@ import { VerificationPage } from './app/pages/Verification/VerificationPage';
 import { ResourceProvider } from './common/components/ResourceContext/ResourceContext';
 import theme from './theme';
 
+export enum ApplicationRoute {
+    LOGIN = '/login',
+    REGISTRATION = '/registration',
+    JUICIEST = '/the-juiciest',
+    VERIFICATION = '/verification',
+    NOT_FOUND = '/not-found',
+    JUICIEST_WITH_ID = '/the-juiciest/:id',
+    CATEGORY_WITH_SUBCATEGORY = '/:category/:subcategory?',
+    CATEGORY_WITH_SUBCATEGORY_AND_ID = '/:category/:subcategory/:id',
+    INDEX = '/',
+    ANY = '/*',
+}
+
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ResourceProvider>
             <ChakraProvider theme={theme}>
                 <Provider store={store}>
-                    <BrowserRouter>
+                    <BrowserRouter basename='/'>
                         <Routes>
-                            <Route path='login' element={<LoginPage />}></Route>
-                            <Route path='registration' element={<LoginPage />}></Route>
-                            <Route path='verification' element={<VerificationPage />}></Route>
-                            <Route path='/' element={<App />}>
+                            <Route path={ApplicationRoute.LOGIN} element={<LoginPage />}></Route>
+                            <Route
+                                path={ApplicationRoute.REGISTRATION}
+                                element={<LoginPage />}
+                            ></Route>
+                            <Route
+                                path={ApplicationRoute.VERIFICATION}
+                                element={<VerificationPage />}
+                            ></Route>
+                            <Route path={ApplicationRoute.INDEX} element={<App />}>
                                 <Route index element={<HomePage />} />
-                                <Route path='the-juiciest/' element={<JuiciestPage />} />
-                                <Route path='the-juiciest/:id' element={<RecipePage />} />
-                                <Route path=':category/:subcategory?' element={<CategoryPage />} />
-                                <Route path=':category/:subcategory/:id' element={<RecipePage />} />
-                                <Route path='/not-found' element={<ErrorPage />} />
-                                <Route path='/*' element={<ErrorPage />} />
+                                <Route
+                                    path={ApplicationRoute.JUICIEST}
+                                    element={<JuiciestPage />}
+                                />
+                                <Route
+                                    path={ApplicationRoute.JUICIEST_WITH_ID}
+                                    element={<RecipePage />}
+                                />
+                                <Route
+                                    path={ApplicationRoute.CATEGORY_WITH_SUBCATEGORY}
+                                    element={<CategoryPage />}
+                                />
+                                <Route
+                                    path={ApplicationRoute.CATEGORY_WITH_SUBCATEGORY_AND_ID}
+                                    element={<RecipePage />}
+                                />
+                                <Route path={ApplicationRoute.NOT_FOUND} element={<ErrorPage />} />
+                                <Route path={ApplicationRoute.ANY} element={<ErrorPage />} />
                             </Route>
                         </Routes>
                     </BrowserRouter>

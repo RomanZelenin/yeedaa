@@ -4,6 +4,8 @@ import { Box, Center, Image, Link as ChakraLink, Text } from '@chakra-ui/react';
 import { Keyboard, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+import leftArrowIcon from '~/assets/icons/left-arrow.svg';
+import rightArrowIcon from '~/assets/icons/right-arrow.svg';
 import { NewRecepieCard } from '~/common/components/Cards/NewRecepieCard';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { Subcategory, useGetCategoriesQuery, useGetNewestRecipesQuery } from '~/query/create-api';
@@ -129,14 +131,14 @@ export default function SectionNewRecipes() {
                         className='swiper-custom-button-prev'
                         data-test-id='carousel-back'
                     >
-                        <Image src='/src/assets/icons/left-arrow.svg' boxSize='24px' />
+                        <Image src={leftArrowIcon} boxSize='24px' />
                     </Center>
                     <Center
                         visibility={{ base: 'hidden', lg: 'visible' }}
                         className='swiper-custom-button-next'
                         data-test-id='carousel-forward'
                     >
-                        <Image src='/src/assets/icons/right-arrow.svg' boxSize='24px' />
+                        <Image src={rightArrowIcon} boxSize='24px' />
                     </Center>
                 </Box>
             </Box>

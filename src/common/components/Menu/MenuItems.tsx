@@ -13,6 +13,8 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 
 import { DEFAULT_FILTER, setFilter } from '~/app/features/filters/filtersSlice';
+import downIcon from '~/assets/icons/down.svg';
+import upIcon from '~/assets/icons/up.svg';
 import { useGetCategoriesQuery } from '~/query/create-api';
 import { Error, setAppError, setAppQuery, setRecepies } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
@@ -51,11 +53,8 @@ export const MenuItems = () => {
         }
     };
 
-    if (isLoading) {
-        return <Text>Loading...</Text>;
-    }
-    if (isError) {
-        return <Text>Error</Text>;
+    if (isLoading || isError) {
+        return null;
     }
 
     return (
@@ -109,11 +108,7 @@ export const MenuItems = () => {
                                         </Text>
 
                                         <Image
-                                            src={
-                                                isExpanded
-                                                    ? '/src/assets/icons/up.svg'
-                                                    : '/src/assets/icons/down.svg'
-                                            }
+                                            src={isExpanded ? upIcon : downIcon}
                                             alt={isExpanded ? 'Collapse' : 'Expand'}
                                         />
                                     </AccordionButton>

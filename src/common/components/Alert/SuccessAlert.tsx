@@ -7,7 +7,7 @@ import {
     CloseButton,
     useDisclosure,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { BottomBehavior } from './BottomBehavior';
 
@@ -22,16 +22,21 @@ export const SuccessAlert = ({
     position: 'fixed' | 'absolute';
     bottom?: BottomBehavior;
 }) => {
-    const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
+    const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
+    const refTimeout = useRef<NodeJS.Timeout>(undefined);
     useEffect(() => {
-        setTimeout(() => {
-            onClose();
-        }, 15000);
-    }, [isVisible]);
+        if (isOpen) {
+            refTimeout.current = setTimeout(() => {
+                onClose();
+            }, 15000);
+        } else {
+            clearTimeout(refTimeout.current);
+        }
+    }, [isOpen]);
 
     return (
-        isVisible && (
+        isOpen && (
             <Alert
                 data-test-id='error-notification'
                 status='success'

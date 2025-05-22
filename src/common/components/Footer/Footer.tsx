@@ -1,5 +1,7 @@
 import { Button, Image, Stack, Text } from '@chakra-ui/react';
 
+import leftIcon from '~/assets/icons/left.svg';
+
 import { useResource } from '../ResourceContext/ResourceContext';
 
 interface FooterProps {
@@ -31,13 +33,7 @@ export const Footer = ({ onLogout }: FooterProps) => {
                 px={0}
                 variant='ghost'
                 justifyContent='start'
-                leftIcon={
-                    <Image
-                        src='/src/assets/icons/left.svg'
-                        alt='Иконка выхода'
-                        onClick={onLogout}
-                    />
-                }
+                leftIcon={<Image src={leftIcon} alt='Иконка выхода' onClick={onLogout} />}
             >
                 {getString('exit')}
             </Button>

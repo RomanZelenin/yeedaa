@@ -1,9 +1,12 @@
 import { Image, useBreakpointValue } from '@chakra-ui/react';
 
+import logoImg from '~/assets/logo.svg';
+import logoMdImg from '~/assets/logo-md.svg';
+
 export const Logo = () => {
     const path = useBreakpointValue({
-        base: '/src/assets/logo.svg',
-        md: '/src/assets/logo-md.svg',
+        base: logoImg,
+        md: logoMdImg,
     })!;
 
     return (

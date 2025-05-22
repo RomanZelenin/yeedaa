@@ -1,5 +1,6 @@
 import { Center, GridItem, Image, Link, Text, VStack } from '@chakra-ui/react';
 
+import pageNotFoundImg from '~/assets/images/page-not-found.png';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 
 export const ErrorPage = () => {
@@ -14,10 +15,7 @@ export const ErrorPage = () => {
                 }}
             >
                 <VStack spacing={{ base: '32px' }}>
-                    <Image
-                        src='/src/assets/images/page-not-found.png'
-                        boxSize={{ base: '108px', lg: '206px' }}
-                    />
+                    <Image src={pageNotFoundImg} boxSize={{ base: '108px', lg: '206px' }} />
                     <VStack
                         spacing={{ base: '16px' }}
                         width={{ base: '252px', lg: '332px' }}

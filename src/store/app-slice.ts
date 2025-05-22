@@ -18,6 +18,8 @@ export const enum Error {
     INVALID_CODE = 'Неверный код',
 }
 
+export const NONE_ERROR_RESPONSE: ResponseError = { value: Error.NONE, message: '' };
+
 export type ResponseError = {
     value: string;
     message?: string;
@@ -28,7 +30,7 @@ const initialState = {
     isNewestRecipesLoading: false,
     isJuiciestRecipesLoading: false,
     isRelevantLoading: false,
-    error: { value: Error.NONE } as ResponseError,
+    error: NONE_ERROR_RESPONSE,
     query: '' as string,
     recipes: [] as Recipe[],
     blogs: blogs as { person: Profile; comment: string }[],

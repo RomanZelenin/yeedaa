@@ -7,7 +7,7 @@ import {
     CloseButton,
     HStack,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { BottomBehavior } from './BottomBehavior';
 
@@ -26,10 +26,15 @@ export const ErrorAlert = ({
     position: 'fixed' | 'absolute';
     bottom?: BottomBehavior;
 }) => {
+    const refTimeout = useRef<NodeJS.Timeout>(undefined);
     useEffect(() => {
-        setTimeout(() => {
-            onClose();
-        }, 15000);
+        if (isOpen) {
+            refTimeout.current = setTimeout(() => {
+                onClose();
+            }, 15000);
+        } else {
+            clearTimeout(refTimeout.current);
+        }
     }, [isOpen]);
 
     return (

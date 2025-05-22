@@ -11,6 +11,7 @@ import {
     VStack,
 } from '@chakra-ui/react';
 
+import verificationFailedImg from '~/assets/images/verification-failed.svg';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
 
 export const VerificationFailedModal = () => {
@@ -45,7 +46,7 @@ export const VerificationFailedModal = () => {
                     <VStack spacing='32px' p='32px'>
                         <Image
                             boxSize={{ base: '108px', lg: '206px' }}
-                            src='/src/assets/images/verification-failed.svg'
+                            src={verificationFailedImg}
                         />
                         <VStack spacing={0} textAlign='center'>
                             <Text textStyle='text2xlLh8Bold' mb={{ base: '16px' }}>

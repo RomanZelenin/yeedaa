@@ -17,15 +17,18 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
+import bookmarkIcon from '~/assets/icons/bookmark.svg';
+import likeIcon from '~/assets/icons/like.svg';
+import personsIcon from '~/assets/icons/persons.svg';
 import { useGetCategoriesQuery } from '~/query/create-api';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 
 export const VegeterianKitchenCard = ({ recipe }: { recipe: Recipe }) => {
     const counters = [
-        { type: 'bookmarks', count: recipe.bookmarks, icon: '/src/assets/icons/bookmark.svg' },
-        { type: 'likes', count: recipe.likes, icon: '/src/assets/icons/like.svg' },
-        { type: 'persons', count: recipe.views, icon: '/src/assets/icons/persons.svg' },
+        { type: 'bookmarks', count: recipe.bookmarks, icon: bookmarkIcon },
+        { type: 'likes', count: recipe.likes, icon: likeIcon },
+        { type: 'persons', count: recipe.views, icon: personsIcon },
     ].filter((item) => typeof item.count === 'number') as {
         type: string;
         count: number;

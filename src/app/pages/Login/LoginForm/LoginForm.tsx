@@ -7,7 +7,13 @@ import { useNavigate } from 'react-router';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
 import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useLoginMutation } from '~/query/create-api';
-import { Error, errorSelector, setAppError, setAppLoader } from '~/store/app-slice';
+import {
+    Error,
+    errorSelector,
+    NONE_ERROR_RESPONSE,
+    setAppError,
+    setAppLoader,
+} from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { LoginFailedModal } from '../Modal/LoginFailedModal';
@@ -24,10 +30,8 @@ export const LoginForm = () => {
     const naviagate = useNavigate();
     const loginInputRef = useRef<HTMLInputElement>(null);
     const [isShowRecoveryModal, setIsShowRecoveryModal] = useState(false);
-
     const error = useAppSelector(errorSelector);
     const [isShowLoginFailed, setIsShowLoginFailed] = useState(false);
-
     const {
         control,
         register,
@@ -38,7 +42,6 @@ export const LoginForm = () => {
         resolver: yupResolver(loginFormSchema),
         mode: 'onChange',
     });
-
     const [login] = useLoginMutation();
     const handleOnError = useCallback((response?: LoginResponse) => {
         switch (response?.status) {
@@ -80,7 +83,6 @@ export const LoginForm = () => {
             event?: React.BaseSyntheticEvent;
         }) => {
             try {
-                setIsShowLoginFailed(false);
                 dispatch(setAppLoader(true));
                 await login(data as LoginFormData).unwrap();
                 naviagate('/', { replace: true });
@@ -92,7 +94,6 @@ export const LoginForm = () => {
         },
         [dispatch, login],
     );
-
     const isIncorrectLoginOrPassword =
         formErrors.login || error.value === Error.INCORRECT_LOGIN_OR_PASSWORD;
 
@@ -122,7 +123,7 @@ export const LoginForm = () => {
                             id='login'
                             {...register('login')}
                             onInput={(e) => {
-                                dispatch(setAppError({ value: Error.NONE }));
+                                dispatch(setAppError(NONE_ERROR_RESPONSE));
                                 setValue('login', (e.target as HTMLInputElement).value.trim());
                             }}
                             ref={loginInputRef}
@@ -160,7 +161,7 @@ export const LoginForm = () => {
                             id='password'
                             {...register('password')}
                             onInput={(e) => {
-                                dispatch(setAppError({ value: Error.NONE }));
+                                dispatch(setAppError(NONE_ERROR_RESPONSE));
                                 setValue('password', (e.target as HTMLInputElement).value);
                             }}
                             aria-invalid={formErrors.password ? 'true' : 'false'}
@@ -192,7 +193,12 @@ export const LoginForm = () => {
                 </VStack>
             </Form>
             {isShowLoginFailed && (
-                <LoginFailedModal onClickRepeat={() => onSubmit({ data: getValues() })} />
+                <LoginFailedModal
+                    onClickRepeat={() => {
+                        setIsShowLoginFailed(false);
+                        onSubmit({ data: getValues() });
+                    }}
+                />
             )}
             {isShowRecoveryModal && (
                 <RecoveryModal

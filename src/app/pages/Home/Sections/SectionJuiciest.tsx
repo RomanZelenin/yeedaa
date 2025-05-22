@@ -1,5 +1,6 @@
 import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
 
+import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useGetJuiciestRecipesQuery } from '~/query/create-api';
 import { setJuiciestRecipesLoader } from '~/store/app-slice';
@@ -46,7 +47,7 @@ export default function SectionJuiciest() {
                         variant='ghost'
                         px='16px'
                         py='8px'
-                        rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
+                        rightIcon={<Image src={arrowRightIcon} />}
                         data-test-id='juiciest-link'
                     >
                         Вся подборка
@@ -70,7 +71,7 @@ export default function SectionJuiciest() {
                     flex={1}
                     px='16px'
                     py='8px'
-                    rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
+                    rightIcon={<Image src={arrowRightIcon} />}
                     data-test-id='juiciest-link-mobile'
                 >
                     Вся подборка

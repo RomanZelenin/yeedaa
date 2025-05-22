@@ -18,17 +18,14 @@ import { OTPRecoveryFrom } from './OTPRecoveryForm';
 export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) => {
     const navigate = useNavigate();
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
-
     const handleOnClickClose = () => {
         onClickClose();
         onClose();
     };
-
     const [currentStep, setCurrentStep] = useState(0);
     const nextStep = () => {
         setCurrentStep(currentStep + 1);
     };
-
     const [email, setEmail] = useState('');
     const steps = [
         {

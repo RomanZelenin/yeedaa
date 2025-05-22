@@ -18,6 +18,8 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
+import bookmarkIcon from '~/assets/icons/bookmark.svg';
+import likeIcon from '~/assets/icons/like.svg';
 import { useGetCategoriesQuery } from '~/query/create-api';
 import { querySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
@@ -80,13 +82,13 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         </Wrap>
                         <HStack spacing='8px'>
                             <HStack spacing='6px' p='4px'>
-                                <Image src='/src/assets/icons/bookmark.svg' boxSize='12px' alt='' />
+                                <Image src={bookmarkIcon} boxSize='12px' alt='' />
                                 <Text textStyle='textXsLh4Semibold' color='lime.600'>
                                     {recipe.bookmarks}
                                 </Text>
                             </HStack>
                             <HStack spacing='6px' p='4px'>
-                                <Image src='/src/assets/icons/like.svg' boxSize='12px' alt='' />
+                                <Image src={likeIcon} boxSize='12px' alt='' />
                                 <Text textStyle='textXsLh4Semibold' color='lime.600'>
                                     {recipe.likes}
                                 </Text>
@@ -110,7 +112,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         px='12px'
                         py='6px'
                         textStyle='textSmLh5Semibold'
-                        leftIcon={<Image src='/src/assets/icons/bookmark.svg' />}
+                        leftIcon={<Image src={bookmarkIcon} />}
                         h='32px'
                         borderRadius='6px'
                         borderColor='blackAlpha.600'
