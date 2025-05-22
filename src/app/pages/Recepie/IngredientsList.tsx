@@ -65,7 +65,7 @@ export const IngredientsList = ({
                                             setNumServings(valueNumber)
                                         }
                                         step={1}
-                                        min={0}
+                                        min={1}
                                         w='90px'
                                         h='40px'
                                     >

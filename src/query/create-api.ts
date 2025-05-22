@@ -1,6 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
+import { LoginFormData } from '~/app/pages/Login/LoginForm/LoginForm';
+import { EmailRecoveryFormData } from '~/app/pages/Login/Modal/Recovery/EmailRecoveryForm';
+import { OTPFormData } from '~/app/pages/Login/Modal/Recovery/OTPRecoveryForm';
+import { RegistrationFormData } from '~/app/pages/Login/RegistrationForm/RegistrationForm';
 
 import { ApiEndpoints } from './constants/api';
 
@@ -42,6 +46,15 @@ type RecipesResponse = {
         page: number;
         limit: number;
         totalPages: number;
+    };
+};
+
+export type LoginResponse = {
+    status: number;
+    data: {
+        statusCode: number;
+        message: string;
+        error: string;
     };
 };
 
@@ -161,6 +174,67 @@ export const apiSlice = createApi({
                 return { ...data, steps: steps, image: IMAGE_BASE_URL + data.image };
             },
         }),
+        login: build.mutation<LoginResponse, LoginFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.LOGIN}`,
+                method: 'post',
+                body,
+            }),
+            transformResponse: (response, meta) => {
+                const headers = meta?.response?.headers;
+                const token = headers?.get('Authentication-Access');
+                sessionStorage.setItem('access_token', token ?? '');
+                return response as LoginResponse;
+            },
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+        }),
+        signup: build.mutation<LoginResponse, RegistrationFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.SIGNUP}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+        }),
+        forgotPassword: build.mutation<LoginResponse, EmailRecoveryFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.FORGOT_PASSWORD}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+        }),
+        verifyOTP: build.mutation<LoginResponse, OTPFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.VERIFY_OTP}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+        }),
+        resetPassword: build.mutation<LoginResponse, EmailRecoveryFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.RESET_PASSWORD}`,
+                method: 'post',
+                body,
+            }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+        }),
     }),
 });
 
@@ -172,4 +246,9 @@ export const {
     useGetNewestRecipesQuery,
     useGetJuiciestRecipesQuery,
     useGetRecipeByCategoryQuery,
+    useLoginMutation,
+    useSignupMutation,
+    useForgotPasswordMutation,
+    useVerifyOTPMutation,
+    useResetPasswordMutation,
 } = apiSlice;

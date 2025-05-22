@@ -5,43 +5,72 @@ import {
     AlertTitle,
     Box,
     CloseButton,
-    useDisclosure,
+    HStack,
 } from '@chakra-ui/react';
+import { useEffect } from 'react';
 
-import { useResource } from '../ResourceContext/ResourceContext';
+import { BottomBehavior } from './BottomBehavior';
 
-export const ErrorAlert = ({ message }: { message: string }) => {
-    const { getString } = useResource();
-    const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
+export const ErrorAlert = ({
+    title,
+    message,
+    position,
+    bottom,
+    isOpen,
+    onClose,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    message: string;
+    position: 'fixed' | 'absolute';
+    bottom?: BottomBehavior;
+}) => {
+    useEffect(() => {
+        setTimeout(() => {
+            onClose();
+        }, 15000);
+    }, [isOpen]);
 
-    return isVisible ? (
-        <Alert
-            data-test-id='error-notification'
-            status='error'
-            variant='solid'
-            width='fit-content'
-            position='fixed'
-            margin='auto'
-            right={0}
-            left={0}
-            bottom={{ base: '106px', md: '112px' }}
-            zIndex='toast'
-        >
-            <AlertIcon />
-            <Box>
-                <AlertTitle>{getString('server-error')}</AlertTitle>
-                <AlertDescription>{message}</AlertDescription>
-            </Box>
-            <CloseButton
-                data-test-id='close-alert-button'
-                alignSelf='flex-start'
-                position='relative'
-                right={-1}
-                top={-1}
-                onClick={onClose}
-            />
-        </Alert>
-    ) : (
-        <></>
+    return (
+        isOpen && (
+            <Alert
+                data-test-id='error-notification'
+                status='error'
+                variant='solid'
+                maxW={{ base: '355px', lg: '400px' }}
+                position={position}
+                width='fit-content'
+                margin='auto'
+                right={{ base: '16px', lg: '0px' }}
+                left={{ base: '16px', lg: '0px' }}
+                bottom={bottom}
+                zIndex='toast'
+            >
+                <HStack>
+                    <AlertIcon justifySelf='start' />
+                    <Box>
+                        <HStack>
+                            <AlertTitle flex={1}>{title}</AlertTitle>
+                            <CloseButton
+                                boxSize='12px'
+                                data-test-id='close-alert-button'
+                                alignSelf='flex-start'
+                                position='relative'
+                                right={-1}
+                                top={1}
+                                onClick={() => {
+                                    onClose();
+                                }}
+                            />
+                        </HStack>
+
+                        <AlertDescription textStyle='textMdLh6Normal' whiteSpace='pre-wrap'>
+                            {message}
+                        </AlertDescription>
+                    </Box>
+                </HStack>
+            </Alert>
+        )
     );
 };

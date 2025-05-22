@@ -5,6 +5,8 @@ import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
 import { RecipeCard } from '~/common/components/Cards/RecipeCard';
 import { Profile } from '~/common/components/Header/ProfileInfo';
 import { useGetRecipeByIdQuery } from '~/query/create-api';
+import { setAppLoader } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 import SectionNewRecipes from '../Home/Sections/SectionNewRecepies';
 import { CookingSteps } from './CookingSteps';
@@ -25,13 +27,26 @@ const mockAuthor: Profile = {
 
 export const RecipePage = () => {
     const { id } = useParams();
-    const { data: recipe, isSuccess, isLoading } = useGetRecipeByIdQuery(id!, { skip: !id });
+    const dispatch = useAppDispatch();
+    const {
+        data: recipe,
+        isSuccess,
+        isLoading,
+        isError,
+    } = useGetRecipeByIdQuery(id!, { skip: !id });
 
     if (isLoading) {
+        dispatch(setAppLoader(true));
+        return null;
+    }
+
+    if (isError) {
+        dispatch(setAppLoader(false));
         return null;
     }
 
     if (isSuccess) {
+        dispatch(setAppLoader(false));
         return (
             <>
                 <GridItem

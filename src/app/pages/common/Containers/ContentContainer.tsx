@@ -37,7 +37,7 @@ export default function ContentContainer({
     const isSearch = useAppSelector(isSearchSelector);
     const dispatch = useAppDispatch();
 
-    const { subcategoriesIds, allergens, garnish, meat } = useMemo(
+    const { _subcategoriesIds, allergens, _garnish, _meat } = useMemo(
         () => ({
             subcategoriesIds: joinSelected(filter.categories),
             allergens: joinSelected(filter.allergens),
@@ -53,9 +53,9 @@ export default function ContentContainer({
             limit: 8,
             searchString: query,
             allergens: allergens.length > 0 ? allergens : undefined,
-            subcategoriesIds: subcategoriesIds,
-            garnish: garnish,
-            meat: meat,
+            subcategoriesIds: undefined,
+            garnish: undefined,
+            meat: undefined,
         },
         { skip: !isSearch },
     );

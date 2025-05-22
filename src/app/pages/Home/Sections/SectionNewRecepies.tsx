@@ -15,27 +15,30 @@ export default function SectionNewRecipes() {
     const dispatcher = useAppDispatch();
     const {
         data: recipes,
-        isLoading,
-        isError,
-        isSuccess,
+        isLoading: isLoadingGetNewestRecipesQuery,
+        isError: isErrorGetNewestRecipesQuery,
+        isSuccess: isSuccessGetNewestRecipesQuery,
     } = useGetNewestRecipesQuery({ limit: 10 });
 
-    const { data: categories, isSuccess: isGetCategoriesSuccess } = useGetCategoriesQuery();
+    const {
+        data: categories,
+        isSuccess: isSuccessGetCategories,
+        isLoading: isLoadingGetCategories,
+        isError: isErrorGetCategories,
+    } = useGetCategoriesQuery();
 
-    if (isLoading) {
+    if (isLoadingGetNewestRecipesQuery || isLoadingGetCategories) {
         dispatcher(setNewestRecipesLoader(true));
-        return <Text>Loading...</Text>;
+        return null;
     }
-    if (isError || isSuccess) {
+    if (isErrorGetNewestRecipesQuery || isErrorGetCategories) {
         dispatcher(setNewestRecipesLoader(false));
-        if (isError) return <Text>Error</Text>;
+        return null;
     }
 
-    if (isGetCategoriesSuccess) {
-        const sortedRecipesForTesting = [...recipes!.data].sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-        ); //Сортировка для прохождения теста
-        const subcategories = sortedRecipesForTesting!.map(
+    if (isSuccessGetCategories && isSuccessGetNewestRecipesQuery) {
+        dispatcher(setNewestRecipesLoader(false));
+        const subcategories = recipes!.data.map(
             (recipe) =>
                 categories!.find(
                     (category) => category._id === recipe.categoriesIds![0],
@@ -103,7 +106,7 @@ export default function SectionNewRecipes() {
                             },
                         }}
                     >
-                        {sortedRecipesForTesting
+                        {recipes!.data
                             ?.map((recipe, i) => ({
                                 ...recipe,
                                 path: `/${rootCategories.at(i)?.category}/${subcategories.at(i)?.category}/${recipe._id}`,
