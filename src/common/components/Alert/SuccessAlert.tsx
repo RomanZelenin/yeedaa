@@ -10,26 +10,31 @@ import {
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
-export type AlertProps = {
+export type AlertButtom =
+    | ResponsiveValue<
+          | number
+          | string
+          | '-moz-initial'
+          | 'inherit'
+          | 'initial'
+          | 'revert'
+          | 'revert-layer'
+          | 'unset'
+          | 'auto'
+      >
+    | undefined;
+
+export const SuccessAlert = ({
+    title,
+    message,
+    position,
+    bottom,
+}: {
     title: string;
     message: string;
     position: 'fixed' | 'absolute';
-    bottom?:
-        | ResponsiveValue<
-              | number
-              | string
-              | '-moz-initial'
-              | 'inherit'
-              | 'initial'
-              | 'revert'
-              | 'revert-layer'
-              | 'unset'
-              | 'auto'
-          >
-        | undefined;
-};
-
-export const SuccessAlert = ({ alertProps }: { alertProps: AlertProps }) => {
+    bottom?: AlertButtom;
+}) => {
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
 
     useEffect(() => {
@@ -44,18 +49,19 @@ export const SuccessAlert = ({ alertProps }: { alertProps: AlertProps }) => {
                 data-test-id='error-notification'
                 status='success'
                 variant='solid'
+                maxW={{ base: '355px', lg: '400px' }}
+                position={position}
                 width='fit-content'
-                position={alertProps.position}
                 margin='auto'
-                right={0}
-                left={0}
-                bottom={alertProps.bottom}
+                right={{ base: '16px', lg: '0px' }}
+                left={{ base: '16px', lg: '0px' }}
+                bottom={bottom}
                 zIndex='toast'
             >
                 <AlertIcon />
                 <Box>
-                    <AlertTitle>{alertProps.title}</AlertTitle>
-                    <AlertDescription>{alertProps.message}</AlertDescription>
+                    <AlertTitle>{title}</AlertTitle>
+                    <AlertDescription>{message}</AlertDescription>
                 </Box>
                 <CloseButton
                     boxSize='12px'

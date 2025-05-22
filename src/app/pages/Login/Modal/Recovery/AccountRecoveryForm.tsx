@@ -233,12 +233,10 @@ export const AccountRecoveryForm = ({
             <ErrorAlert
                 isOpen={isOpenErrorAlert}
                 onClose={onCloseErrorAlert}
-                alertProps={{
-                    bottom: '20px',
-                    title: error.value,
-                    message: error.message ?? '',
-                    position: 'fixed',
-                }}
+                bottom='20px'
+                title={error.value}
+                message={error.message ?? ''}
+                position='fixed'
             />
         </>
     );

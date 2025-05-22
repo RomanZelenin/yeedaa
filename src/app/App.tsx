@@ -82,12 +82,10 @@ export default function App() {
                         <ErrorAlert
                             isOpen={isOpenErrorAlert}
                             onClose={onCloseErrorAlert}
-                            alertProps={{
-                                bottom: { base: '106px', md: '112px' },
-                                title: error.value,
-                                message: error.message ?? '',
-                                position: 'fixed',
-                            }}
+                            bottom={{ base: '106px', md: '112px' }}
+                            title={error.value}
+                            message={error.message ?? ''}
+                            position='fixed'
                         />
                     )}
                 </Grid>

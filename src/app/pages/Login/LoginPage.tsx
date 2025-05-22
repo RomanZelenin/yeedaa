@@ -109,23 +109,19 @@ export const LoginPage = () => {
                     )}
                     {successfulRecovery !== undefined && (
                         <SuccessAlert
-                            alertProps={{
-                                position: 'absolute',
-                                bottom: '60px',
-                                title: 'Восстановление данных успешно',
-                                message: '',
-                            }}
+                            position='absolute'
+                            bottom='60px'
+                            title='Восстановление данных успешно'
+                            message=''
                         />
                     )}
                     <ErrorAlert
                         isOpen={isOpenErrorAlert}
                         onClose={onCloseErrorAlert}
-                        alertProps={{
-                            bottom: '50px',
-                            title: error.value,
-                            message: error.message ?? '',
-                            position: 'absolute',
-                        }}
+                        bottom='50px'
+                        title={error.value}
+                        message={error.message ?? ''}
+                        position='absolute'
                     />
                     <Spacer />
                     <Text
@@ -160,12 +156,10 @@ export const LoginPage = () => {
 const VerificationStatus = ({ emailVerified }: { emailVerified: boolean }) =>
     emailVerified ? (
         <SuccessAlert
-            alertProps={{
-                position: 'absolute',
-                bottom: '60px',
-                title: 'Верификация прошла успешно',
-                message: '',
-            }}
+            position='absolute'
+            bottom='60px'
+            title='Верификация прошла успешно'
+            message=''
         />
     ) : (
         <VerificationFailedModal />

@@ -9,16 +9,22 @@ import {
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
-import { AlertProps } from './SuccessAlert';
+import { AlertButtom } from './SuccessAlert';
 
 export const ErrorAlert = ({
-    alertProps,
+    title,
+    message,
+    position,
+    bottom,
     isOpen,
     onClose,
 }: {
     isOpen: boolean;
     onClose: () => void;
-    alertProps: AlertProps;
+    title: string;
+    message: string;
+    position: 'fixed' | 'absolute';
+    bottom?: AlertButtom;
 }) => {
     useEffect(() => {
         setTimeout(() => {
@@ -32,20 +38,20 @@ export const ErrorAlert = ({
                 data-test-id='error-notification'
                 status='error'
                 variant='solid'
-                maxW='355px'
-                position={alertProps.position}
+                maxW={{ base: '355px', lg: '400px' }}
+                position={position}
                 width='fit-content'
                 margin='auto'
-                right={0}
-                left={0}
-                bottom={alertProps.bottom}
+                right={{ base: '16px', lg: '0px' }}
+                left={{ base: '16px', lg: '0px' }}
+                bottom={bottom}
                 zIndex='toast'
             >
                 <HStack>
                     <AlertIcon justifySelf='start' />
                     <Box>
                         <HStack>
-                            <AlertTitle flex={1}>{alertProps.title}</AlertTitle>
+                            <AlertTitle flex={1}>{title}</AlertTitle>
                             <CloseButton
                                 boxSize='12px'
                                 data-test-id='close-alert-button'
@@ -60,7 +66,7 @@ export const ErrorAlert = ({
                         </HStack>
 
                         <AlertDescription textStyle='textMdLh6Normal' whiteSpace='pre-wrap'>
-                            {alertProps.message}
+                            {message}
                         </AlertDescription>
                     </Box>
                 </HStack>
