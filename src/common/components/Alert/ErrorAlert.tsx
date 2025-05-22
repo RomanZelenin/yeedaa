@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
-import { AlertButtom } from './SuccessAlert';
+import { BottomBehavior } from './BottomBehavior';
 
 export const ErrorAlert = ({
     title,
@@ -24,7 +24,7 @@ export const ErrorAlert = ({
     title: string;
     message: string;
     position: 'fixed' | 'absolute';
-    bottom?: AlertButtom;
+    bottom?: BottomBehavior;
 }) => {
     useEffect(() => {
         setTimeout(() => {

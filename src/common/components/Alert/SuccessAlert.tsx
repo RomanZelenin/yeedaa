@@ -5,24 +5,11 @@ import {
     AlertTitle,
     Box,
     CloseButton,
-    ResponsiveValue,
     useDisclosure,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
-export type AlertButtom =
-    | ResponsiveValue<
-          | number
-          | string
-          | '-moz-initial'
-          | 'inherit'
-          | 'initial'
-          | 'revert'
-          | 'revert-layer'
-          | 'unset'
-          | 'auto'
-      >
-    | undefined;
+import { BottomBehavior } from './BottomBehavior';
 
 export const SuccessAlert = ({
     title,
@@ -33,7 +20,7 @@ export const SuccessAlert = ({
     title: string;
     message: string;
     position: 'fixed' | 'absolute';
-    bottom?: AlertButtom;
+    bottom?: BottomBehavior;
 }) => {
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
 
