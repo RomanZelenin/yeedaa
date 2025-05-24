@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader, Image, Stack, Tag, TagLabel, Text } from '@chakra-ui/react';
 
+import { Fallback } from '../Fallback/Fallback';
 import { useResource } from '../ResourceContext/ResourceContext';
 
 export const StepPreparationCard = ({
@@ -21,7 +22,7 @@ export const StepPreparationCard = ({
                     objectFit='cover'
                     src={cover}
                     w={{ base: '158px', lg: '346px' }}
-                    alt={`step ${step}`}
+                    fallback={<Fallback width={{ base: '158px', lg: '346px' }} height='inherit' />}
                 />
             )}
             <Stack spacing={{ base: '12px', lg: '16px' }} flex={1} p={{ base: '8px', lg: '24px' }}>

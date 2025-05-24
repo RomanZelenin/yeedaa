@@ -24,6 +24,7 @@ import { useGetCategoriesQuery } from '~/query/create-api';
 import { querySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
+import { Fallback } from '../Fallback/Fallback';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
@@ -45,7 +46,12 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
             overflow='clip'
             minH='244px'
         >
-            <Image objectFit='cover' src={recipe.image} w='346px' alt={recipe.title} />
+            <Image
+                objectFit='cover'
+                src={recipe.image}
+                w='346px'
+                fallback={<Fallback width='346px' height='100%' />}
+            />
             {recipe.recommendation?.slice(0, 1).map((profile, i) => (
                 <>
                     <Tag
@@ -161,7 +167,11 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
             overflow='clip'
             minH='128px'
         >
-            <Image src={recipe.image} w='158px' alt={recipe.title} />
+            <Image
+                src={recipe.image}
+                w='158px'
+                fallback={<Fallback width='158px' height='100%' />}
+            />
             <Wrap pos='absolute' top='6px' left='6px' alignItems='center' maxW='158px'>
                 {categories?.map((category, i) => (
                     <WrapItem key={i}>

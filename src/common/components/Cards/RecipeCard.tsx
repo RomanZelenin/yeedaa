@@ -18,6 +18,7 @@ import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import likeIcon from '~/assets/icons/like.svg';
 import { useGetCategoriesQuery } from '~/query/create-api';
 
+import { Fallback } from '../Fallback/Fallback';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
 
@@ -43,7 +44,12 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                     borderRadius='8px'
                     w={{ base: '328px', md: '232px', lg: '353px', xl: '553px' }}
                     h={{ base: '224px', lg: '410px', xl: '410px' }}
-                    alt={recipe.title}
+                    fallback={
+                        <Fallback
+                            width='100%'
+                            height={{ base: '224px', lg: '410px', xl: '410px' }}
+                        />
+                    }
                 />
                 <VStack w='100%' alignSelf={{ md: 'stretch' }}>
                     <HStack w='100%' justify='space-between' align='start'>
