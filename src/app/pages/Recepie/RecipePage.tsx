@@ -1,4 +1,4 @@
-import { Box, Flex, GridItem } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
@@ -8,6 +8,7 @@ import { useGetRecipeByIdQuery } from '~/query/create-api';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
+import { EmptyPage } from '../common/Containers/EmptyPage';
 import SectionNewRecipes from '../Home/Sections/SectionNewRecepies';
 import { CookingSteps } from './CookingSteps';
 import { IngredientsList } from './IngredientsList';
@@ -48,13 +49,8 @@ export const RecipePage = () => {
     if (isSuccess) {
         dispatch(setAppLoader(false));
         return (
-            <>
-                <GridItem
-                    colSpan={{ base: 4, md: 8 }}
-                    display='block'
-                    colStart={{ base: 1, md: 1 }}
-                    colEnd={{ base: 5, md: 13 }}
-                >
+            <EmptyPage>
+                <>
                     <Flex
                         direction={{ base: 'column' }}
                         px={{ base: '16px', md: '20px', lg: '0px' }}
@@ -81,8 +77,8 @@ export const RecipePage = () => {
                     <Box mt='24px'>
                         <SectionNewRecipes />
                     </Box>
-                </GridItem>
-            </>
+                </>
+            </EmptyPage>
         );
     }
 };
