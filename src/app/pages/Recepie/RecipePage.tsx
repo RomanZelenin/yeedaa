@@ -8,7 +8,7 @@ import { useGetRecipeByIdQuery } from '~/query/create-api';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
-import { EmptyPage } from '../common/Containers/EmptyPage';
+import { EmptyConatainer } from '../common/Containers/EmptyContainer';
 import SectionNewRecipes from '../Home/Sections/SectionNewRecepies';
 import { CookingSteps } from './CookingSteps';
 import { IngredientsList } from './IngredientsList';
@@ -49,7 +49,7 @@ export const RecipePage = () => {
     if (isSuccess) {
         dispatch(setAppLoader(false));
         return (
-            <EmptyPage>
+            <EmptyConatainer>
                 <>
                     <Flex
                         direction={{ base: 'column' }}
@@ -78,7 +78,7 @@ export const RecipePage = () => {
                         <SectionNewRecipes />
                     </Box>
                 </>
-            </EmptyPage>
+            </EmptyConatainer>
         );
     }
 };

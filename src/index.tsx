@@ -10,6 +10,7 @@ import { store } from '~/store/configure-store.ts';
 
 import App from './app/App';
 import CategoryPage from './app/pages/Category/CategoryPage';
+import { CreateRecipePage } from './app/pages/CreateRecipe/CreateRecipePage';
 import { ErrorPage } from './app/pages/Error/ErrorPage';
 import HomePage from './app/pages/Home/HomePage';
 import JuiciestPage from './app/pages/Juiciest/JuiciestPage';
@@ -29,6 +30,7 @@ export enum ApplicationRoute {
     CATEGORY_WITH_SUBCATEGORY = '/:category/:subcategory?',
     CATEGORY_WITH_SUBCATEGORY_AND_ID = '/:category/:subcategory/:id',
     INDEX = '/',
+    NEW_RECIPE = '/new-recipe',
     ANY = '/*',
 }
 
@@ -65,6 +67,10 @@ createRoot(document.getElementById('root')!).render(
                                 <Route
                                     path={ApplicationRoute.CATEGORY_WITH_SUBCATEGORY_AND_ID}
                                     element={<RecipePage />}
+                                />
+                                <Route
+                                    path={ApplicationRoute.NEW_RECIPE}
+                                    element={<CreateRecipePage />}
                                 />
                                 <Route path={ApplicationRoute.NOT_FOUND} element={<ErrorPage />} />
                                 <Route path={ApplicationRoute.ANY} element={<ErrorPage />} />

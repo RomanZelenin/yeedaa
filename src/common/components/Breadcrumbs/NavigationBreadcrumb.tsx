@@ -48,6 +48,8 @@ export const NavigationBreadcrumb = () => {
                         path: `/the-juiciest/${recipeId}#`,
                     });
                 }
+            } else if (location.pathname.startsWith('/new-recipe')) {
+                breadcrumbs.push({ title: getString('new-recipe'), path: '/new-recipe' });
             }
         }
         setBreadcrumbs(breadcrumbs);

@@ -58,6 +58,9 @@ export type LoginResponse = {
     };
 };
 
+export type MeasureUnit = { _id: string; name: string };
+export type MeasureUnitsResponse = Array<MeasureUnit>;
+
 const IMAGE_BASE_URL = 'https://training-api.clevertec.ru';
 const API_BASE_URL = 'https://marathon-api.clevertec.ru/';
 
@@ -235,6 +238,15 @@ export const apiSlice = createApi({
                 return response;
             },
         }),
+        getMeasureUnits: build.query<MeasureUnitsResponse, void>({
+            query: () => ({
+                url: ApiEndpoints.MEASURE_UNITS,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('access_token')}`,
+                },
+            }),
+        }),
     }),
 });
 
@@ -251,4 +263,5 @@ export const {
     useForgotPasswordMutation,
     useVerifyOTPMutation,
     useResetPasswordMutation,
+    useGetMeasureUnitsQuery,
 } = apiSlice;

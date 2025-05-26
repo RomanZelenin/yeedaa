@@ -1,6 +1,6 @@
 import { Grid, GridItem, Show, useDisclosure } from '@chakra-ui/react';
 import { useEffect } from 'react';
-import { Navigate, Outlet } from 'react-router';
+import { Navigate, Outlet, useLocation } from 'react-router';
 
 import profile from '~/app/mocks/profile.json';
 import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
@@ -12,7 +12,10 @@ import { SideMenu } from '~/common/components/Menu/SideMenu';
 import { Error, errorSelector, loadingSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
+import { ApplicationRoute } from '..';
+
 export default function App() {
+    const location = useLocation();
     const isLoading = useAppSelector(loadingSelector);
     const error = useAppSelector(errorSelector);
     const {
@@ -69,11 +72,13 @@ export default function App() {
                         </Grid>
                     </GridItem>
                     <GridItem area='aside' hideBelow='lg'>
-                        <AsidePanel
-                            bookmarks={profile.activity.bookmarks}
-                            persons={profile.activity.persons}
-                            likes={profile.activity.likes}
-                        />
+                        {location.pathname !== ApplicationRoute.NEW_RECIPE && (
+                            <AsidePanel
+                                bookmarks={profile.activity.bookmarks}
+                                persons={profile.activity.persons}
+                                likes={profile.activity.likes}
+                            />
+                        )}
                     </GridItem>
                     <GridItem area='footer' hideFrom='lg'>
                         <BottomMenu avatar={profile.avatar} />

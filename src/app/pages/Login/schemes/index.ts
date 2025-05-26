@@ -1,5 +1,8 @@
 import * as yup from 'yup';
 
+import { CookingStep } from '~/app/mocks/types/type_defenitions';
+
+import { IngredientFormData } from '../../CreateRecipe/IngredientsEditor';
 import { LoginFormData } from '../LoginForm/LoginForm';
 import { AccountFormData } from '../Modal/Recovery/AccountRecoveryForm';
 import { EmailRecoveryFormData } from '../Modal/Recovery/EmailRecoveryForm';
@@ -185,3 +188,27 @@ export const registrationFormSchema: yup.ObjectSchema<RegistrationFormData> = yu
             ),
     })
     .required();
+
+export const ingredientSchema: yup.ObjectSchema<IngredientFormData> = yup
+    .object({
+        title: yup.string().trim().required().max(50, MAX_LENGTH),
+        count: yup.number().positive().required(),
+        measureUnit: yup.string().required(),
+    })
+    .required();
+
+export const ingridientsSchema = yup.object({
+    items: yup.array().of(ingredientSchema).required(),
+});
+
+export const cookingStepSchema: yup.ObjectSchema<CookingStep> = yup
+    .object({
+        stepNumber: yup.number().required(),
+        description: yup.string().trim().required().max(300),
+        image: yup.string(),
+    })
+    .required();
+
+export const cookingStepsSchema = yup.object({
+    items: yup.array().of(cookingStepSchema).required(),
+});

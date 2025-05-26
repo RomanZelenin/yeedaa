@@ -47,7 +47,7 @@ export default function SectionNewRecipes() {
                 )! as unknown as Subcategory,
         );
         const rootCategories = subcategories.map((subcategory) =>
-            categories.find((category) => category._id === subcategory.rootCategoryId),
+            categories.find((category) => category._id === subcategory?.rootCategoryId),
         );
 
         return (
