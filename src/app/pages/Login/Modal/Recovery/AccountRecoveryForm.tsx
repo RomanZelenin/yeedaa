@@ -1,13 +1,13 @@
-import { Button, Input, Stack, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Button, Input, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
+import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
 import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useResetPasswordMutation } from '~/query/create-api';
-import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
+import { Error, Notification, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 import { accountRecoverySchema } from '../../schemes';
@@ -33,13 +33,7 @@ export const AccountRecoveryForm = ({
     onSuccess: () => void;
 }) => {
     const dispatch = useAppDispatch();
-    const [error, setError] = useState<ResponseError>({ value: Error.NONE });
-    const {
-        isOpen: isOpenErrorAlert,
-        onClose: onCloseErrorAlert,
-        onOpen: onOpenErrorAlert,
-    } = useDisclosure({ defaultIsOpen: error.value !== Error.NONE });
-
+    const [notification, setNotification] = useState<Notification | null>(null);
     const {
         getValues,
         setValue,
@@ -55,18 +49,21 @@ export const AccountRecoveryForm = ({
     const handleOnError = useCallback((response?: LoginResponse) => {
         switch (response?.status) {
             case StatusCode.InternalServerError:
-                setError({
-                    value: Error.SERVER,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
                     message: 'Попробуйте немного позже',
+                    type: 'error',
                 });
                 break;
             default:
-                setError({
-                    value: response!.data.error,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: response!.data.error,
                     message: response!.data.message,
+                    type: 'error',
                 });
         }
-        onOpenErrorAlert();
     }, []);
 
     const onSubmit = useCallback(
@@ -141,7 +138,7 @@ export const AccountRecoveryForm = ({
                                 variant='filled'
                                 id='recovery-login'
                                 onInput={(e) => {
-                                    setError({ value: Error.NONE });
+                                    setNotification(null);
                                     setValue('login', (e.target as HTMLInputElement).value);
                                 }}
                                 onBlur={() => {
@@ -230,14 +227,14 @@ export const AccountRecoveryForm = ({
                     </Button>
                 </VStack>
             </Form>
-            <ErrorAlert
-                isOpen={isOpenErrorAlert}
-                onClose={onCloseErrorAlert}
-                bottom='20px'
-                title={error.value}
-                message={error.message ?? ''}
-                position='fixed'
-            />
+            {notification && (
+                <CustomAlert
+                    position='fixed'
+                    key={notification._id}
+                    notification={notification}
+                    bottom='20px'
+                />
+            )}
         </>
     );
 };

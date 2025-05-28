@@ -2,6 +2,7 @@ import * as yup from 'yup';
 
 import { CookingStep } from '~/app/mocks/types/type_defenitions';
 
+import { RecipieFormData } from '../../CreateRecipe/CreateRecipePage';
 import { IngredientFormData } from '../../CreateRecipe/IngredientsEditor';
 import { LoginFormData } from '../LoginForm/LoginForm';
 import { AccountFormData } from '../Modal/Recovery/AccountRecoveryForm';
@@ -212,3 +213,33 @@ export const cookingStepSchema: yup.ObjectSchema<CookingStep> = yup
 export const cookingStepsSchema = yup.object({
     items: yup.array().of(cookingStepSchema).required(),
 });
+
+export const recipieSchema: yup.ObjectSchema<RecipieFormData> = yup
+    .object({
+        title: yup.string().trim().required().max(50),
+        description: yup.string().trim().required().max(500),
+        time: yup.number().positive().max(1000).required(),
+        categoriesIds: yup.array<string[]>().min(3).required(),
+        portions: yup.number().positive().required(),
+        image: yup.string().default('').required(),
+        steps: yup.array().of(cookingStepSchema).min(1).required(),
+        ingredients: yup.array().of(ingredientSchema).min(1).required(),
+        meat: yup.string().default(''),
+        garnish: yup.string().default(''),
+    })
+    .required();
+
+/*  export const recipieSchemaForDraft: yup.ObjectSchema<RecipieFormData> = yup
+    .object({
+        title: yup.string().trim().required().max(50),
+        description: yup.string().trim().max(500).default(''),
+        time: yup.number().positive().max(1000).default(0),
+        categoriesIds: yup.array<string[]>().min(3).default([]),
+        portions: yup.number().positive().default(undefined),
+        image: yup.string().default(''),
+        steps: yup.array().of(cookingStepSchema).min(1).default([]),
+        ingredients: yup.array().of(ingredientSchema).min(1).default([]),
+        meat: yup.string().default(''),
+        garnish: yup.string().default(''),
+    })
+    .required() */

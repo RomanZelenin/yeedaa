@@ -1,21 +1,12 @@
-import {
-    Button,
-    HStack,
-    Image,
-    PinInput,
-    PinInputField,
-    Text,
-    useDisclosure,
-    VStack,
-} from '@chakra-ui/react';
+import { Button, HStack, Image, PinInput, PinInputField, Text, VStack } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
 import codeRecoveryImg from '~/assets/images/code-recovery.svg';
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
+import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useVerifyOTPMutation } from '~/query/create-api';
-import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
+import { Error, Notification, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export type OTPFormData = {
@@ -30,52 +21,49 @@ export const OTPRecoveryFrom = ({
     email: string;
     onSuccess: (data: OTPFormData) => void;
 }) => {
-    const [error, setError] = useState<ResponseError>({ value: Error.NONE });
-    const {
-        isOpen: isOpenErrorAlert,
-        onClose: onCloseErrorAlert,
-        onOpen: onOpenErrorAlert,
-    } = useDisclosure();
-
+    const [notification, setNotification] = useState<Notification | null>(null);
     const dispatch = useAppDispatch();
     const [inputPinKey, setInputPinKey] = useState(0);
     const handleComplete = (pin: string) => {
         onSubmit({ data: { email, otpToken: pin } });
-        if (error.value !== Error.INVALID_CODE) resetPinInput();
+        if (notification?.title !== Error.INVALID_CODE) resetPinInput();
     };
     const resetPinInput = () => {
         setInputPinKey((prev) => prev + 1);
     };
-
     const [verifyOtp] = useVerifyOTPMutation();
-
     const handleOnError = useCallback((response?: LoginResponse) => {
         switch (response?.status) {
             case StatusCode.BadRequest:
-                setError({
-                    value: response.data.message,
-                    message: '',
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: response.data.message,
+                    type: 'error',
                 });
                 break;
             case StatusCode.Forbidden:
-                setError({
-                    value: Error.INVALID_CODE,
-                    message: '',
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.INVALID_CODE,
+                    type: 'error',
                 });
                 break;
             case StatusCode.InternalServerError:
-                setError({
-                    value: Error.SERVER,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
                     message: 'Попробуйте немного позже',
+                    type: 'error',
                 });
                 break;
             default:
-                setError({
-                    value: response!.data.error,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: response!.data.error,
                     message: response!.data.message,
+                    type: 'error',
                 });
         }
-        if (response?.status !== StatusCode.Forbidden) onOpenErrorAlert();
     }, []);
 
     const onSubmit = useCallback(
@@ -88,7 +76,7 @@ export const OTPRecoveryFrom = ({
             event?: React.BaseSyntheticEvent;
         }) => {
             try {
-                setError({ value: Error.NONE });
+                setNotification(null);
                 dispatch(setAppLoader(true));
                 await verifyOtp(data).unwrap();
                 onSuccess(data);
@@ -107,7 +95,7 @@ export const OTPRecoveryFrom = ({
                 <VStack spacing='32px' p='32px'>
                     <Image boxSize={{ base: '108px', lg: '206px' }} src={codeRecoveryImg} />
                     <VStack spacing='16px' textAlign='center'>
-                        {error.value === Error.INVALID_CODE && (
+                        {notification?.title === Error.INVALID_CODE && (
                             <Text textStyle='text2xlLh8Bold'>Неверный код</Text>
                         )}
                         <Text textStyle='textMdLh6Normal'>
@@ -122,14 +110,16 @@ export const OTPRecoveryFrom = ({
                                 otp
                                 onComplete={handleComplete}
                                 key={inputPinKey}
-                                onChange={() => setError({ value: Error.NONE })}
+                                onChange={() => setNotification(null)}
                             >
                                 {[1, 2, 3, 4, 5, 6].map((i) => (
                                     <PinInputField
                                         data-test-id={`verification-code-input-${i}`}
                                         key={i}
                                         borderColor={
-                                            error.value === Error.INVALID_CODE ? 'red' : 'inherit'
+                                            notification?.title === Error.INVALID_CODE
+                                                ? 'red'
+                                                : 'inherit'
                                         }
                                     />
                                 ))}
@@ -142,14 +132,14 @@ export const OTPRecoveryFrom = ({
                 </VStack>
                 <Button type='submit' display='none' />
             </Form>
-            <ErrorAlert
-                isOpen={isOpenErrorAlert}
-                onClose={onCloseErrorAlert}
-                bottom='20px'
-                title={error.value}
-                message={error.message ?? ''}
-                position='fixed'
-            />
+            {notification && notification.title !== Error.INVALID_CODE && (
+                <CustomAlert
+                    position='fixed'
+                    key={notification._id}
+                    notification={notification}
+                    bottom='20px'
+                />
+            )}
         </>
     );
 };

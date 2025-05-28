@@ -1,35 +1,22 @@
-import { Grid, GridItem, Show, useDisclosure } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { Grid, GridItem, Show } from '@chakra-ui/react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 
 import profile from '~/app/mocks/profile.json';
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
+import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { AsidePanel } from '~/common/components/AsidePanel/AsidePanel';
 import { Header } from '~/common/components/Header/Header';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
 import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
-import { Error, errorSelector, loadingSelector } from '~/store/app-slice';
+import { ApplicationRoute } from '~/router';
+import { Error, loadingSelector, notificationSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
-
-import { ApplicationRoute } from '..';
 
 export default function App() {
     const location = useLocation();
     const isLoading = useAppSelector(loadingSelector);
-    const error = useAppSelector(errorSelector);
-    const {
-        isOpen: isOpenErrorAlert,
-        onClose: onCloseErrorAlert,
-        onOpen: onOpenErrorAlert,
-    } = useDisclosure();
+    const notification = useAppSelector(notificationSelector);
     const accessToken = sessionStorage.getItem('access_token');
-
-    useEffect(() => {
-        if (error.value !== Error.NONE) {
-            onOpenErrorAlert();
-        }
-    }, [error]);
 
     if (accessToken === null) return <Navigate to='/login' replace />;
 
@@ -83,14 +70,12 @@ export default function App() {
                     <GridItem area='footer' hideFrom='lg'>
                         <BottomMenu avatar={profile.avatar} />
                     </GridItem>
-                    {error.value !== Error.NONE && (
-                        <ErrorAlert
-                            isOpen={isOpenErrorAlert}
-                            onClose={onCloseErrorAlert}
-                            bottom={{ base: '106px', md: '112px' }}
-                            title={error.value}
-                            message={error.message ?? ''}
+                    {notification && notification.title !== Error.RECEPIES_NOT_FOUND && (
+                        <CustomAlert
                             position='fixed'
+                            key={notification._id}
+                            notification={notification}
+                            bottom={{ base: '106px', md: '112px' }}
                         />
                     )}
                 </Grid>

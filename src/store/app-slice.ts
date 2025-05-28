@@ -25,6 +25,13 @@ export type ResponseError = {
     message?: string;
 };
 
+export type Notification = {
+    _id: string;
+    type: 'error' | 'success';
+    title: string;
+    message?: string;
+};
+
 const initialState = {
     isLoading: false,
     isNewestRecipesLoading: false,
@@ -36,6 +43,7 @@ const initialState = {
     blogs: blogs as { person: Profile; comment: string }[],
     breadcrumb: [] as { title: string; path: string }[],
     isSearch: false,
+    notification: null as Notification | null,
 };
 
 export const appSlice = createSlice({
@@ -66,6 +74,12 @@ export const appSlice = createSlice({
         setIsSearch(state, { payload: isSearch }: PayloadAction<boolean>) {
             state.isSearch = isSearch;
         },
+        setNotification(state, { payload: notification }: PayloadAction<Notification>) {
+            state.notification = notification;
+        },
+        removeNotification(state) {
+            state.notification = null;
+        },
     },
 });
 
@@ -81,6 +95,8 @@ export const newestRecipesLoading = (state: ApplicationState) => state.app.isNew
 export const juiciestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
 export const relevantLoading = (state: ApplicationState) => state.app.isRelevantLoading;
 
+export const notificationSelector = (state: ApplicationState) => state.app.notification;
+
 export const {
     setAppError,
     setAppLoader,
@@ -90,5 +106,7 @@ export const {
     setJuiciestRecipesLoader,
     setRelevantLoader,
     setIsSearch,
+    setNotification,
+    removeNotification,
 } = appSlice.actions;
 export default appSlice.reducer;

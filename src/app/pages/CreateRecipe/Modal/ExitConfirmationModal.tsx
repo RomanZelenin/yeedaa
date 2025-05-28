@@ -7,7 +7,6 @@ import {
     ModalContent,
     ModalOverlay,
     Text,
-    useDisclosure,
     VStack,
 } from '@chakra-ui/react';
 
@@ -15,15 +14,21 @@ import loginFailedImg from '~/assets/images/login-failed.svg';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
 import { WriteLineIcon } from '~/common/components/Icons/WriteLineIcon';
 
-export const ExitConfirmationModal = () => {
-    const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
-
+export const ExitConfirmationModal = ({
+    onClose,
+    onExitWithoutSaving,
+    onClickSaving,
+}: {
+    onClose: () => void;
+    onExitWithoutSaving: () => void;
+    onClickSaving: () => void;
+}) => {
     const handleOnClickClose = () => {
         onClose();
     };
 
     return (
-        <Modal onClose={handleOnClickClose} isOpen={isVisible} isCentered>
+        <Modal onClose={handleOnClickClose} isOpen={true} isCentered>
             <ModalOverlay />
             <ModalContent
                 borderRadius='16px'
@@ -69,12 +74,16 @@ export const ExitConfirmationModal = () => {
                                 width='100%'
                                 bgColor='black'
                                 color='white'
-                                onClick={() => {}}
+                                onClick={() => {
+                                    onClickSaving();
+                                }}
                                 height={{ base: '48px' }}
                             >
                                 <Text textStyle='textLgLh7Semibold'>Сохранить черновик</Text>
                             </Button>
-                            <Button variant='ghost'>Выйти без сохранения</Button>
+                            <Button variant='ghost' onClick={() => onExitWithoutSaving()}>
+                                Выйти без сохранения
+                            </Button>
                         </VStack>
                     </VStack>
                 </ModalBody>

@@ -12,9 +12,10 @@ import {
     isSearchSelector,
     querySelector,
     recipesSelector,
-    setAppError,
+    removeNotification,
     setAppQuery,
     setIsSearch,
+    setNotification,
     setRecepies,
 } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
@@ -62,7 +63,12 @@ export default function ContentContainer({
 
     if (isError) {
         dispatch(
-            setAppError({ value: Error.SERVER, message: 'Попробуйте поискать снова попозже' }),
+            setNotification({
+                _id: crypto.randomUUID(),
+                title: Error.SERVER,
+                message: 'Попробуйте поискать снова попозже',
+                type: 'error',
+            }),
         );
         dispatch(setAppQuery(''));
         dispatch(setRecepies([]));
@@ -72,10 +78,16 @@ export default function ContentContainer({
     if (isSuccess) {
         recipes = data.data;
         if (recipes.length === 0) {
-            dispatch(setAppError({ value: Error.RECEPIES_NOT_FOUND }));
+            dispatch(
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.RECEPIES_NOT_FOUND,
+                    type: 'error',
+                }),
+            );
             dispatch(setAppQuery(''));
         } else {
-            dispatch(setAppError({ value: Error.NONE }));
+            dispatch(removeNotification());
         }
         dispatch(setRecepies(recipes));
         dispatch(setIsSearch(false));

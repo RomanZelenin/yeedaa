@@ -16,7 +16,7 @@ import { DEFAULT_FILTER, setFilter } from '~/app/features/filters/filtersSlice';
 import downIcon from '~/assets/icons/down.svg';
 import upIcon from '~/assets/icons/up.svg';
 import { useGetCategoriesQuery } from '~/query/create-api';
-import { Error, setAppError, setAppQuery, setRecepies } from '~/store/app-slice';
+import { removeNotification, setAppQuery, setRecepies } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export const MenuItems = () => {
@@ -46,7 +46,7 @@ export const MenuItems = () => {
         if (selectedItem != idx) {
             setSelectedSubmenuIdx(0);
             dispatcher(setAppQuery(''));
-            dispatcher(setAppError({ value: Error.NONE }));
+            dispatcher(removeNotification());
             dispatcher(setRecepies([]));
             dispatcher(setFilter(DEFAULT_FILTER));
             navigate(path);

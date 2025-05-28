@@ -10,12 +10,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
+import { setNotification } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 import { AccountRecoveryForm } from './AccountRecoveryForm';
 import { EmailRecoveryForm } from './EmailRecoveryForm';
 import { OTPRecoveryFrom } from './OTPRecoveryForm';
 
 export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
     const handleOnClickClose = () => {
@@ -50,7 +53,14 @@ export const RecoveryModal = ({ onClickClose }: { onClickClose: () => void }) =>
                     email={email}
                     onSuccess={() => {
                         onClickClose();
-                        navigate('/login', { state: { successfulRecovery: true } });
+                        dispatch(
+                            setNotification({
+                                _id: crypto.randomUUID(),
+                                title: 'Восстановление данных успешно',
+                                type: 'success',
+                            }),
+                        );
+                        navigate('/login');
                     }}
                 />
             ),

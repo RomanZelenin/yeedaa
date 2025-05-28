@@ -4,10 +4,13 @@ import fillIcon from '~/assets/icons/BsFillImageFill.svg';
 
 export const Fallback = (props: CenterProps) => (
     <Center
+        onClick={props.onClick}
         width={props.width}
         height={props.height}
         bgColor='blackAlpha.200'
         borderRadius={props.borderRadius}
+        borderColor={props.borderColor}
+        border={props.border}
     >
         <Image src={fillIcon} />
     </Center>

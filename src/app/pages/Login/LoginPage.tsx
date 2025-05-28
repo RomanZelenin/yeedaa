@@ -9,19 +9,17 @@ import {
     TabPanels,
     Tabs,
     Text,
-    useDisclosure,
     VStack,
 } from '@chakra-ui/react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import loginBgImg from '~/assets/images/auth-background-image.png';
 import logoImg from '~/assets/logo-md.svg';
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
-import { SuccessAlert } from '~/common/components/Alert/SuccessAlert';
+import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
-import { ApplicationRoute } from '~/index';
-import { Error, errorSelector, loadingSelector } from '~/store/app-slice';
+import { ApplicationRoute } from '~/router';
+import { loadingSelector, notificationSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import { LoginForm } from './LoginForm/LoginForm';
@@ -32,17 +30,7 @@ export const LoginPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isLoading = useAppSelector(loadingSelector);
-    const error = useAppSelector(errorSelector);
-    const {
-        isOpen: isOpenErrorAlert,
-        onClose: onCloseErrorAlert,
-        onOpen: onOpenErrorAlert,
-    } = useDisclosure();
-
-    useEffect(() => {
-        error.value !== Error.NONE ? onOpenErrorAlert() : onCloseErrorAlert();
-    }, [error]);
-
+    const notification = useAppSelector(notificationSelector);
     const tabs = useMemo(
         () => [
             { title: 'Вход на сайт', path: ApplicationRoute.LOGIN, content: <LoginForm /> },
@@ -55,7 +43,6 @@ export const LoginPage = () => {
         [],
     );
     const emailVerified: boolean | undefined = location.state?.emailVerified;
-    const successfulRecovery: boolean | undefined = location.state?.successfulRecovery;
 
     return (
         <AppLoader isLoading={isLoading}>
@@ -104,26 +91,16 @@ export const LoginPage = () => {
                             ))}
                         </TabPanels>
                     </Tabs>
-                    {emailVerified !== undefined && (
-                        <VerificationStatus emailVerified={emailVerified} />
-                    )}
-                    {successfulRecovery !== undefined && (
-                        <SuccessAlert
+                    {notification && (
+                        <CustomAlert
                             position='absolute'
+                            key={notification._id}
+                            notification={notification}
                             bottom='60px'
-                            title='Восстановление данных успешно'
-                            message=''
                         />
                     )}
-                    <ErrorAlert
-                        status='error'
-                        isOpen={isOpenErrorAlert}
-                        onClose={onCloseErrorAlert}
-                        bottom='50px'
-                        title={error.value}
-                        message={error.message ?? ''}
-                        position='absolute'
-                    />
+
+                    {emailVerified !== undefined && !emailVerified && <VerificationFailedModal />}
                     <Spacer />
                     <Text
                         bgColor='transparent'
@@ -153,15 +130,3 @@ export const LoginPage = () => {
         </AppLoader>
     );
 };
-
-const VerificationStatus = ({ emailVerified }: { emailVerified: boolean }) =>
-    emailVerified ? (
-        <SuccessAlert
-            position='absolute'
-            bottom='60px'
-            title='Верификация прошла успешно'
-            message=''
-        />
-    ) : (
-        <VerificationFailedModal />
-    );

@@ -9,10 +9,10 @@ import { StatusCode } from '~/query/constants/api';
 import { LoginResponse, useLoginMutation } from '~/query/create-api';
 import {
     Error,
-    errorSelector,
-    NONE_ERROR_RESPONSE,
-    setAppError,
+    notificationSelector,
+    removeNotification,
     setAppLoader,
+    setNotification,
 } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
@@ -30,7 +30,8 @@ export const LoginForm = () => {
     const naviagate = useNavigate();
     const loginInputRef = useRef<HTMLInputElement>(null);
     const [isShowRecoveryModal, setIsShowRecoveryModal] = useState(false);
-    const error = useAppSelector(errorSelector);
+
+    const notification = useAppSelector(notificationSelector);
     const [isShowLoginFailed, setIsShowLoginFailed] = useState(false);
     const {
         control,
@@ -47,17 +48,21 @@ export const LoginForm = () => {
         switch (response?.status) {
             case StatusCode.Unauthorized:
                 dispatch(
-                    setAppError({
-                        value: Error.INCORRECT_LOGIN_OR_PASSWORD,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.INCORRECT_LOGIN_OR_PASSWORD,
                         message: 'Попробуйте снова.',
+                        type: 'error',
                     }),
                 );
                 break;
             case StatusCode.Forbidden:
                 dispatch(
-                    setAppError({
-                        value: Error.EMAIL_NOT_VERIFED,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.EMAIL_NOT_VERIFED,
                         message: 'Проверьте почту и перейдите по ссылке.',
+                        type: 'error',
                     }),
                 );
                 break;
@@ -66,9 +71,11 @@ export const LoginForm = () => {
                 break;
             default:
                 dispatch(
-                    setAppError({
-                        value: response!.data.error,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: response!.data.error,
                         message: response!.data.message,
+                        type: 'error',
                     }),
                 );
         }
@@ -95,7 +102,7 @@ export const LoginForm = () => {
         [dispatch, login],
     );
     const isIncorrectLoginOrPassword =
-        formErrors.login || error.value === Error.INCORRECT_LOGIN_OR_PASSWORD;
+        formErrors.login || notification?.title === Error.INCORRECT_LOGIN_OR_PASSWORD;
 
     return (
         <>
@@ -123,7 +130,7 @@ export const LoginForm = () => {
                             id='login'
                             {...register('login')}
                             onInput={(e) => {
-                                dispatch(setAppError(NONE_ERROR_RESPONSE));
+                                dispatch(removeNotification());
                                 setValue('login', (e.target as HTMLInputElement).value.trim());
                             }}
                             ref={loginInputRef}
@@ -161,7 +168,7 @@ export const LoginForm = () => {
                             id='password'
                             {...register('password')}
                             onInput={(e) => {
-                                dispatch(setAppError(NONE_ERROR_RESPONSE));
+                                dispatch(removeNotification());
                                 setValue('password', (e.target as HTMLInputElement).value);
                             }}
                             aria-invalid={formErrors.password ? 'true' : 'false'}

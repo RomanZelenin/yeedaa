@@ -7,7 +7,7 @@ import {
 } from '~/common/components/Cards/VegeterianKitchenCard';
 import { useRandomCategory } from '~/common/hooks/useRandomCategory';
 import { useGetRecipeByCategoryQuery } from '~/query/create-api';
-import { Error, setAppError, setRelevantLoader } from '~/store/app-slice';
+import { Error, setNotification, setRelevantLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionRelevantKitchen() {
@@ -34,7 +34,12 @@ export default function SectionRelevantKitchen() {
         if (isError) {
             dispatch(setRelevantLoader(false));
             dispatch(
-                setAppError({ value: Error.SERVER, message: 'Попробуйте поискать снова попозже' }),
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
+                    type: 'error',
+                    message: 'Попробуйте поискать снова попозже',
+                }),
             );
         }
         if (isSuccess) {
