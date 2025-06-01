@@ -2,7 +2,7 @@ import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
 
 import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
-import { useGetJuiciestRecipesQuery } from '~/query/create-api';
+import { useGetJuiciestRecipesQuery } from '~/query/create-recipe-api';
 import { setJuiciestRecipesLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 

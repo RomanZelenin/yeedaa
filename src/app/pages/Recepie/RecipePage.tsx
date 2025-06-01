@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
 import { RecipeCard } from '~/common/components/Cards/RecipeCard';
 import { Profile } from '~/common/components/Header/ProfileInfo';
-import { useGetRecipeByIdQuery } from '~/query/create-api';
+import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 

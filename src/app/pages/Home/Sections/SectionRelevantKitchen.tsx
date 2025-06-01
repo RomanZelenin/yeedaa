@@ -6,7 +6,7 @@ import {
     VegeterianKitchenCompactCard,
 } from '~/common/components/Cards/VegeterianKitchenCard';
 import { useRandomCategory } from '~/common/hooks/useRandomCategory';
-import { useGetRecipeByCategoryQuery } from '~/query/create-api';
+import { useGetRecipeByCategoryQuery } from '~/query/create-recipe-api';
 import { Error, setNotification, setRelevantLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 

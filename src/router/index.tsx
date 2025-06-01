@@ -21,6 +21,7 @@ export enum ApplicationRoute {
     CATEGORY_WITH_SUBCATEGORY_AND_ID = '/:category/:subcategory/:id',
     INDEX = '/',
     NEW_RECIPE = '/new-recipe',
+    EDIT_RECIPE = '/edit-recipe/:category/:subcategory/:id',
     ANY = '/*',
 }
 
@@ -64,6 +65,10 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: ApplicationRoute.NEW_RECIPE,
+                    element: <CreateRecipePage />,
+                },
+                {
+                    path: ApplicationRoute.EDIT_RECIPE,
                     element: <CreateRecipePage />,
                 },
                 {

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router';
 
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
 
 import { getRandomNumber } from '../utils/getRandomNumber';
 

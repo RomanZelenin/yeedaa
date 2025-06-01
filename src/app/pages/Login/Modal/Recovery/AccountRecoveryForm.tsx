@@ -5,8 +5,9 @@ import { Form, useForm } from 'react-hook-form';
 
 import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
-import { StatusCode } from '~/query/constants/api';
-import { LoginResponse, useResetPasswordMutation } from '~/query/create-api';
+import { StatusCode } from '~/query/constants';
+import { useResetPasswordMutation } from '~/query/create-auth-api';
+import { StatusResponse } from '~/query/types';
 import { Error, Notification, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -46,7 +47,7 @@ export const AccountRecoveryForm = ({
     });
 
     const [resetPassword] = useResetPasswordMutation();
-    const handleOnError = useCallback((response?: LoginResponse) => {
+    const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.InternalServerError:
                 setNotification({
@@ -81,7 +82,7 @@ export const AccountRecoveryForm = ({
                 console.log(data);
                 onSuccess();
             } catch (e) {
-                handleOnError(e as LoginResponse);
+                handleOnError(e as StatusResponse);
             } finally {
                 dispatch(setAppLoader(false));
             }

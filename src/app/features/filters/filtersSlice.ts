@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ApplicationState } from '~/store/configure-store';
 
 export type SelectItem = {
+    _id?: string;
     title: string;
     selected: boolean;
 };

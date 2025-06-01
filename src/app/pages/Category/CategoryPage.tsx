@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router';
 import { filterSelector } from '~/app/features/filters/filtersSlice';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
-import { useGetRecipeByCategoryQuery } from '~/query/create-api';
+import { useGetRecipeByCategoryQuery } from '~/query/create-recipe-api';
 import { querySelector, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 

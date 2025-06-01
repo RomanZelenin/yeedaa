@@ -18,7 +18,6 @@ import { ThreeButtons } from './ThreeButtons';
 
 export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
     const { getString } = useResource();
-
     return (
         <>
             <Card overflow='clip' flex={1} bgColor='lime.300' borderRadius='8px'>

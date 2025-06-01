@@ -15,7 +15,7 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import { DEFAULT_FILTER, setFilter } from '~/app/features/filters/filtersSlice';
 import downIcon from '~/assets/icons/down.svg';
 import upIcon from '~/assets/icons/up.svg';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
 import { removeNotification, setAppQuery, setRecepies } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 

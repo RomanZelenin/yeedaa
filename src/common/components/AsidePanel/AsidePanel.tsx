@@ -18,7 +18,7 @@ export const AsidePanel = ({
     return (
         <VStack pos='fixed' bottom={0} top='80px' justify='space-between'>
             <ProfileNotification bookmarks={bookmarks} persons={persons} likes={likes} />
-            <LinkBox>
+            <LinkBox data-test-id='add-recipe-button'>
                 <LinkOverlay as={Link} to='/new-recipe'>
                     <Box
                         as='button'

@@ -2,6 +2,7 @@ import {
     Button,
     Flex,
     HStack,
+    IconButton,
     Image,
     Stack,
     Tag,
@@ -11,24 +12,123 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { useLocation, useNavigate } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import alarmIcon from '~/assets/icons/alarm.svg';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import likeIcon from '~/assets/icons/like.svg';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
+import { getJWTPayload } from '~/common/utils/getJWTPayload';
+import { StatusCode } from '~/query/constants';
+import {
+    useBookmarkRecipeMutation,
+    useDeleteRecipeMutation,
+    useLikeRecipeMutation,
+} from '~/query/create-recipe-api';
+import { StatusResponse } from '~/query/types';
+import { ApplicationRoute } from '~/router';
+import { Error, setAppLoader, setNotification } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 import { Fallback } from '../Fallback/Fallback';
+import { BasketIcon } from '../Icons/BasketIcon';
+import { WriteLineIcon } from '../Icons/WriteLineIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
 
 export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
     const { getString } = useResource();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useAppDispatch();
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
+    const isRecipeOwner = getJWTPayload().userId === recipe.authorId;
+    const [deleteRecipe] = useDeleteRecipeMutation();
+    const [likeRecipe] = useLikeRecipeMutation();
+    const [bookmarkRecipe] = useBookmarkRecipeMutation();
 
-    const allCategories = useGetCategoriesQuery().data;
-    const categories = allCategories?.filter((it) =>
-        it.subCategories?.some((it) => recipe.categoriesIds?.includes(it._id)),
-    );
+    const handleOnDeleteRecipeError = (response?: StatusResponse) => {
+        switch (response?.status) {
+            case StatusCode.InternalServerError:
+                dispatch(
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.SERVER,
+                        message: 'Не удалось удалить рецепт',
+                        type: 'error',
+                    }),
+                );
+                break;
+            default:
+                dispatch(
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: response?.data.error ?? '',
+                        message: response?.data.message,
+                        type: 'error',
+                    }),
+                );
+        }
+    };
+    const handleOnDeleteRecipe = async () => {
+        try {
+            dispatch(setAppLoader(true));
+            await deleteRecipe(recipe._id).unwrap();
+            dispatch(
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: 'Рецепт успешно удален',
+                    type: 'success',
+                }),
+            );
+            navigate(ApplicationRoute.INDEX, { replace: true });
+        } catch (e) {
+            handleOnDeleteRecipeError(e as StatusResponse);
+        } finally {
+            dispatch(setAppLoader(false));
+        }
+    };
+
+    const handleOnActionRecipeError = (response?: StatusResponse) => {
+        switch (response?.status) {
+            case StatusCode.InternalServerError:
+                dispatch(
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.SERVER,
+                        message: 'Попробуйте немного позже',
+                        type: 'error',
+                    }),
+                );
+                break;
+            default:
+                dispatch(
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: response?.data.error ?? '',
+                        message: response?.data.message,
+                        type: 'error',
+                    }),
+                );
+        }
+    };
+
+    const handleOnLikeRecipe = async () => {
+        try {
+            await likeRecipe(recipe._id).unwrap();
+        } catch (e) {
+            handleOnActionRecipeError(e as StatusResponse);
+        }
+    };
+
+    const handleOnBookmarkRecipe = async () => {
+        try {
+            await bookmarkRecipe(recipe._id).unwrap();
+        } catch (e) {
+            handleOnActionRecipeError(e as StatusResponse);
+        }
+    };
 
     return (
         <>
@@ -103,51 +203,95 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                         </WrapItem>
                         <WrapItem>
                             <HStack spacing={{ base: '12px' }} justify={{ md: 'end' }}>
-                                <Button
-                                    borderRadius='6px'
-                                    variant='outline'
-                                    px='12px'
-                                    py='6px'
-                                    leftIcon={
-                                        <Image src={likeIcon} boxSize={{ xl: '16px' }} alt='like' />
-                                    }
-                                    h={{ base: '24px', lg: '32px', xl: '48px' }}
-                                >
-                                    <Text
-                                        textStyle={{
-                                            base: 'textXsLh4Semibold',
-                                            lg: 'textSmLh5Semibold',
-                                            xl: 'textLgLh7Semibold',
-                                        }}
-                                    >
-                                        {getString('rate-recipe')}
-                                    </Text>
-                                </Button>
-                                <Button
-                                    borderRadius='6px'
-                                    bgColor='lime.400'
-                                    variant='outline'
-                                    px='12px'
-                                    py='6px'
-                                    leftIcon={
-                                        <Image
-                                            src={bookmarkIcon}
-                                            boxSize={{ xl: '16px' }}
-                                            alt='bookmark'
+                                {isRecipeOwner ? (
+                                    <>
+                                        <IconButton
+                                            data-test-id='recipe-delete-button'
+                                            onClick={handleOnDeleteRecipe}
+                                            minW={0}
+                                            boxSize='32px'
+                                            borderRadius='100%'
+                                            backgroundColor='transparent'
+                                            aria-label='remove'
+                                            icon={<BasketIcon fill='black' />}
                                         />
-                                    }
-                                    h={{ base: '24px', lg: '32px', xl: '48px' }}
-                                >
-                                    <Text
-                                        textStyle={{
-                                            base: 'textXsLh4Semibold',
-                                            lg: 'textSmLh5Semibold',
-                                            xl: 'textLgLh7Semibold',
-                                        }}
-                                    >
-                                        {getString('save-to-bookmarks')}
-                                    </Text>
-                                </Button>
+                                        <Button
+                                            onClick={() => {
+                                                navigate(`/edit-recipe${location.pathname}`, {
+                                                    replace: true,
+                                                    state: recipe,
+                                                });
+                                            }}
+                                            variant='outline'
+                                            borderColor='blackAlpha.600'
+                                            leftIcon={<WriteLineIcon />}
+                                        >
+                                            <Text
+                                                textStyle={{
+                                                    base: 'textXsLh4Semibold',
+                                                    lg: 'textSmLh5Semibold',
+                                                    xl: 'textLgLh7Semibold',
+                                                }}
+                                            >
+                                                Редактировать рецепт
+                                            </Text>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button
+                                            onClick={handleOnLikeRecipe}
+                                            borderRadius='6px'
+                                            variant='outline'
+                                            px='12px'
+                                            py='6px'
+                                            leftIcon={
+                                                <Image
+                                                    src={likeIcon}
+                                                    boxSize={{ xl: '16px' }}
+                                                    alt='like'
+                                                />
+                                            }
+                                            h={{ base: '24px', lg: '32px', xl: '48px' }}
+                                        >
+                                            <Text
+                                                textStyle={{
+                                                    base: 'textXsLh4Semibold',
+                                                    lg: 'textSmLh5Semibold',
+                                                    xl: 'textLgLh7Semibold',
+                                                }}
+                                            >
+                                                {getString('rate-recipe')}
+                                            </Text>
+                                        </Button>
+                                        <Button
+                                            onClick={handleOnBookmarkRecipe}
+                                            borderRadius='6px'
+                                            bgColor='lime.400'
+                                            variant='outline'
+                                            px='12px'
+                                            py='6px'
+                                            leftIcon={
+                                                <Image
+                                                    src={bookmarkIcon}
+                                                    boxSize={{ xl: '16px' }}
+                                                    alt='bookmark'
+                                                />
+                                            }
+                                            h={{ base: '24px', lg: '32px', xl: '48px' }}
+                                        >
+                                            <Text
+                                                textStyle={{
+                                                    base: 'textXsLh4Semibold',
+                                                    lg: 'textSmLh5Semibold',
+                                                    xl: 'textLgLh7Semibold',
+                                                }}
+                                            >
+                                                {getString('save-to-bookmarks')}
+                                            </Text>
+                                        </Button>
+                                    </>
+                                )}
                             </HStack>
                         </WrapItem>
                     </Wrap>

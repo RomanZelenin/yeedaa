@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
 
 export function useCurrentCategory({
     categoryName,

@@ -25,7 +25,11 @@ export const HamburgerMenu = ({ isOpen, onClose }: DrawerComponentProps) => (
             mt={{ base: '64px', md: '80px' }}
         >
             <DrawerHeader fontSize='16px' fontWeight={400} lineHeight='24px'>
-                <NavigationBreadcrumb />
+                <NavigationBreadcrumb
+                    onClickBreadcrumb={() => {
+                        onClose();
+                    }}
+                />
             </DrawerHeader>
 
             <DrawerBody>

@@ -4,6 +4,7 @@ import fillIcon from '~/assets/icons/BsFillImageFill.svg';
 
 export const Fallback = (props: CenterProps) => (
     <Center
+        data-test-id={props[`data-test-id`]}
         onClick={props.onClick}
         width={props.width}
         height={props.height}

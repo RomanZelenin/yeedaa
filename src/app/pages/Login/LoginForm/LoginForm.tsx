@@ -5,8 +5,9 @@ import { Form, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
-import { StatusCode } from '~/query/constants/api';
-import { LoginResponse, useLoginMutation } from '~/query/create-api';
+import { StatusCode } from '~/query/constants';
+import { useLoginMutation } from '~/query/create-auth-api';
+import { StatusResponse } from '~/query/types';
 import {
     Error,
     notificationSelector,
@@ -44,7 +45,7 @@ export const LoginForm = () => {
         mode: 'onChange',
     });
     const [login] = useLoginMutation();
-    const handleOnError = useCallback((response?: LoginResponse) => {
+    const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.Unauthorized:
                 dispatch(
@@ -94,7 +95,7 @@ export const LoginForm = () => {
                 await login(data as LoginFormData).unwrap();
                 naviagate('/', { replace: true });
             } catch (e) {
-                handleOnError(e as LoginResponse);
+                handleOnError(e as StatusResponse);
             } finally {
                 dispatch(setAppLoader(false));
             }

@@ -15,17 +15,13 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
 
 import { Fallback } from '../Fallback/Fallback';
 import { ThreeButtons } from './ThreeButtons';
 
 export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
-    const subcategoriesIds = recipe.categoriesIds?.map((id) => id);
-    const categories = useGetCategoriesQuery().data?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
-
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     return (
         <Card
             w={{ base: '158px', lg: '279px', xl: '322px' }}

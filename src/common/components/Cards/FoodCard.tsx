@@ -20,7 +20,7 @@ import {
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import likeIcon from '~/assets/icons/like.svg';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
 import { querySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
@@ -32,12 +32,7 @@ import { ThreeButtons } from './ThreeButtons';
 export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-
-    const subcategoriesIds = recipe.categoriesIds?.map((categoryId) => categoryId);
-    const categories = useGetCategoriesQuery().data?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
-
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     return (
         <Card
             key={id}
@@ -152,13 +147,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
 export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-
-    const subcategoriesIds = recipe.categoriesIds?.map((categoryId) => categoryId);
-    const allCategories = useGetCategoriesQuery().data;
-    const categories = allCategories?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
-
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     return (
         <Card
             key={id}

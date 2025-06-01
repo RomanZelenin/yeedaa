@@ -59,13 +59,15 @@ export default function App() {
                         </Grid>
                     </GridItem>
                     <GridItem area='aside' hideBelow='lg'>
-                        {location.pathname !== ApplicationRoute.NEW_RECIPE && (
-                            <AsidePanel
-                                bookmarks={profile.activity.bookmarks}
-                                persons={profile.activity.persons}
-                                likes={profile.activity.likes}
-                            />
-                        )}
+                        {location.pathname !== ApplicationRoute.NEW_RECIPE &&
+                            location.pathname.split('/')[1] !==
+                                ApplicationRoute.EDIT_RECIPE.split('/')[1] && (
+                                <AsidePanel
+                                    bookmarks={profile.activity.bookmarks}
+                                    persons={profile.activity.persons}
+                                    likes={profile.activity.likes}
+                                />
+                            )}
                     </GridItem>
                     <GridItem area='footer' hideFrom='lg'>
                         <BottomMenu avatar={profile.avatar} />

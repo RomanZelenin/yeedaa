@@ -51,7 +51,11 @@ export const Header = ({ profile }: { profile: Profile }) => {
 
                     <Show above='lg'>
                         <Box ml='127px'>
-                            <NavigationBreadcrumb />
+                            <NavigationBreadcrumb
+                                onClickBreadcrumb={() => {
+                                    onClose();
+                                }}
+                            />
                         </Box>
                         <Spacer />
                         <Box mr='40px'>

@@ -8,7 +8,9 @@ import leftArrowIcon from '~/assets/icons/left-arrow.svg';
 import rightArrowIcon from '~/assets/icons/right-arrow.svg';
 import { NewRecepieCard } from '~/common/components/Cards/NewRecepieCard';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { Subcategory, useGetCategoriesQuery, useGetNewestRecipesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
+import { useGetNewestRecipesQuery } from '~/query/create-recipe-api';
+import { Subcategory } from '~/query/types';
 import { setNewestRecipesLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 

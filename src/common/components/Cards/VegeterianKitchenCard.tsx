@@ -15,30 +15,32 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { useMemo } from 'react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import likeIcon from '~/assets/icons/like.svg';
 import personsIcon from '~/assets/icons/persons.svg';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 
 export const VegeterianKitchenCard = ({ recipe }: { recipe: Recipe }) => {
-    const counters = [
-        { type: 'bookmarks', count: recipe.bookmarks, icon: bookmarkIcon },
-        { type: 'likes', count: recipe.likes, icon: likeIcon },
-        { type: 'persons', count: recipe.views, icon: personsIcon },
-    ].filter((item) => typeof item.count === 'number') as {
-        type: string;
-        count: number;
-        icon: string;
-    }[];
-
-    const subcategoriesIds = recipe.categoriesIds?.map((id) => id);
-    const categories = useGetCategoriesQuery().data?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
+    const counters = useMemo(
+        () =>
+            [
+                { type: 'bookmarks', count: recipe.bookmarks, icon: bookmarkIcon },
+                { type: 'likes', count: recipe.likes, icon: likeIcon },
+                { type: 'persons', count: recipe.views, icon: personsIcon },
+            ].filter((item) => typeof item.count === 'number') as {
+                type: string;
+                count: number;
+                icon: string;
+            }[],
+        [recipe],
     );
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
 
     return (
         <Card p='12px' borderRadius='8px' border='1px solid rgba(0, 0, 0, 0.08)' h='100%'>

@@ -5,8 +5,9 @@ import { Form, useForm } from 'react-hook-form';
 
 import loginFailedImg from '~/assets/images/login-failed.svg';
 import { CustomAlert } from '~/common/components/Alert/CustomAlert';
-import { StatusCode } from '~/query/constants/api';
-import { LoginResponse, useForgotPasswordMutation } from '~/query/create-api';
+import { StatusCode } from '~/query/constants';
+import { useForgotPasswordMutation } from '~/query/create-auth-api';
+import { StatusResponse } from '~/query/types';
 import { Error, Notification, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -34,7 +35,7 @@ export const EmailRecoveryForm = ({
     });
 
     const [forgotPassword] = useForgotPasswordMutation();
-    const handleOnError = useCallback((response?: LoginResponse) => {
+    const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.BadRequest:
                 setNotification({
@@ -85,7 +86,7 @@ export const EmailRecoveryForm = ({
                 await forgotPassword(data).unwrap();
                 onSuccess(data);
             } catch (e) {
-                handleOnError(e as LoginResponse);
+                handleOnError(e as StatusResponse);
             } finally {
                 dispatch(setAppLoader(false));
             }

@@ -41,5 +41,5 @@ export type Ingredient = {
 export type CookingStep = {
     stepNumber: number;
     description: string;
-    image?: string;
+    image?: string | null;
 };

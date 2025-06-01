@@ -11,7 +11,7 @@ export const StepPreparationCard = ({
 }: {
     description: string;
     step: number;
-    cover?: string;
+    cover?: string | null;
     isLast: boolean;
 }) => {
     const { getString } = useResource();

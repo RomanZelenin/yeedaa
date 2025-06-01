@@ -1,94 +1,20 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { LoginFormData } from '~/app/pages/Login/LoginForm/LoginForm';
-import { EmailRecoveryFormData } from '~/app/pages/Login/Modal/Recovery/EmailRecoveryForm';
-import { OTPFormData } from '~/app/pages/Login/Modal/Recovery/OTPRecoveryForm';
-import { RegistrationFormData } from '~/app/pages/Login/RegistrationForm/RegistrationForm';
 
-import { ApiEndpoints } from './constants/api';
+import { API_BASE_URL, ApiEndpoints, IMAGE_BASE_URL } from './constants';
+import { PartialRecipeQuery, RecipeDraft, RecipesResponse, StatusResponse } from './types';
 
-export type Category = {
-    _id: string;
-    title: string;
-    category: string;
-    icon: string;
-    description: string;
-    subCategories?: Subcategory[];
-};
-
-export type Subcategory = {
-    _id: string;
-    title: string;
-    category: string;
-    rootCategoryId: string;
-};
-
-type RecipeQuery = {
-    id: string;
-    page: number;
-    limit: number;
-    allergens: string;
-    searchString: string;
-    meat: string;
-    garnish: string;
-    subcategoriesIds: string;
-    sortBy: 'createdAt' | 'likes';
-    sortOrder: 'asc' | 'desc';
-};
-
-export type PartialRecipeQuery = Partial<RecipeQuery>;
-
-type RecipesResponse = {
-    data: Recipe[];
-    meta: {
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
-    };
-};
-
-export type LoginResponse = {
-    status: number;
-    data: {
-        statusCode: number;
-        message: string;
-        error: string;
-    };
-};
-
-export type MeasureUnit = { _id: string; name: string };
-export type MeasureUnitsResponse = Array<MeasureUnit>;
-
-const IMAGE_BASE_URL = 'https://training-api.clevertec.ru';
-const API_BASE_URL = 'https://marathon-api.clevertec.ru/';
-
-export const apiSlice = createApi({
-    reducerPath: 'api',
-    baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
+export const recipeApi = createApi({
+    reducerPath: 'recipeApi',
+    baseQuery: fetchBaseQuery({
+        baseUrl: API_BASE_URL,
+        prepareHeaders: (headers) => {
+            headers.set('Authorization', `Bearer ${sessionStorage.getItem('access_token')}`);
+        },
+    }),
+    tagTypes: ['Recipe'],
     endpoints: (build) => ({
-        getCategories: build.query<Category[], void>({
-            query: () => ({
-                url: ApiEndpoints.CATEGORY,
-                method: 'GET',
-            }),
-            transformResponse: (response) =>
-                (response as Category[]).map((it) => ({
-                    ...it,
-                    icon: IMAGE_BASE_URL + it.icon,
-                })),
-        }),
-        getCategoriyById: build.query<Category, string | undefined>({
-            query: (id) => ({
-                url: `${ApiEndpoints.CATEGORY}/${id}`,
-                method: 'GET',
-            }),
-            transformResponse: (response) => ({
-                ...(response as Category),
-                icon: IMAGE_BASE_URL + (response as Category).icon,
-            }),
-        }),
         getRecipeByCategory: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
                 url: `${ApiEndpoints.RECIPE_BY_CATEGORY}/${q.id}`,
@@ -107,6 +33,7 @@ export const apiSlice = createApi({
                 }));
                 return { ...(response as RecipesResponse), data: data };
             },
+            providesTags: ['Recipe'],
         }),
         getNewestRecipes: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -129,6 +56,7 @@ export const apiSlice = createApi({
                     return { data: [response] }; //Для тестирования отдельный случай
                 }
             },
+            providesTags: ['Recipe'],
         }),
         getJuiciestRecipes: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -148,6 +76,7 @@ export const apiSlice = createApi({
                 }));
                 return { ...(response as RecipesResponse), data: data };
             },
+            providesTags: ['Recipe'],
         }),
         getRecipe: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -162,6 +91,7 @@ export const apiSlice = createApi({
                 }));
                 return { ...(response as RecipesResponse), data: data };
             },
+            providesTags: ['Recipe'],
         }),
         getRecipeById: build.query<Recipe, string>({
             query: (id) => ({
@@ -176,27 +106,11 @@ export const apiSlice = createApi({
                 }));
                 return { ...data, steps: steps, image: IMAGE_BASE_URL + data.image };
             },
+            providesTags: ['Recipe'],
         }),
-        login: build.mutation<LoginResponse, LoginFormData>({
+        createRecipeDraft: build.mutation<StatusResponse, RecipeDraft>({
             query: (body) => ({
-                url: `${ApiEndpoints.LOGIN}`,
-                method: 'post',
-                body,
-            }),
-            transformResponse: (response, meta) => {
-                const headers = meta?.response?.headers;
-                const token = headers?.get('Authentication-Access');
-                sessionStorage.setItem('access_token', token ?? '');
-                return response as LoginResponse;
-            },
-            transformErrorResponse: (response) => {
-                console.log(response);
-                return response;
-            },
-        }),
-        signup: build.mutation<LoginResponse, RegistrationFormData>({
-            query: (body) => ({
-                url: `${ApiEndpoints.SIGNUP}`,
+                url: `${ApiEndpoints.RECIPE_DRAFT}`,
                 method: 'post',
                 body,
             }),
@@ -205,9 +119,9 @@ export const apiSlice = createApi({
                 return response;
             },
         }),
-        forgotPassword: build.mutation<LoginResponse, EmailRecoveryFormData>({
+        createRecipe: build.mutation<RecipeDraft, RecipeDraft>({
             query: (body) => ({
-                url: `${ApiEndpoints.FORGOT_PASSWORD}`,
+                url: `${ApiEndpoints.RECIPE}`,
                 method: 'post',
                 body,
             }),
@@ -215,53 +129,66 @@ export const apiSlice = createApi({
                 console.log(response);
                 return response;
             },
+            invalidatesTags: ['Recipe'],
         }),
-        verifyOTP: build.mutation<LoginResponse, OTPFormData>({
-            query: (body) => ({
-                url: `${ApiEndpoints.VERIFY_OTP}`,
-                method: 'post',
-                body,
+        deleteRecipe: build.mutation<StatusResponse, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.RECIPE}/${id}`,
+                method: 'delete',
             }),
             transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },
+            invalidatesTags: ['Recipe'],
         }),
-        resetPassword: build.mutation<LoginResponse, EmailRecoveryFormData>({
-            query: (body) => ({
-                url: `${ApiEndpoints.RESET_PASSWORD}`,
-                method: 'post',
-                body,
+        editRecipe: build.mutation<RecipeDraft, { id: string; body: RecipeDraft }>({
+            query: (data) => ({
+                url: `${ApiEndpoints.RECIPE}/${data.id}`,
+                method: 'PATCH',
+                body: data.body,
             }),
             transformErrorResponse: (response) => {
                 console.log(response);
                 return response;
             },
+            invalidatesTags: ['Recipe'],
         }),
-        getMeasureUnits: build.query<MeasureUnitsResponse, void>({
-            query: () => ({
-                url: ApiEndpoints.MEASURE_UNITS,
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem('access_token')}`,
-                },
+        likeRecipe: build.mutation<StatusResponse, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.RECIPE}/${id}/like`,
+                method: 'post',
             }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+            invalidatesTags: ['Recipe'],
+        }),
+        bookmarkRecipe: build.mutation<StatusResponse, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.RECIPE}/${id}/bookmark`,
+                method: 'post',
+            }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+            invalidatesTags: ['Recipe'],
         }),
     }),
 });
 
 export const {
-    useGetCategoriyByIdQuery,
-    useGetCategoriesQuery,
-    useGetRecipeQuery,
+    useCreateRecipeDraftMutation,
+    useCreateRecipeMutation,
+    useEditRecipeMutation,
+    useDeleteRecipeMutation,
+    useLikeRecipeMutation,
+    useBookmarkRecipeMutation,
     useGetRecipeByIdQuery,
-    useGetNewestRecipesQuery,
+    useGetRecipeQuery,
     useGetJuiciestRecipesQuery,
+    useGetNewestRecipesQuery,
     useGetRecipeByCategoryQuery,
-    useLoginMutation,
-    useSignupMutation,
-    useForgotPasswordMutation,
-    useVerifyOTPMutation,
-    useResetPasswordMutation,
-    useGetMeasureUnitsQuery,
-} = apiSlice;
+} = recipeApi;

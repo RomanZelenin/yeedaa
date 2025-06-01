@@ -6,7 +6,7 @@ import { filterSelector } from '~/app/features/filters/filtersSlice';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useMapRecipesToCategoryPaths } from '~/common/hooks/useMapRecipesToCategoryPaths';
 import { joinSelected } from '~/common/utils/joinSelected';
-import { useGetRecipeQuery } from '~/query/create-api';
+import { useGetRecipeQuery } from '~/query/create-recipe-api';
 import {
     Error,
     isSearchSelector,
