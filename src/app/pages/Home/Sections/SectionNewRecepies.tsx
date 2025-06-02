@@ -1,6 +1,7 @@
 import 'swiper/swiper-bundle.css';
 
 import { Box, Center, Image, Link as ChakraLink, Text } from '@chakra-ui/react';
+import { Link } from 'react-router';
 import { Keyboard, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -118,10 +119,11 @@ export default function SectionNewRecipes() {
                             .map((recipe, i) => (
                                 <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
                                     <ChakraLink
+                                        as={Link}
+                                        to={recipe.path}
                                         _hover={{
                                             textDecoration: 'none',
                                         }}
-                                        href={`${recipe.path}`}
                                     >
                                         <NewRecepieCard key={i} recipe={recipe} />
                                     </ChakraLink>

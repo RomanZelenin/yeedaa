@@ -16,6 +16,7 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { Link } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
@@ -122,8 +123,8 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         {getString('save')}
                     </Button>
                     <Button
-                        as='a'
-                        href={recipe.path}
+                        as={Link}
+                        to={recipe.path}
                         data-test-id={`card-link-${id}`}
                         bgColor='blackAlpha.900'
                         color='white'
@@ -200,8 +201,8 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                     />
 
                     <Button
-                        as='a'
-                        href={recipe.path}
+                        as={Link}
+                        to={recipe.path}
                         data-test-id={`card-link-${id}`}
                         bgColor='black'
                         color='white'

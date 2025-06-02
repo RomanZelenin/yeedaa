@@ -1,4 +1,5 @@
 import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
+import { Link } from 'react-router';
 
 import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
@@ -39,8 +40,8 @@ export default function SectionJuiciest() {
                     </Text>
                     <Button
                         visibility={{ base: 'hidden', lg: 'visible' }}
-                        as='a'
-                        href='/the-juiciest'
+                        as={Link}
+                        to='/the-juiciest'
                         bgColor='lime.300'
                         fontSize='16px'
                         color='black'
@@ -61,8 +62,8 @@ export default function SectionJuiciest() {
                 />
                 <Button
                     visibility={{ base: 'visible', lg: 'hidden' }}
-                    as='a'
-                    href='/the-juiciest'
+                    as={Link}
+                    to='/the-juiciest'
                     bgColor='lime.300'
                     alignSelf='center'
                     fontSize='16px'
