@@ -1,5 +1,8 @@
-import { Avatar, Box, Flex, Text, VStack } from '@chakra-ui/react';
+import { Avatar, Box, Flex, Link, Text, VStack } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
+import { Link as ReactRouterLink } from 'react-router';
+
+import { ApplicationRoute } from '~/router';
 
 import { HomeIcon } from '../Icons/HomeIcon';
 import { SearchIcon } from '../Icons/SearchIcon';
@@ -78,13 +81,15 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                     }
                 >
                     <VStack spacing={0}>
-                        <Box
-                            bgColor={selectedMenuIdx === idx ? 'black' : 'none'}
-                            borderRadius='100%'
-                        >
-                            {it.icon}
-                        </Box>
-                        <Text>{it.title}</Text>
+                        <Link as={ReactRouterLink} to={ApplicationRoute.NEW_RECIPE}>
+                            <Box
+                                bgColor={selectedMenuIdx === idx ? 'black' : 'none'}
+                                borderRadius='100%'
+                            >
+                                {it.icon}
+                            </Box>
+                            <Text>{it.title}</Text>
+                        </Link>
                     </VStack>
                 </Box>
             ))}

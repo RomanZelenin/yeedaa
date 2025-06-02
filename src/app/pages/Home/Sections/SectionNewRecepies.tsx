@@ -1,12 +1,17 @@
 import 'swiper/swiper-bundle.css';
 
 import { Box, Center, Image, Link as ChakraLink, Text } from '@chakra-ui/react';
+import { Link } from 'react-router';
 import { Keyboard, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+import leftArrowIcon from '~/assets/icons/left-arrow.svg';
+import rightArrowIcon from '~/assets/icons/right-arrow.svg';
 import { NewRecepieCard } from '~/common/components/Cards/NewRecepieCard';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { Subcategory, useGetCategoriesQuery, useGetNewestRecipesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
+import { useGetNewestRecipesQuery } from '~/query/create-recipe-api';
+import { Subcategory } from '~/query/types';
 import { setNewestRecipesLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -45,7 +50,7 @@ export default function SectionNewRecipes() {
                 )! as unknown as Subcategory,
         );
         const rootCategories = subcategories.map((subcategory) =>
-            categories.find((category) => category._id === subcategory.rootCategoryId),
+            categories.find((category) => category._id === subcategory?.rootCategoryId),
         );
 
         return (
@@ -114,10 +119,11 @@ export default function SectionNewRecipes() {
                             .map((recipe, i) => (
                                 <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
                                     <ChakraLink
+                                        as={Link}
+                                        to={recipe.path}
                                         _hover={{
                                             textDecoration: 'none',
                                         }}
-                                        href={`${recipe.path}`}
                                     >
                                         <NewRecepieCard key={i} recipe={recipe} />
                                     </ChakraLink>
@@ -129,14 +135,14 @@ export default function SectionNewRecipes() {
                         className='swiper-custom-button-prev'
                         data-test-id='carousel-back'
                     >
-                        <Image src='/src/assets/icons/left-arrow.svg' boxSize='24px' />
+                        <Image src={leftArrowIcon} boxSize='24px' />
                     </Center>
                     <Center
                         visibility={{ base: 'hidden', lg: 'visible' }}
                         className='swiper-custom-button-next'
                         data-test-id='carousel-forward'
                     >
-                        <Image src='/src/assets/icons/right-arrow.svg' boxSize='24px' />
+                        <Image src={rightArrowIcon} boxSize='24px' />
                     </Center>
                 </Box>
             </Box>

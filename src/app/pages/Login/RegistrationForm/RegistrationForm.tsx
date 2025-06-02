@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
-import { StatusCode } from '~/query/constants/api';
-import { LoginResponse, useSignupMutation } from '~/query/create-api';
-import { Error, setAppError, setAppLoader } from '~/store/app-slice';
+import { StatusCode } from '~/query/constants';
+import { useSignupMutation } from '~/query/create-auth-api';
+import { StatusResponse } from '~/query/types';
+import { Error, removeNotification, setAppLoader, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 import { VerificationEmailModal } from '../Modal/VerificationEmailModal';
@@ -74,7 +75,6 @@ export const RegistrationForm = () => {
             ),
         },
     ];
-
     const password = watch('password');
     useEffect(() => {
         if (watch('confirmPassword')) {
@@ -92,29 +92,34 @@ export const RegistrationForm = () => {
     };
 
     const [singnup] = useSignupMutation();
-    const handleOnError = useCallback((response?: LoginResponse) => {
+    const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.BadRequest:
                 dispatch(
-                    setAppError({
-                        value: response.data.message,
-                        message: '',
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: response.data.message,
+                        type: 'error',
                     }),
                 );
                 break;
             case StatusCode.InternalServerError:
                 dispatch(
-                    setAppError({
-                        value: Error.SERVER,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.SERVER,
                         message: 'Попробуйте немного позже',
+                        type: 'error',
                     }),
                 );
                 break;
             default:
                 dispatch(
-                    setAppError({
-                        value: response!.data.error,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: response!.data.error,
                         message: response!.data.message,
+                        type: 'error',
                     }),
                 );
         }
@@ -129,12 +134,12 @@ export const RegistrationForm = () => {
             event?: React.BaseSyntheticEvent;
         }) => {
             try {
-                dispatch(setAppError({ value: Error.NONE }));
+                dispatch(removeNotification());
                 dispatch(setAppLoader(true));
                 await singnup(data as RegistrationFormData).unwrap();
                 setIsShowSuccessModalDialog(true);
             } catch (e) {
-                handleOnError(e as LoginResponse);
+                handleOnError(e as StatusResponse);
             } finally {
                 dispatch(setAppLoader(false));
             }

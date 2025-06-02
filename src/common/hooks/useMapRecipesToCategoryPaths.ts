@@ -1,5 +1,6 @@
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { Subcategory, useGetCategoriesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
+import { Subcategory } from '~/query/types';
 
 export function useMapRecipesToCategoryPaths(recipes: Recipe[]) {
     const { data: categories, isSuccess } = useGetCategoriesQuery();

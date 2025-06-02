@@ -11,17 +11,19 @@ import {
     VStack,
 } from '@chakra-ui/react';
 
+import loginFailedImg from '~/assets/images/login-failed.svg';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
-import { Error, setAppError } from '~/store/app-slice';
-import { useAppDispatch } from '~/store/hooks';
 
 export const LoginFailedModal = ({ onClickRepeat }: { onClickRepeat: () => void }) => {
     const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
-    const dispatch = useAppDispatch();
 
     const handleOnClickClose = () => {
-        dispatch(setAppError({ value: Error.NONE }));
         onClose();
+    };
+
+    const handleOnClickRepeat = () => {
+        handleOnClickClose();
+        onClickRepeat();
     };
 
     return (
@@ -47,10 +49,7 @@ export const LoginFailedModal = ({ onClickRepeat }: { onClickRepeat: () => void 
                         aria-label='close'
                     />
                     <VStack spacing='32px' p='32px'>
-                        <Image
-                            boxSize={{ base: '108px', lg: '206px' }}
-                            src='/src/assets/images/login-failed.svg'
-                        />
+                        <Image boxSize={{ base: '108px', lg: '206px' }} src={loginFailedImg} />
                         <VStack spacing={0}>
                             <Text textStyle='text2xlLh8Bold' mb={{ base: '16px' }}>
                                 Вход не выполнен
@@ -67,10 +66,7 @@ export const LoginFailedModal = ({ onClickRepeat }: { onClickRepeat: () => void 
                             width='100%'
                             bgColor='black'
                             color='white'
-                            onClick={() => {
-                                handleOnClickClose();
-                                onClickRepeat();
-                            }}
+                            onClick={handleOnClickRepeat}
                             height={{ base: '48px' }}
                         >
                             <Text textStyle='textLgLh7Semibold'>Повторить</Text>

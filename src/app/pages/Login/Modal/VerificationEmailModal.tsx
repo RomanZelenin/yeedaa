@@ -11,6 +11,7 @@ import {
     VStack,
 } from '@chakra-ui/react';
 
+import selebratingImg from '~/assets/images/selebrating.svg';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
 
 export const VerificationEmailModal = ({
@@ -50,10 +51,7 @@ export const VerificationEmailModal = ({
                         aria-label='close'
                     />
                     <VStack spacing='32px' p='32px'>
-                        <Image
-                            boxSize={{ base: '108px', lg: '206px' }}
-                            src='/src/assets/images/selebrating.svg'
-                        />
+                        <Image boxSize={{ base: '108px', lg: '206px' }} src={selebratingImg} />
                         <VStack spacing={0} textAlign='center'>
                             <Text textStyle='text2xlLh8Bold' mb={{ base: '16px' }}>
                                 Остался последний шаг. Нужно верифицировать ваш e-mail

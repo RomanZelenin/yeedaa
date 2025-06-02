@@ -6,19 +6,24 @@ type ThreeButtonsProps = {
     views?: number;
 };
 
+import bookmarkIcon from '~/assets/icons/bookmark.svg';
+import likeIcon from '~/assets/icons/like.svg';
+import personsIcon from '~/assets/icons/persons.svg';
+
 export const ThreeButtons = ({ bookmarks, likes, views }: ThreeButtonsProps) => {
     const buttonsData = [
-        { type: 'bookmarks', count: bookmarks, icon: '/src/assets/icons/bookmark.svg' },
-        { type: 'likes', count: likes, icon: '/src/assets/icons/like.svg' },
-        { type: 'persons', count: views, icon: '/src/assets/icons/persons.svg' },
+        { type: 'bookmarks', count: bookmarks, icon: bookmarkIcon },
+        { type: 'likes', count: likes, icon: likeIcon },
+        { type: 'persons', count: views, icon: personsIcon },
     ];
 
     return (
         <HStack spacing='8px'>
-            {buttonsData.map(({ type, count, icon }) =>
-                typeof count === 'number' ? (
-                    <ButtonItem key={type} iconSrc={icon} count={count} />
-                ) : null,
+            {buttonsData.map(
+                ({ type, count, icon }) =>
+                    typeof count === 'number' && (
+                        <ButtonItem key={type} iconSrc={icon} count={count} />
+                    ),
             )}
         </HStack>
     );

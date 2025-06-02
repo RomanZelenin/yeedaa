@@ -16,12 +16,16 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { Link } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import bookmarkIcon from '~/assets/icons/bookmark.svg';
+import likeIcon from '~/assets/icons/like.svg';
+import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
 import { querySelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
+import { Fallback } from '../Fallback/Fallback';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { ThreeButtons } from './ThreeButtons';
@@ -29,12 +33,7 @@ import { ThreeButtons } from './ThreeButtons';
 export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-
-    const subcategoriesIds = recipe.categoriesIds?.map((categoryId) => categoryId);
-    const categories = useGetCategoriesQuery().data?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
-
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     return (
         <Card
             key={id}
@@ -43,7 +42,12 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
             overflow='clip'
             minH='244px'
         >
-            <Image objectFit='cover' src={recipe.image} w='346px' alt={recipe.title} />
+            <Image
+                objectFit='cover'
+                src={recipe.image}
+                w='346px'
+                fallback={<Fallback width='346px' height='100%' />}
+            />
             {recipe.recommendation?.slice(0, 1).map((profile, i) => (
                 <>
                     <Tag
@@ -80,13 +84,13 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         </Wrap>
                         <HStack spacing='8px'>
                             <HStack spacing='6px' p='4px'>
-                                <Image src='/src/assets/icons/bookmark.svg' boxSize='12px' alt='' />
+                                <Image src={bookmarkIcon} boxSize='12px' alt='' />
                                 <Text textStyle='textXsLh4Semibold' color='lime.600'>
                                     {recipe.bookmarks}
                                 </Text>
                             </HStack>
                             <HStack spacing='6px' p='4px'>
-                                <Image src='/src/assets/icons/like.svg' boxSize='12px' alt='' />
+                                <Image src={likeIcon} boxSize='12px' alt='' />
                                 <Text textStyle='textXsLh4Semibold' color='lime.600'>
                                     {recipe.likes}
                                 </Text>
@@ -110,7 +114,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         px='12px'
                         py='6px'
                         textStyle='textSmLh5Semibold'
-                        leftIcon={<Image src='/src/assets/icons/bookmark.svg' />}
+                        leftIcon={<Image src={bookmarkIcon} />}
                         h='32px'
                         borderRadius='6px'
                         borderColor='blackAlpha.600'
@@ -119,8 +123,8 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         {getString('save')}
                     </Button>
                     <Button
-                        as='a'
-                        href={recipe.path}
+                        as={Link}
+                        to={recipe.path}
                         data-test-id={`card-link-${id}`}
                         bgColor='blackAlpha.900'
                         color='white'
@@ -144,13 +148,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
 export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-
-    const subcategoriesIds = recipe.categoriesIds?.map((categoryId) => categoryId);
-    const allCategories = useGetCategoriesQuery().data;
-    const categories = allCategories?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
-
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     return (
         <Card
             key={id}
@@ -159,7 +157,11 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
             overflow='clip'
             minH='128px'
         >
-            <Image src={recipe.image} w='158px' alt={recipe.title} />
+            <Image
+                src={recipe.image}
+                w='158px'
+                fallback={<Fallback width='158px' height='100%' />}
+            />
             <Wrap pos='absolute' top='6px' left='6px' alignItems='center' maxW='158px'>
                 {categories?.map((category, i) => (
                     <WrapItem key={i}>
@@ -199,8 +201,8 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                     />
 
                     <Button
-                        as='a'
-                        href={recipe.path}
+                        as={Link}
+                        to={recipe.path}
                         data-test-id={`card-link-${id}`}
                         bgColor='black'
                         color='white'

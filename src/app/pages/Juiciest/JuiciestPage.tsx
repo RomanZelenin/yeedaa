@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { useGetJuiciestRecipesQuery } from '~/query/create-api';
+import { useGetJuiciestRecipesQuery } from '~/query/create-recipe-api';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 

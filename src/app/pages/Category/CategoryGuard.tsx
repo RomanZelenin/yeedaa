@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router';
 
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
 
 export const CategoryGuard = ({ category, subcategoryName, children }) => {
     const { isSuccess, isError } = useGetCategoriesQuery();

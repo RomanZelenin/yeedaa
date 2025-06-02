@@ -1,9 +1,9 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { Link as ReactRouterLink, useParams } from 'react-router';
 
 import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
-import { useGetRecipeByIdQuery } from '~/query/create-api';
+import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 
@@ -12,7 +12,7 @@ type BreadcrumbItem = {
     path: string;
 };
 
-export const NavigationBreadcrumb = () => {
+export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb: () => void }) => {
     const { getString } = useResource();
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
     const { category: categoryName, subcategory: subcategoryName, id: recipeId } = useParams();
@@ -48,6 +48,8 @@ export const NavigationBreadcrumb = () => {
                         path: `/the-juiciest/${recipeId}#`,
                     });
                 }
+            } else if (location.pathname.startsWith('/new-recipe')) {
+                breadcrumbs.push({ title: getString('new-recipe'), path: '/new-recipe' });
             }
         }
         setBreadcrumbs(breadcrumbs);
@@ -64,8 +66,10 @@ export const NavigationBreadcrumb = () => {
             {breadcrumbs.map((item, index) => (
                 <BreadcrumbItem key={`${item.path}-${index}`}>
                     <BreadcrumbLink
+                        onClick={() => onClickBreadcrumb()}
+                        as={ReactRouterLink}
                         whiteSpace='nowrap'
-                        href={item.path}
+                        to={item.path}
                         color={index !== breadcrumbs.length - 1 ? 'rgba(0, 0, 0, 0.64)' : 'black'}
                         aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}
                     >

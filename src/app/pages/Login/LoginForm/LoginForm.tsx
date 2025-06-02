@@ -5,9 +5,16 @@ import { Form, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
 import { PasswordInput } from '~/common/components/PasswordInput/PasswordInput';
-import { StatusCode } from '~/query/constants/api';
-import { LoginResponse, useLoginMutation } from '~/query/create-api';
-import { Error, errorSelector, setAppError, setAppLoader } from '~/store/app-slice';
+import { StatusCode } from '~/query/constants';
+import { useLoginMutation } from '~/query/create-auth-api';
+import { StatusResponse } from '~/query/types';
+import {
+    Error,
+    notificationSelector,
+    removeNotification,
+    setAppLoader,
+    setNotification,
+} from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { LoginFailedModal } from '../Modal/LoginFailedModal';
@@ -25,9 +32,8 @@ export const LoginForm = () => {
     const loginInputRef = useRef<HTMLInputElement>(null);
     const [isShowRecoveryModal, setIsShowRecoveryModal] = useState(false);
 
-    const error = useAppSelector(errorSelector);
+    const notification = useAppSelector(notificationSelector);
     const [isShowLoginFailed, setIsShowLoginFailed] = useState(false);
-
     const {
         control,
         register,
@@ -38,23 +44,26 @@ export const LoginForm = () => {
         resolver: yupResolver(loginFormSchema),
         mode: 'onChange',
     });
-
     const [login] = useLoginMutation();
-    const handleOnError = useCallback((response?: LoginResponse) => {
+    const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.Unauthorized:
                 dispatch(
-                    setAppError({
-                        value: Error.INCORRECT_LOGIN_OR_PASSWORD,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.INCORRECT_LOGIN_OR_PASSWORD,
                         message: 'Попробуйте снова.',
+                        type: 'error',
                     }),
                 );
                 break;
             case StatusCode.Forbidden:
                 dispatch(
-                    setAppError({
-                        value: Error.EMAIL_NOT_VERIFED,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.EMAIL_NOT_VERIFED,
                         message: 'Проверьте почту и перейдите по ссылке.',
+                        type: 'error',
                     }),
                 );
                 break;
@@ -63,9 +72,11 @@ export const LoginForm = () => {
                 break;
             default:
                 dispatch(
-                    setAppError({
-                        value: response!.data.error,
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: response!.data.error,
                         message: response!.data.message,
+                        type: 'error',
                     }),
                 );
         }
@@ -80,21 +91,19 @@ export const LoginForm = () => {
             event?: React.BaseSyntheticEvent;
         }) => {
             try {
-                setIsShowLoginFailed(false);
                 dispatch(setAppLoader(true));
                 await login(data as LoginFormData).unwrap();
                 naviagate('/', { replace: true });
             } catch (e) {
-                handleOnError(e as LoginResponse);
+                handleOnError(e as StatusResponse);
             } finally {
                 dispatch(setAppLoader(false));
             }
         },
         [dispatch, login],
     );
-
     const isIncorrectLoginOrPassword =
-        formErrors.login || error.value === Error.INCORRECT_LOGIN_OR_PASSWORD;
+        formErrors.login || notification?.title === Error.INCORRECT_LOGIN_OR_PASSWORD;
 
     return (
         <>
@@ -122,7 +131,7 @@ export const LoginForm = () => {
                             id='login'
                             {...register('login')}
                             onInput={(e) => {
-                                dispatch(setAppError({ value: Error.NONE }));
+                                dispatch(removeNotification());
                                 setValue('login', (e.target as HTMLInputElement).value.trim());
                             }}
                             ref={loginInputRef}
@@ -160,7 +169,7 @@ export const LoginForm = () => {
                             id='password'
                             {...register('password')}
                             onInput={(e) => {
-                                dispatch(setAppError({ value: Error.NONE }));
+                                dispatch(removeNotification());
                                 setValue('password', (e.target as HTMLInputElement).value);
                             }}
                             aria-invalid={formErrors.password ? 'true' : 'false'}
@@ -192,7 +201,12 @@ export const LoginForm = () => {
                 </VStack>
             </Form>
             {isShowLoginFailed && (
-                <LoginFailedModal onClickRepeat={() => onSubmit({ data: getValues() })} />
+                <LoginFailedModal
+                    onClickRepeat={() => {
+                        setIsShowLoginFailed(false);
+                        onSubmit({ data: getValues() });
+                    }}
+                />
             )}
             {isShowRecoveryModal && (
                 <RecoveryModal

@@ -1,5 +1,6 @@
 import { Button, HStack, Image, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 
+import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
 import { BlogCard } from '~/common/components/Cards/BlogCard';
 import { blogsSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
@@ -33,7 +34,7 @@ export default function SectionCookingBlogs() {
                     variant='ghost'
                     px='16px'
                     py='8px'
-                    rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
+                    rightIcon={<Image src={arrowRightIcon} />}
                 >
                     Все авторы
                 </Button>
@@ -56,7 +57,7 @@ export default function SectionCookingBlogs() {
                     flex={1}
                     px='16px'
                     py='8px'
-                    rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' boxSize='16px' />}
+                    rightIcon={<Image src={arrowRightIcon} boxSize='16px' />}
                 >
                     Все авторы
                 </Button>

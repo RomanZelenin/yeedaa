@@ -13,8 +13,10 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 
 import { DEFAULT_FILTER, setFilter } from '~/app/features/filters/filtersSlice';
-import { useGetCategoriesQuery } from '~/query/create-api';
-import { Error, setAppError, setAppQuery, setRecepies } from '~/store/app-slice';
+import downIcon from '~/assets/icons/down.svg';
+import upIcon from '~/assets/icons/up.svg';
+import { useGetCategoriesQuery } from '~/query/create-category-api';
+import { removeNotification, setAppQuery, setRecepies } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export const MenuItems = () => {
@@ -44,18 +46,15 @@ export const MenuItems = () => {
         if (selectedItem != idx) {
             setSelectedSubmenuIdx(0);
             dispatcher(setAppQuery(''));
-            dispatcher(setAppError({ value: Error.NONE }));
+            dispatcher(removeNotification());
             dispatcher(setRecepies([]));
             dispatcher(setFilter(DEFAULT_FILTER));
             navigate(path);
         }
     };
 
-    if (isLoading) {
-        return <Text>Loading...</Text>;
-    }
-    if (isError) {
-        return <Text>Error</Text>;
+    if (isLoading || isError) {
+        return null;
     }
 
     return (
@@ -109,11 +108,7 @@ export const MenuItems = () => {
                                         </Text>
 
                                         <Image
-                                            src={
-                                                isExpanded
-                                                    ? '/src/assets/icons/up.svg'
-                                                    : '/src/assets/icons/down.svg'
-                                            }
+                                            src={isExpanded ? upIcon : downIcon}
                                             alt={isExpanded ? 'Collapse' : 'Expand'}
                                         />
                                     </AccordionButton>

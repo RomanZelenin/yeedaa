@@ -1,12 +1,14 @@
-import { Button, Image, Input, Stack, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Button, Image, Input, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
-import { ErrorAlert } from '~/common/components/Alert/ErrorAlert';
-import { StatusCode } from '~/query/constants/api';
-import { LoginResponse, useForgotPasswordMutation } from '~/query/create-api';
-import { Error, ResponseError, setAppLoader } from '~/store/app-slice';
+import loginFailedImg from '~/assets/images/login-failed.svg';
+import { CustomAlert } from '~/common/components/Alert/CustomAlert';
+import { StatusCode } from '~/query/constants';
+import { useForgotPasswordMutation } from '~/query/create-auth-api';
+import { StatusResponse } from '~/query/types';
+import { Error, Notification, setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 import { emailRecoverySchema } from '../../schemes';
@@ -20,14 +22,8 @@ export const EmailRecoveryForm = ({
 }: {
     onSuccess: (data: EmailRecoveryFormData) => void;
 }) => {
-    const [error, setError] = useState<ResponseError>({ value: Error.NONE });
-    const {
-        isOpen: isOpenErrorAlert,
-        onClose: onCloseErrorAlert,
-        onOpen: onOpenErrorAlert,
-    } = useDisclosure({ defaultIsOpen: error.value !== Error.NONE });
+    const [notification, setNotification] = useState<Notification | null>(null);
     const dispatch = useAppDispatch();
-
     const {
         control,
         register,
@@ -39,35 +35,41 @@ export const EmailRecoveryForm = ({
     });
 
     const [forgotPassword] = useForgotPasswordMutation();
-    const handleOnError = useCallback((response?: LoginResponse) => {
+    const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.BadRequest:
-                setError({
-                    value: response.data.message,
-                    message: '',
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: response.data.message,
+                    type: 'error',
                 });
                 break;
             case StatusCode.Forbidden:
                 setValue('email', '');
-                setError({
-                    value: 'Такого e-mail нет',
-                    message: `Попробуйте другой e-mail или проверьте правильность его написания`,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: 'Такого e-mail нет',
+                    message: 'Попробуйте другой e-mail или проверьте правильность его написания',
+                    type: 'error',
                 });
                 break;
             case StatusCode.InternalServerError:
                 setValue('email', '');
-                setError({
-                    value: Error.SERVER,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
                     message: 'Попробуйте немного позже',
+                    type: 'error',
                 });
                 break;
             default:
-                setError({
-                    value: response!.data.error,
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: response!.data.error,
                     message: response!.data.message,
+                    type: 'error',
                 });
         }
-        onOpenErrorAlert();
     }, []);
 
     const onSubmit = useCallback(
@@ -84,7 +86,7 @@ export const EmailRecoveryForm = ({
                 await forgotPassword(data).unwrap();
                 onSuccess(data);
             } catch (e) {
-                handleOnError(e as LoginResponse);
+                handleOnError(e as StatusResponse);
             } finally {
                 dispatch(setAppLoader(false));
             }
@@ -96,10 +98,7 @@ export const EmailRecoveryForm = ({
         <>
             <Form onSubmit={onSubmit} control={control}>
                 <VStack spacing='32px' p='32px'>
-                    <Image
-                        boxSize={{ base: '108px', lg: '206px' }}
-                        src='/src/assets/images/login-failed.svg'
-                    />
+                    <Image boxSize={{ base: '108px', lg: '206px' }} src={loginFailedImg} />
                     <Stack spacing={0} textAlign='center'>
                         <Text textStyle='textMdLh6Normal' mb={{ base: '16px' }}>
                             {`Для восстановления входа введите ваш\u00A0e-mail, куда можно отправить уникальный код`}
@@ -115,22 +114,18 @@ export const EmailRecoveryForm = ({
                             type='email'
                             borderRadius='6px'
                             borderColor={
-                                formErrors.email || error.value !== Error.NONE ? 'red' : 'lime.150'
+                                formErrors.email || notification !== null ? 'red' : 'lime.150'
                             }
                             bgColor='white'
                             _active={{
                                 bgColor: 'white',
                                 borderColor:
-                                    formErrors.email || error.value !== Error.NONE
-                                        ? 'red'
-                                        : 'lime.150',
+                                    formErrors.email || notification !== null ? 'red' : 'lime.150',
                             }}
                             _focus={{
                                 bgColor: 'white',
                                 borderColor:
-                                    formErrors.email || error.value !== Error.NONE
-                                        ? 'red'
-                                        : 'lime.150',
+                                    formErrors.email || notification !== null ? 'red' : 'lime.150',
                             }}
                             placeholder='e-mail'
                             variant='filled'
@@ -160,14 +155,14 @@ export const EmailRecoveryForm = ({
                     </VStack>
                 </VStack>
             </Form>
-            <ErrorAlert
-                isOpen={isOpenErrorAlert}
-                onClose={onCloseErrorAlert}
-                bottom='20px'
-                title={error.value}
-                message={error.message ?? ''}
-                position='fixed'
-            />
+            {notification && (
+                <CustomAlert
+                    position='fixed'
+                    key={notification._id}
+                    notification={notification}
+                    bottom='20px'
+                />
+            )}
         </>
     );
 };

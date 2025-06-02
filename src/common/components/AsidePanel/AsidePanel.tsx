@@ -1,4 +1,5 @@
 import { Box, LinkBox, LinkOverlay, Text, VStack } from '@chakra-ui/react';
+import { Link } from 'react-router';
 
 import { WriteIcon } from '../Icons/WriteIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
@@ -17,8 +18,8 @@ export const AsidePanel = ({
     return (
         <VStack pos='fixed' bottom={0} top='80px' justify='space-between'>
             <ProfileNotification bookmarks={bookmarks} persons={persons} likes={likes} />
-            <LinkBox>
-                <LinkOverlay href='#'>
+            <LinkBox data-test-id='add-recipe-button'>
+                <LinkOverlay as={Link} to='/new-recipe'>
                     <Box
                         as='button'
                         boxSize='208px'

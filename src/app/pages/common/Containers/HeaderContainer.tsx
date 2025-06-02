@@ -23,11 +23,11 @@ import { useResource } from '~/common/components/ResourceContext/ResourceContext
 import { AllergySelectorWithSwitcher } from '~/common/components/Selector /AllergySelectorWithSwitcher';
 import {
     Error,
-    errorSelector,
     isSearchSelector,
+    notificationSelector,
     querySelector,
     recipesSelector,
-    setAppError,
+    removeNotification,
     setAppQuery,
     setIsSearch,
     setRecepies,
@@ -54,7 +54,8 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
         setInputQuery(query);
     }, [query]);
 
-    const error = useAppSelector(errorSelector);
+    //const error = useAppSelector(errorSelector);
+    const notification = useAppSelector(notificationSelector);
     const filter = useAppSelector(filterSelector);
     const allergens = filter.allergens
         .filter((allergen) => allergen.selected)
@@ -81,7 +82,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             }
         >
             <Box textAlign='center'>
-                {error.value === Error.RECEPIES_NOT_FOUND ? (
+                {notification?.title === Error.RECEPIES_NOT_FOUND ? (
                     <>
                         <Text textStyle='textMdLh6Semibold'>
                             По вашему запросу ничего не найдено.
@@ -140,7 +141,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             onFocus={() => setIsSearchInputActive(true)}
                             onBlur={() => setIsSearchInputActive(false)}
                             onInput={(e) => {
-                                dispatcher(setAppError({ value: Error.NONE }));
+                                dispatcher(removeNotification());
                                 dispatcher(setRecepies([]));
                                 setInputQuery((e.target as HTMLInputElement).value);
                             }}
@@ -164,7 +165,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                                 onClick={() => {
                                     setInputQuery('');
                                     dispatcher(setAppQuery(''));
-                                    dispatcher(setAppError({ value: Error.NONE }));
+                                    dispatcher(removeNotification());
                                     dispatcher(setRecepies([]));
                                 }}
                                 flex={1}

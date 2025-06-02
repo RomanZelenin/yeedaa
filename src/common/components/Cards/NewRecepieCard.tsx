@@ -15,20 +15,17 @@ import {
 } from '@chakra-ui/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useGetCategoriesQuery } from '~/query/create-api';
+import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
 
+import { Fallback } from '../Fallback/Fallback';
 import { ThreeButtons } from './ThreeButtons';
 
 export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
-    const subcategoriesIds = recipe.categoriesIds?.map((id) => id);
-    const categories = useGetCategoriesQuery().data?.filter((it) =>
-        it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
-
+    const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     return (
         <Card
             w={{ base: '158px', lg: '279px', xl: '322px' }}
-            h={{ base: '224px', lg: '402px', xl: '414px' }}
+            h={{ base: '224px', lg: '438px' }}
             border='1px solid rgba(0, 0, 0, 0.08);'
             borderRadius='8px'
             overflow='clip'
@@ -41,6 +38,7 @@ export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
                     w={{ base: '158px', lg: '277px', xl: '322px' }}
                     h={{ base: '128px', lg: '230px' }}
                     alt={recipe.title}
+                    fallback={<Fallback width='100%' height={{ base: '128px', lg: '230px' }} />}
                 />
                 <Wrap
                     display={{ base: 'inline-flex', lg: 'none' }}
@@ -52,7 +50,7 @@ export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
                     {categories?.map((category, i) => (
                         <WrapItem key={i}>
                             <Tag layerStyle='categoryTag' bgColor=' lime.150'>
-                                <Image src={category.icon} boxSize='16px' alt='' />
+                                <Image src={category.icon} boxSize='16px' alt='icon' />
                                 <TagLabel textStyle='textSmLh5'>{category.title}</TagLabel>
                             </Tag>
                         </WrapItem>
@@ -92,14 +90,18 @@ export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
                     </Hide>
                     <Show above='lg'>
                         <Flex justify='space-between' flex={1} alignItems='end'>
-                            {categories?.map((category, i) => (
-                                <WrapItem key={i}>
-                                    <Tag layerStyle='categoryTag' bgColor=' lime.150'>
-                                        <Image src={category.icon} boxSize='16px' alt='' />
-                                        <TagLabel textStyle='textSmLh5'>{category.title}</TagLabel>
-                                    </Tag>
-                                </WrapItem>
-                            ))}
+                            <Wrap>
+                                {categories?.map((category, i) => (
+                                    <WrapItem key={i}>
+                                        <Tag layerStyle='categoryTag' bgColor=' lime.150'>
+                                            <Image src={category.icon} boxSize='16px' alt='icon' />
+                                            <TagLabel textStyle='textSmLh5'>
+                                                {category.title}
+                                            </TagLabel>
+                                        </Tag>
+                                    </WrapItem>
+                                ))}
+                            </Wrap>
                             <ThreeButtons
                                 bookmarks={recipe.bookmarks}
                                 likes={recipe.likes}

@@ -11,6 +11,7 @@ import {
     Text,
     Wrap,
 } from '@chakra-ui/react';
+import { useMemo } from 'react';
 
 import { SelectItem } from '~/app/features/filters/filtersSlice';
 
@@ -25,9 +26,10 @@ export const MultiSelectDropdown = ({
     id?: string;
     placeholder: string;
     items: SelectItem[];
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, id?: string) => void;
 }) => {
     const { getString } = useResource();
+    const selectedItems = useMemo(() => items.filter((it) => it.selected), [items]);
 
     return (
         <Menu closeOnSelect={false}>
@@ -45,30 +47,32 @@ export const MultiSelectDropdown = ({
                         px='12px'
                         textAlign='start'
                     >
-                        {items.filter((it) => it.selected).length === 0 ? (
+                        {selectedItems.length === 0 ? (
                             placeholder
                         ) : (
                             <>
                                 <Wrap>
-                                    {items
-                                        .filter((it) => it.selected)
-                                        .map((item, i) => (
-                                            <Tag
-                                                key={i}
-                                                color='lime.600'
-                                                border='1px solid var(--chakra-colors-lime-400)'
-                                                bgColor='transparent'
-                                                borderRadius='6px'
-                                            >
-                                                <TagLabel>{getString(item.title)}</TagLabel>
-                                            </Tag>
-                                        ))}
+                                    {selectedItems.slice(0, 3).map((item, i) => (
+                                        <Tag
+                                            key={i}
+                                            color='lime.600'
+                                            border='1px solid var(--chakra-colors-lime-400)'
+                                            bgColor='transparent'
+                                            borderRadius='6px'
+                                        >
+                                            <TagLabel>
+                                                {i < 2
+                                                    ? getString(item.title)
+                                                    : `+${selectedItems.length - 2}`}
+                                            </TagLabel>
+                                        </Tag>
+                                    ))}
                                 </Wrap>
                             </>
                         )}
                     </MenuButton>
 
-                    <MenuList flex={1} zIndex='popover' py='4px'>
+                    <MenuList zIndex='popover' py='4px'>
                         {items.map((it, i) => (
                             <MenuItem
                                 h='32px'
@@ -83,7 +87,7 @@ export const MultiSelectDropdown = ({
                                     variant='lime'
                                     value={it.title}
                                     isChecked={it.selected}
-                                    onChange={onChange}
+                                    onChange={(e) => onChange(e, it._id)}
                                     mr={2}
                                 >
                                     <Text textStyle='textSmLh5'>{getString(it.title)}</Text>

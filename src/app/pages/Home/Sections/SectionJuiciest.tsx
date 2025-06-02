@@ -1,7 +1,9 @@
 import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
+import { Link } from 'react-router';
 
+import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
-import { useGetJuiciestRecipesQuery } from '~/query/create-api';
+import { useGetJuiciestRecipesQuery } from '~/query/create-recipe-api';
 import { setJuiciestRecipesLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -38,15 +40,15 @@ export default function SectionJuiciest() {
                     </Text>
                     <Button
                         visibility={{ base: 'hidden', lg: 'visible' }}
-                        as='a'
-                        href='/the-juiciest'
+                        as={Link}
+                        to='/the-juiciest'
                         bgColor='lime.300'
                         fontSize='16px'
                         color='black'
                         variant='ghost'
                         px='16px'
                         py='8px'
-                        rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
+                        rightIcon={<Image src={arrowRightIcon} />}
                         data-test-id='juiciest-link'
                     >
                         Вся подборка
@@ -60,8 +62,8 @@ export default function SectionJuiciest() {
                 />
                 <Button
                     visibility={{ base: 'visible', lg: 'hidden' }}
-                    as='a'
-                    href='/the-juiciest'
+                    as={Link}
+                    to='/the-juiciest'
                     bgColor='lime.300'
                     alignSelf='center'
                     fontSize='16px'
@@ -70,7 +72,7 @@ export default function SectionJuiciest() {
                     flex={1}
                     px='16px'
                     py='8px'
-                    rightIcon={<Image src='/src/assets/icons/BsArrowRight.svg' />}
+                    rightIcon={<Image src={arrowRightIcon} />}
                     data-test-id='juiciest-link-mobile'
                 >
                     Вся подборка

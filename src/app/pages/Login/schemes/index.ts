@@ -1,5 +1,9 @@
 import * as yup from 'yup';
 
+import { CookingStep } from '~/app/mocks/types/type_defenitions';
+
+import { RecipieFormData } from '../../CreateRecipe/CreateRecipePage';
+import { IngredientFormData } from '../../CreateRecipe/IngredientsEditor';
 import { LoginFormData } from '../LoginForm/LoginForm';
 import { AccountFormData } from '../Modal/Recovery/AccountRecoveryForm';
 import { EmailRecoveryFormData } from '../Modal/Recovery/EmailRecoveryForm';
@@ -183,5 +187,62 @@ export const registrationFormSchema: yup.ObjectSchema<RegistrationFormData> = yu
                     ? schema.oneOf(password, PASSWORDS_MUST_MATCH)
                     : schema,
             ),
+    })
+    .required();
+
+export const ingredientSchema: yup.ObjectSchema<IngredientFormData> = yup
+    .object({
+        title: yup.string().trim().required().max(50, MAX_LENGTH),
+        count: yup.number().positive().required(),
+        measureUnit: yup.string().required(),
+    })
+    .required();
+
+export const cookingStepSchema: yup.ObjectSchema<CookingStep> = yup
+    .object({
+        stepNumber: yup.number().required(),
+        description: yup.string().trim().required().max(300),
+        image: yup.string().nullable(),
+    })
+    .required();
+
+export const recipieSchema: yup.ObjectSchema<RecipieFormData> = yup
+    .object({
+        title: yup.string().trim().required().max(50),
+        description: yup.string().trim().required().max(500),
+        time: yup
+            .string()
+            .trim()
+            .test({
+                name: 'is-num',
+                test(value) {
+                    if (value === '') return true;
+                    const num = parseInt(value!);
+                    if (num < 1 || num > 1000) {
+                        return false;
+                    }
+                    return true;
+                },
+            })
+            .required(),
+        categoriesIds: yup.array<string[]>().min(3).required(),
+        portions: yup
+            .string()
+            .trim()
+            .test({
+                name: 'is-num',
+                test(value) {
+                    if (value === '') return true;
+                    const num = parseInt(value!);
+                    if (num < 1) {
+                        return false;
+                    }
+                    return true;
+                },
+            })
+            .required(),
+        image: yup.string().required(),
+        steps: yup.array().of(cookingStepSchema).min(1).required(),
+        ingredients: yup.array().of(ingredientSchema).min(1).required(),
     })
     .required();
