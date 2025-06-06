@@ -10,6 +10,8 @@ export enum ApiEndpoints {
     MEASURE_UNITS = '/measure-units',
     FILE_UPLOAD = '/file/upload',
     RECIPE_DRAFT = '/recipe/draft',
+    BLOGGERS = '/bloggers',
+    TOGGLE_SUBSCRIPTION = '/users/toggle-subscription',
 }
 
 export enum StatusCode {

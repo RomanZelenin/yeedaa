@@ -27,8 +27,10 @@ import { useAppSelector } from '~/store/hooks';
 
 import { Fallback } from '../Fallback/Fallback';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
+import { LikeIcon } from '../Icons/LikeIcon';
+import { PersonsIcon } from '../Icons/PersonsIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
-import { ThreeButtons } from './ThreeButtons';
+import { IconWithCounter } from './IconWithCounter';
 
 export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
@@ -175,11 +177,17 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
 
             <Stack spacing={0} flex={1} px='8px' pt='8px' pb='4px'>
                 <CardHeader p={0}>
-                    <ThreeButtons
-                        bookmarks={recipe.bookmarks}
-                        likes={recipe.likes}
-                        views={recipe.views}
-                    />
+                    <HStack spacing='8px'>
+                        <IconWithCounter
+                            icon={<BookmarkIcon boxSize='12px' />}
+                            count={recipe.bookmarks}
+                        />
+                        <IconWithCounter icon={<LikeIcon boxSize='12px' />} count={recipe.likes} />
+                        <IconWithCounter
+                            icon={<PersonsIcon fill='black' boxSize='12px' />}
+                            count={recipe.views}
+                        />
+                    </HStack>
                 </CardHeader>
                 <CardBody p={0}>
                     <Text textStyle='textMdLh6Medium' noOfLines={2}>

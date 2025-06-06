@@ -322,6 +322,12 @@ const theme = extendTheme({
             fontSize: '36px',
             lineHeight: '40px',
         },
+        text4xlLh10Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '36px',
+            lineHeight: '40px',
+        },
         textMdLh6Normal: {
             fontStyle: 'normal',
             fontWeight: 400,

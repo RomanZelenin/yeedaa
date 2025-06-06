@@ -1,4 +1,4 @@
-import { Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
+import { Button, Image, Stack, Text, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
 import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
@@ -29,7 +29,7 @@ export default function SectionJuiciest() {
         dispatch(setJuiciestRecipesLoader(false));
         return (
             <VStack spacing='12px' align='stretch'>
-                <HStack>
+                <Stack flexDir='row'>
                     <Text
                         px={{ base: '16px', lg: '0px' }}
                         fontSize={{ base: '24px', lg: '48px' }}
@@ -39,6 +39,8 @@ export default function SectionJuiciest() {
                         Самое сочное
                     </Text>
                     <Button
+                        alignSelf='center'
+                        display={{ base: 'none', lg: 'inline-flex' }}
                         visibility={{ base: 'hidden', lg: 'visible' }}
                         as={Link}
                         to='/the-juiciest'
@@ -53,7 +55,7 @@ export default function SectionJuiciest() {
                     >
                         Вся подборка
                     </Button>
-                </HStack>
+                </Stack>
                 <RecipeCollection
                     recipes={recipes!.data.map((recipe) => ({
                         ...recipe,

@@ -33,9 +33,12 @@ import { useAppDispatch } from '~/store/hooks';
 
 import { Fallback } from '../Fallback/Fallback';
 import { BasketIcon } from '../Icons/BasketIcon';
+import { BookmarkIcon } from '../Icons/BookmarkIcon';
+import { LikeIcon } from '../Icons/LikeIcon';
+import { PersonsIcon } from '../Icons/PersonsIcon';
 import { WriteLineIcon } from '../Icons/WriteLineIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
-import { ThreeButtons } from './ThreeButtons';
+import { IconWithCounter } from './IconWithCounter';
 
 export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
     const { getString } = useResource();
@@ -168,11 +171,20 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                 </WrapItem>
                             ))}
                         </Wrap>
-                        <ThreeButtons
-                            bookmarks={recipe.bookmarks}
-                            likes={recipe.likes}
-                            views={recipe.views}
-                        />
+                        <HStack spacing='8px'>
+                            <IconWithCounter
+                                icon={<BookmarkIcon boxSize='12px' />}
+                                count={recipe.bookmarks}
+                            />
+                            <IconWithCounter
+                                icon={<LikeIcon boxSize='12px' />}
+                                count={recipe.likes}
+                            />
+                            <IconWithCounter
+                                icon={<PersonsIcon fill='black' boxSize='12px' />}
+                                count={recipe.views}
+                            />
+                        </HStack>
                     </HStack>
                     <Stack alignSelf='start' width='100%'>
                         <Text

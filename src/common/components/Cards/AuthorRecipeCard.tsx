@@ -13,8 +13,9 @@ import {
 import subscribeIcon from '~/assets/icons/subscribe.svg';
 
 import { Profile } from '../Header/ProfileInfo';
+import { PersonsIcon } from '../Icons/PersonsIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
-import { ThreeButtons } from './ThreeButtons';
+import { IconWithCounter } from './IconWithCounter';
 
 export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
     const { getString } = useResource();
@@ -60,7 +61,10 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                                         {getString('subscribe')}
                                     </Text>
                                 </Button>
-                                <ThreeButtons views={1} />
+                                <IconWithCounter
+                                    icon={<PersonsIcon fill='black' boxSize='12px' />}
+                                    count={1}
+                                />
                             </HStack>
                         </VStack>
                     </Flex>

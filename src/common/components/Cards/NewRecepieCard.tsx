@@ -4,6 +4,7 @@ import {
     CardBody,
     Flex,
     Hide,
+    HStack,
     Image,
     Show,
     Tag,
@@ -18,7 +19,10 @@ import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
 
 import { Fallback } from '../Fallback/Fallback';
-import { ThreeButtons } from './ThreeButtons';
+import { BookmarkIcon } from '../Icons/BookmarkIcon';
+import { LikeIcon } from '../Icons/LikeIcon';
+import { PersonsIcon } from '../Icons/PersonsIcon';
+import { IconWithCounter } from './IconWithCounter';
 
 export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
@@ -81,11 +85,20 @@ export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
                     </Box>
                     <Hide above='lg'>
                         <Flex flex={1} alignItems='end'>
-                            <ThreeButtons
-                                bookmarks={recipe.bookmarks}
-                                likes={recipe.likes}
-                                views={recipe.views}
-                            />
+                            <HStack spacing='8px'>
+                                <IconWithCounter
+                                    icon={<BookmarkIcon boxSize='12px' />}
+                                    count={recipe.bookmarks}
+                                />
+                                <IconWithCounter
+                                    icon={<LikeIcon boxSize='12px' />}
+                                    count={recipe.likes}
+                                />
+                                <IconWithCounter
+                                    icon={<PersonsIcon fill='black' boxSize='12px' />}
+                                    count={recipe.views}
+                                />
+                            </HStack>
                         </Flex>
                     </Hide>
                     <Show above='lg'>
@@ -102,11 +115,20 @@ export const NewRecepieCard = ({ recipe }: { recipe: Recipe }) => {
                                     </WrapItem>
                                 ))}
                             </Wrap>
-                            <ThreeButtons
-                                bookmarks={recipe.bookmarks}
-                                likes={recipe.likes}
-                                views={recipe.views}
-                            />
+                            <HStack spacing='8px'>
+                                <IconWithCounter
+                                    icon={<BookmarkIcon boxSize='12px' />}
+                                    count={recipe.bookmarks}
+                                />
+                                <IconWithCounter
+                                    icon={<LikeIcon boxSize='12px' />}
+                                    count={recipe.likes}
+                                />
+                                <IconWithCounter
+                                    icon={<PersonsIcon fill='black' boxSize='12px' />}
+                                    count={recipe.views}
+                                />
+                            </HStack>
                         </Flex>
                     </Show>
                 </VStack>

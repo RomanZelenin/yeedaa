@@ -50,10 +50,12 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                 }
             } else if (location.pathname.startsWith('/new-recipe')) {
                 breadcrumbs.push({ title: getString('new-recipe'), path: '/new-recipe' });
+            } else if (location.pathname.startsWith('/blogs')) {
+                breadcrumbs.push({ title: getString('blogs'), path: '/blogs' });
             }
         }
         setBreadcrumbs(breadcrumbs);
-    }, [category, subcategory, recipe, recipeId]);
+    }, [category, subcategory, recipe, recipeId, location.pathname]);
 
     return (
         <Breadcrumb

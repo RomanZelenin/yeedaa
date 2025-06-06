@@ -37,6 +37,7 @@ const initialState = {
     isNewestRecipesLoading: false,
     isJuiciestRecipesLoading: false,
     isRelevantLoading: false,
+    isBloggersLoading: false,
     error: NONE_ERROR_RESPONSE,
     query: '' as string,
     recipes: [] as Recipe[],
@@ -64,6 +65,9 @@ export const appSlice = createSlice({
         },
         setRelevantLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
             state.isRelevantLoading = isLoading;
+        },
+        setBloggersLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
+            state.isBloggersLoading = isLoading;
         },
         setAppQuery(state, { payload: query }: PayloadAction<string>) {
             state.query = query;
@@ -94,6 +98,7 @@ export const isSearchSelector = (state: ApplicationState) => state.app.isSearch;
 export const newestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
 export const juiciestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
 export const relevantLoading = (state: ApplicationState) => state.app.isRelevantLoading;
+export const bloggersLoading = (state: ApplicationState) => state.app.isBloggersLoading;
 
 export const notificationSelector = (state: ApplicationState) => state.app.notification;
 
@@ -105,6 +110,7 @@ export const {
     setNewestRecipesLoader,
     setJuiciestRecipesLoader,
     setRelevantLoader,
+    setBloggersLoader,
     setIsSearch,
     setNotification,
     removeNotification,
