@@ -22,16 +22,7 @@ import { StatusResponse } from '~/query/types';
 import { Error, setAppLoader, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
-export const SaveImageModal = ({
-    image,
-    onClickClose,
-    onClickSave,
-    onClickDelete,
-    dataTestIdInput,
-    dataTestIdPreview,
-    dataTestIdModal,
-    dataTestIdFallback,
-}: {
+export type SaveImageModalProps = {
     image?: string;
     onClickDelete: () => void;
     onClickClose: () => void;
@@ -40,9 +31,11 @@ export const SaveImageModal = ({
     dataTestIdModal?: string;
     dataTestIdPreview?: string;
     dataTestIdFallback?: string;
-}) => {
+};
+
+export const SaveImageModal = ({ props }: { props: SaveImageModalProps }) => {
     const dispatch = useAppDispatch();
-    const [preview, setPreview] = useState<string | ArrayBuffer | null>(image ?? null);
+    const [preview, setPreview] = useState<string | ArrayBuffer | null>(props.image ?? null);
     const { control, register } = useForm();
     const [fileUpload] = useFileUploadMutation();
 
@@ -91,10 +84,10 @@ export const SaveImageModal = ({
 
     const handleOnClickSave = async (formData: FormData) => {
         try {
-            onClickClose();
+            props.onClickClose();
             dispatch(setAppLoader(true));
             const result = await fileUpload(formData).unwrap();
-            onClickSave(result.url);
+            props.onClickSave(result.url);
         } catch (e) {
             handleOnError(e as StatusResponse);
         } finally {
@@ -104,8 +97,8 @@ export const SaveImageModal = ({
 
     const handleOnClickDelete = () => {
         setPreview(null);
-        onClickDelete();
-        onClickClose();
+        props.onClickDelete();
+        props.onClickClose();
     };
 
     const onSubmit = (data: FieldValues) => {
@@ -115,10 +108,10 @@ export const SaveImageModal = ({
     };
 
     return (
-        <Modal onClose={onClickClose} isOpen={true} isCentered>
+        <Modal onClose={() => props.onClickClose()} isOpen={true} isCentered>
             <ModalOverlay />
             <ModalContent borderRadius='16px' width={{ base: '316px', lg: '396px' }}>
-                <ModalBody data-test-id={dataTestIdModal} p={0}>
+                <ModalBody data-test-id={props.dataTestIdModal} p={0}>
                     <Form method='post' control={control} onSubmit={({ data }) => onSubmit(data)}>
                         <IconButton
                             position='absolute'
@@ -129,7 +122,7 @@ export const SaveImageModal = ({
                             alignSelf='end'
                             margin='24px'
                             minW={0}
-                            onClick={onClickClose}
+                            onClick={() => props.onClickClose()}
                             backgroundColor='transparent'
                             icon={<CloseInCircleIcon boxSize='24px' />}
                             aria-label='close'
@@ -138,7 +131,7 @@ export const SaveImageModal = ({
                             <Text textStyle='text2xlLh8Bold'>Изображение</Text>
                             <Box>
                                 <Input
-                                    data-test-id={dataTestIdInput}
+                                    data-test-id={props.dataTestIdInput}
                                     type='file'
                                     {...register('file')}
                                     id='file'
@@ -151,14 +144,14 @@ export const SaveImageModal = ({
                                 />
                                 {preview ? (
                                     <Image
-                                        data-test-id={dataTestIdPreview}
+                                        data-test-id={props.dataTestIdPreview}
                                         src={preview.toString()}
                                         onClick={handleImageClick}
                                         height='206px'
                                     />
                                 ) : (
                                     <Fallback
-                                        data-test-id={dataTestIdFallback}
+                                        data-test-id={props.dataTestIdFallback}
                                         onClick={handleImageClick}
                                         height='206px'
                                         width='206px'

@@ -368,46 +368,53 @@ export const CreateRecipePage = () => {
                 {isOpenSaveImageModal &&
                     (selectedStepIdxPreview === -1 ? (
                         <SaveImageModal
-                            dataTestIdInput='recipe-image-block-input-file'
-                            dataTestIdModal='recipe-image-modal'
-                            dataTestIdPreview='recipe-image-modal-preview-image'
-                            dataTestIdFallback='recipe-image-modal-image-block'
-                            image={(getValues('image') as string) ?? ''}
-                            onClickClose={() => onCloseSaveImageModal()}
-                            onClickSave={(image) => {
-                                setHasChanges(true);
-                                setValue('image', image as string);
-                                trigger('image');
+                            props={{
+                                dataTestIdInput: 'recipe-image-block-input-file',
+                                dataTestIdModal: 'recipe-image-modal',
+                                dataTestIdPreview: 'recipe-image-modal-preview-image',
+                                dataTestIdFallback: 'recipe-image-modal-image-block',
+                                image: (getValues('image') as string) ?? '',
+                                onClickClose: () => onCloseSaveImageModal(),
+                                onClickSave: (image) => {
+                                    setHasChanges(true);
+                                    setValue('image', image as string);
+                                    trigger('image');
+                                },
+                                onClickDelete: () => setValue('image', undefined),
                             }}
-                            onClickDelete={() => setValue('image', undefined)}
                         />
                     ) : (
                         <SaveImageModal
-                            dataTestIdInput={`recipe-steps-image-block-${selectedStepIdxPreview}-input-file`}
-                            dataTestIdPreview='recipe-image-modal-preview-image'
-                            dataTestIdModal='recipe-image-modal'
-                            dataTestIdFallback='recipe-image-modal-image-block'
-                            image={steps.fields[selectedStepIdxPreview].image ?? ''}
-                            onClickClose={() => {
-                                onCloseSaveImageModal();
-                                setSelectedStepIdxPreview(-1);
-                                setHasChanges(true);
-                            }}
-                            onClickSave={(image) => {
-                                setValue(`steps.${selectedStepIdxPreview}.image`, image as string);
-                                setStepsImages([
-                                    ...stepsImages.slice(0, selectedStepIdxPreview),
-                                    image,
-                                    ...stepsImages.slice(selectedStepIdxPreview + 1),
-                                ]);
-                            }}
-                            onClickDelete={() => {
-                                setValue(`steps.${selectedStepIdxPreview}.image`, null);
-                                setStepsImages([
-                                    ...stepsImages.slice(0, selectedStepIdxPreview),
-                                    null,
-                                    ...stepsImages.slice(selectedStepIdxPreview + 1),
-                                ]);
+                            props={{
+                                dataTestIdInput: `recipe-steps-image-block-${selectedStepIdxPreview}-input-file`,
+                                dataTestIdPreview: 'recipe-image-modal-preview-image',
+                                dataTestIdModal: 'recipe-image-modal',
+                                dataTestIdFallback: 'recipe-image-modal-image-block',
+                                image: steps.fields[selectedStepIdxPreview].image ?? '',
+                                onClickClose: () => {
+                                    onCloseSaveImageModal();
+                                    setSelectedStepIdxPreview(-1);
+                                    setHasChanges(true);
+                                },
+                                onClickSave: (image) => {
+                                    setValue(
+                                        `steps.${selectedStepIdxPreview}.image`,
+                                        image as string,
+                                    );
+                                    setStepsImages([
+                                        ...stepsImages.slice(0, selectedStepIdxPreview),
+                                        image,
+                                        ...stepsImages.slice(selectedStepIdxPreview + 1),
+                                    ]);
+                                },
+                                onClickDelete: () => {
+                                    setValue(`steps.${selectedStepIdxPreview}.image`, null);
+                                    setStepsImages([
+                                        ...stepsImages.slice(0, selectedStepIdxPreview),
+                                        null,
+                                        ...stepsImages.slice(selectedStepIdxPreview + 1),
+                                    ]);
+                                },
                             }}
                         />
                     ))}

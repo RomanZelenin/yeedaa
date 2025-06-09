@@ -56,13 +56,11 @@ export const RecipeCardEditor = ({
                 ?.filter((category) => category.subCategories !== undefined)
                 .flatMap((category) => category.subCategories!) ?? [];
         setSubCategories(
-            subcategories
-                .map((it) => ({
-                    _id: it._id,
-                    title: it.title,
-                    selected: getValues('categoriesIds').includes(it._id),
-                }))
-                .slice(0, 10),
+            subcategories.map((it) => ({
+                _id: it._id,
+                title: it.title,
+                selected: getValues('categoriesIds').includes(it._id),
+            })),
         );
     }, [categories]);
 

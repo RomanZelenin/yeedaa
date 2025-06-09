@@ -10,7 +10,7 @@ export const IconWithCounter = ({
     count: number;
     dataTestId?: string;
 }) => (
-    <HStack data-test-id={dataTestId} spacing='6px' p='4px'>
+    <HStack data-test-id={dataTestId} spacing='6px' p='4px' minW='40px'>
         {icon}
         <Text textStyle='textXsLh4Semibold' color='lime.600'>
             {count}

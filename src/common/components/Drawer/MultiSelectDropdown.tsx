@@ -71,8 +71,7 @@ export const MultiSelectDropdown = ({
                             </>
                         )}
                     </MenuButton>
-
-                    <MenuList zIndex='popover' py='4px'>
+                    <MenuList zIndex='popover' py='4px' maxH='350px' overflowY='auto'>
                         {items.map((it, i) => (
                             <MenuItem
                                 h='32px'
