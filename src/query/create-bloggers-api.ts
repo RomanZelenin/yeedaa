@@ -1,7 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { API_BASE_URL, ApiEndpoints } from './constants';
-import { BloggersQuery, BloggersResponse, StatusResponse, ToggleSubscriptionQuery } from './types';
+import {
+    BloggerInfoQuery,
+    BloggersQuery,
+    BloggersResponse,
+    StatusResponse,
+    ToggleSubscriptionQuery,
+} from './types';
 
 export const bloggersApi = createApi({
     reducerPath: 'bloggersApi',
@@ -24,6 +30,16 @@ export const bloggersApi = createApi({
             } */
             providesTags: ['Bloggers'],
         }),
+        getBlogger: build.query<StatusResponse | BloggerInfoResponse, BloggerInfoQuery>({
+            query: (params) => ({
+                url: `${ApiEndpoints.BLOGGERS}/${params.bloggerId}`,
+                method: 'GET',
+                params: {
+                    currentUserId: params.currentUserId,
+                },
+            }),
+            providesTags: ['Bloggers'],
+        }),
         toggleSubscription: build.mutation<StatusResponse, ToggleSubscriptionQuery>({
             query: (body) => ({
                 url: `${ApiEndpoints.TOGGLE_SUBSCRIPTION}`,
@@ -35,4 +51,21 @@ export const bloggersApi = createApi({
     }),
 });
 
-export const { useGetBloggersQuery, useToggleSubscriptionMutation } = bloggersApi;
+export const { useGetBloggersQuery, useToggleSubscriptionMutation, useGetBloggerQuery } =
+    bloggersApi;
+
+export type BloggerInfoResponse = {
+    bloggerInfo: {
+        _id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        login: string;
+    };
+    recipesIds: string[];
+    subscribers: string[];
+    subscriptions: string[];
+    isFavorite: boolean;
+    totalBookmarks: number;
+    totalSubscribers: number;
+};

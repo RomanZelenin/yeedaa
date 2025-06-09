@@ -6,7 +6,9 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 
 import { CookingStep } from '~/app/mocks/types/type_defenitions';
 import { WriteLineIcon } from '~/common/components/Icons/WriteLineIcon';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useNavigationGuard } from '~/common/hooks/useNavigationGuard';
+import { getPathToRecipe } from '~/common/utils/getPathToRecipe';
 import { StatusCode } from '~/query/constants';
 import { useGetCategoriesQuery } from '~/query/create-category-api';
 import {
@@ -14,7 +16,8 @@ import {
     useCreateRecipeMutation,
     useEditRecipeMutation,
 } from '~/query/create-recipe-api';
-import { RecipeDraft, StatusResponse, Subcategory } from '~/query/types';
+import { RecipeDraft, StatusResponse } from '~/query/types';
+import { ApplicationRoute } from '~/router';
 import { Error, setAppLoader, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -42,6 +45,7 @@ export type RecipieFormData = {
 export const CreateRecipePage = () => {
     const { id } = useParams();
     const location = useLocation();
+    const { getString } = useResource();
     const [hasChanges, setHasChanges] = useState(false);
     const [stepsImages, setStepsImages] = useState<unknown[]>([null]);
     const [selectedStepIdxPreview, setSelectedStepIdxPreview] = useState(-1);
@@ -177,7 +181,7 @@ export const CreateRecipePage = () => {
             await createDraft(draft).unwrap();
             setHasChanges(false);
             setTimeout(() => {
-                navigate('/', { replace: true });
+                navigate(ApplicationRoute.INDEX, { replace: true });
                 dispatch(
                     setNotification({
                         _id: crypto.randomUUID(),
@@ -193,22 +197,46 @@ export const CreateRecipePage = () => {
         }
     };
 
+    const handleOnClickSafeDraft = async () => {
+        clearErrors();
+        const isValid = await trigger('title');
+        if (isValid) {
+            await handleOnSaveRecipeDraft({
+                ...getValues(),
+                ingredients: getValues('ingredients').map((it) => ({
+                    ...it,
+                    count: parseInt(it.count),
+                })),
+                image: URL.parse(getValues('image') ?? '')?.pathname,
+                portions: parseInt(getValues('portions') ?? ''),
+                time: parseInt(getValues('time') ?? ''),
+            });
+        }
+    };
+
+    const handleOnClickPublish = async () => {
+        clearErrors();
+        const isValid = await trigger();
+        if (isValid) {
+            await handleOnPublishRecipe({
+                ...getValues(),
+                ingredients: getValues('ingredients').map((it) => ({
+                    ...it,
+                    count: parseInt(it.count),
+                })),
+                image: URL.parse(getValues('image') ?? '')?.pathname,
+                portions: parseInt(getValues('portions') ?? ''),
+                time: parseInt(getValues('time') ?? ''),
+            });
+        }
+    };
+
     const {
         data: categories,
         /*    isSuccess: isSuccessGetCategories,
            isLoading: isLoadingGetCategories,
            isError: isErrorGetCategories, */
     } = useGetCategoriesQuery();
-
-    const getPathToRecipe = (recipe: RecipeDraft) => {
-        const subcategory = categories?.find(
-            (category) => category._id === recipe.categoriesIds![0],
-        ) as unknown as Subcategory;
-        const category = categories?.find(
-            (category) => category._id === subcategory.rootCategoryId,
-        );
-        return `/${category?.category}/${subcategory?.category}/${recipe._id}`;
-    };
 
     const handleOnPublishRecipe = async (recipe: RecipeDraft) => {
         try {
@@ -219,13 +247,15 @@ export const CreateRecipePage = () => {
             }));
 
             dispatch(setAppLoader(true));
-            const result = location.state
+            location.state
                 ? await editRecipe({ id: id!, body: recipe }).unwrap()
                 : await createRecipe(recipe).unwrap();
 
             setHasChanges(false);
             setTimeout(() => {
-                navigate(getPathToRecipe(result), { replace: true });
+                navigate(getPathToRecipe({ recipe: recipe, categories: categories }), {
+                    replace: true,
+                });
                 dispatch(
                     setNotification({
                         _id: crypto.randomUUID(),
@@ -300,54 +330,22 @@ export const CreateRecipePage = () => {
                                 <Button
                                     id='recipe-save-draft-button'
                                     data-test-id='recipe-save-draft-button'
-                                    onClick={async () => {
-                                        clearErrors();
-                                        const isValid = await trigger('title');
-                                        if (isValid) {
-                                            handleOnSaveRecipeDraft({
-                                                ...getValues(),
-                                                ingredients: getValues('ingredients').map((it) => ({
-                                                    ...it,
-                                                    count: parseInt(it.count),
-                                                })),
-                                                image: URL.parse(getValues('image') ?? '')
-                                                    ?.pathname,
-                                                portions: parseInt(getValues('portions') ?? ''),
-                                                time: parseInt(getValues('time') ?? ''),
-                                            });
-                                        }
-                                    }}
+                                    onClick={handleOnClickSafeDraft}
                                     variant='outline'
                                     borderColor='blackAlpha.600'
                                     leftIcon={<WriteLineIcon />}
                                 >
-                                    Сохранить черновик
+                                    {getString('save-draft')}
                                 </Button>
                                 <Button
                                     id='recipe-publish-recipe-button'
                                     data-test-id='recipe-publish-recipe-button'
-                                    onClick={async () => {
-                                        clearErrors();
-                                        const isValid = await trigger();
-                                        if (isValid) {
-                                            handleOnPublishRecipe({
-                                                ...getValues(),
-                                                ingredients: getValues('ingredients').map((it) => ({
-                                                    ...it,
-                                                    count: parseInt(it.count),
-                                                })),
-                                                image: URL.parse(getValues('image') ?? '')
-                                                    ?.pathname,
-                                                portions: parseInt(getValues('portions') ?? ''),
-                                                time: parseInt(getValues('time') ?? ''),
-                                            });
-                                        }
-                                    }}
+                                    onClick={handleOnClickPublish}
                                     variant='solid'
                                     backgroundColor='black'
                                     color='white'
                                 >
-                                    Опубликовать рецепт
+                                    {getString('publish-recipe')}
                                 </Button>
                             </Stack>
                         </Flex>
@@ -355,9 +353,7 @@ export const CreateRecipePage = () => {
                 </form>
                 {isShowExitConfirmationModal && (
                     <ExitConfirmationModal
-                        onClose={() => {
-                            handleCancel();
-                        }}
+                        onClose={() => handleCancel()}
                         onExitWithoutSaving={() => handleConfirm()}
                         onClickSaving={async () => {
                             const isValid = await trigger('title');

@@ -23,6 +23,7 @@ export type Blogger = {
 };
 
 export type Note = {
+    _id: string;
     date: string;
     text: string;
 };

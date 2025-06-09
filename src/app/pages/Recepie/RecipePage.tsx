@@ -1,9 +1,12 @@
 import { Box, Flex } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
 import { RecipeCard } from '~/common/components/Cards/RecipeCard';
 import { Profile } from '~/common/components/Header/ProfileInfo';
+import { getJWTPayload } from '~/common/utils/getJWTPayload';
+import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
 import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
@@ -14,40 +17,59 @@ import { CookingSteps } from './CookingSteps';
 import { IngredientsList } from './IngredientsList';
 import { NutritionFacts } from './NutritionFacts';
 
-const mockAuthor: Profile = {
-    firstName: 'Сергей',
-    lastName: 'Разумов',
-    nickname: 'serge25',
-    avatar: '/src/assets/images/kate-avatar.png',
-    activity: {
-        bookmarks: 1,
-        persons: 1,
-        likes: 1,
-    },
-};
-
 export const RecipePage = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
     const {
         data: recipe,
-        isSuccess,
-        isLoading,
-        isError,
+        isSuccess: isSuccessGetRecipe,
+        isLoading: isLoadingRecipe,
+        isError: isErrorGetRecipe,
     } = useGetRecipeByIdQuery(id!, { skip: !id });
 
-    if (isLoading) {
+    const [authorId, setAuthorId] = useState<string>();
+    const currentUserId = getJWTPayload().userId;
+    const {
+        data: bloggerInfo,
+        isError: isErrorBloggerInfo,
+        isLoading: isLoadingBloggerInfo,
+        isSuccess: isSuccessBloggerInfo,
+    } = useGetBloggerQuery(
+        { bloggerId: authorId!, currentUserId: currentUserId },
+        { skip: !authorId },
+    );
+
+    useEffect(() => {
+        if (isSuccessGetRecipe) {
+            setAuthorId(recipe.authorId);
+        }
+    }, [isSuccessGetRecipe, recipe, id, bloggerInfo]);
+
+    if (isLoadingRecipe || isLoadingBloggerInfo) {
         dispatch(setAppLoader(true));
         return null;
     }
 
-    if (isError) {
+    if (isErrorGetRecipe || isErrorBloggerInfo) {
         dispatch(setAppLoader(false));
         return null;
     }
 
-    if (isSuccess) {
+    if (isSuccessGetRecipe && isSuccessBloggerInfo) {
         dispatch(setAppLoader(false));
+        const response = bloggerInfo as BloggerInfoResponse;
+        const profile: Profile = {
+            _id: response.bloggerInfo._id,
+            isFavorite: response.isFavorite,
+            firstName: response.bloggerInfo.firstName,
+            lastName: response.bloggerInfo.lastName,
+            nickname: response.bloggerInfo.login,
+            activity: {
+                bookmarks: 1,
+                persons: response.totalSubscribers,
+                likes: 1,
+            },
+        };
         return (
             <EmptyConatainer>
                 <>
@@ -71,7 +93,7 @@ export const RecipePage = () => {
                                 portions={recipe.portions}
                             />
                             <CookingSteps steps={recipe.steps} />
-                            <AuthorRecipeCard person={mockAuthor} />
+                            <AuthorRecipeCard person={profile} />
                         </Flex>
                     </Flex>
                     <Box mt='24px'>

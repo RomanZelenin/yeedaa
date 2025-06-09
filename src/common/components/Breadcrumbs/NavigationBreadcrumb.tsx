@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 import { Link as ReactRouterLink, useParams } from 'react-router';
 
 import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
+import { getJWTPayload } from '~/common/utils/getJWTPayload';
+import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
 import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import { ApplicationRoute } from '~/router';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 
@@ -20,8 +23,17 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
     const { category, subcategory } = useCurrentCategory({ categoryName, subcategoryName });
     const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
 
+    const { userId } = useParams();
+    const currentUserId = getJWTPayload().userId;
+    const { data: blogger, isSuccess: isSuccessBloggerInfo } = useGetBloggerQuery(
+        { bloggerId: userId!, currentUserId: currentUserId },
+        { skip: !userId },
+    );
+
     useEffect(() => {
-        const breadcrumbs = [{ title: getString('home'), path: '/' }];
+        const breadcrumbs: BreadcrumbItem[] = [
+            { title: getString('home'), path: ApplicationRoute.INDEX },
+        ];
         if (category) {
             breadcrumbs.push({
                 title: `${category.title}`,
@@ -40,22 +52,32 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                 }
             }
         } else {
-            if (location.pathname.startsWith('/the-juiciest')) {
-                breadcrumbs.push({ title: getString('juiciest'), path: '/the-juiciest' });
+            if (location.pathname.startsWith(ApplicationRoute.JUICIEST)) {
+                breadcrumbs.push({ title: getString('juiciest'), path: ApplicationRoute.JUICIEST });
                 if (recipeId && recipe) {
                     breadcrumbs.push({
                         title: `${recipe.title}`,
                         path: `/the-juiciest/${recipeId}#`,
                     });
                 }
-            } else if (location.pathname.startsWith('/new-recipe')) {
-                breadcrumbs.push({ title: getString('new-recipe'), path: '/new-recipe' });
-            } else if (location.pathname.startsWith('/blogs')) {
-                breadcrumbs.push({ title: getString('blogs'), path: '/blogs' });
+            } else if (location.pathname.startsWith(ApplicationRoute.NEW_RECIPE)) {
+                breadcrumbs.push({
+                    title: getString('new-recipe'),
+                    path: ApplicationRoute.NEW_RECIPE,
+                });
+            } else if (location.pathname.startsWith(ApplicationRoute.BLOGS)) {
+                breadcrumbs.push({ title: getString('blogs'), path: ApplicationRoute.BLOGS });
+                if (userId && isSuccessBloggerInfo) {
+                    const bloggerInfo = (blogger as BloggerInfoResponse).bloggerInfo;
+                    breadcrumbs.push({
+                        title: `${bloggerInfo.firstName} ${bloggerInfo.lastName} (@${bloggerInfo.login})`,
+                        path: '#',
+                    });
+                }
             }
         }
         setBreadcrumbs(breadcrumbs);
-    }, [category, subcategory, recipe, recipeId, location.pathname]);
+    }, [category, subcategory, recipe, recipeId, userId, blogger, location.pathname]);
 
     return (
         <Breadcrumb

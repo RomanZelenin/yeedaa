@@ -25,6 +25,7 @@ import {
 import { SelectItem } from '~/app/features/filters/filtersSlice';
 import { MultiSelectDropdown } from '~/common/components/Drawer/MultiSelectDropdown';
 import { Fallback } from '~/common/components/Fallback/Fallback';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useGetCategoriesQuery } from '~/query/create-category-api';
 
 import { RecipieFormData } from './CreateRecipePage';
@@ -42,6 +43,7 @@ export const RecipeCardEditor = ({
     setValue: UseFormSetValue<RecipieFormData>;
     getValues: UseFormGetValues<RecipieFormData>;
 }) => {
+    const { getString } = useResource();
     const getBorderColor = (field?: FieldError) =>
         field !== undefined ? { borderColor: 'rgb(229,62,62)' } : { borderColor: 'blackAlpha.200' };
 
@@ -119,7 +121,7 @@ export const RecipeCardEditor = ({
                         _active={getBorderColor(formErrors.categoriesIds)}
                     >
                         <MultiSelectDropdown
-                            placeholder='Выберите из списка...'
+                            placeholder={`${getString('select-from-list')}...`}
                             items={subCategories}
                             onChange={(_e, id) => {
                                 const idx = subCategories.findIndex((it) => it._id === id);
@@ -143,7 +145,7 @@ export const RecipeCardEditor = ({
                     _focus={getBorderColor(formErrors.title)}
                     _active={getBorderColor(formErrors.title)}
                     color='blackAlpha.700'
-                    placeholder='Название рецепта'
+                    placeholder={getString('recipe-name')}
                 />
                 <Textarea
                     data-test-id='recipe-description'
@@ -152,7 +154,7 @@ export const RecipeCardEditor = ({
                     {...getBorderColor(formErrors.description)}
                     _focus={getBorderColor(formErrors.description)}
                     _active={getBorderColor(formErrors.description)}
-                    placeholder='Краткое описание рецепта'
+                    placeholder={getString('brief-description-recipe')}
                 />
                 <HStack>
                     <Text textStyle='textMdLh6Semibold'>На сколько человек ваш рецепт?</Text>

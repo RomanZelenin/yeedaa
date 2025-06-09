@@ -4,12 +4,19 @@ import { Recipe } from '~/app/mocks/types/type_defenitions';
 
 import { FoodCard, FoodCardCompact } from '../Cards/FoodCard';
 
-export function RecipeCollection({ recipes }: { recipes?: Recipe[] }) {
+export function RecipeCollection({
+    recipes,
+    dataTestId,
+}: {
+    recipes?: Recipe[];
+    dataTestId?: string;
+}) {
     return (
         <>
             <Show above='lg'>
                 <VStack align='stretch'>
                     <SimpleGrid
+                        data-test-id={dataTestId}
                         columns={{ base: 1, xl: 2 }}
                         columnGap={{ xl: '24px' }}
                         rowGap={{ lg: '16px', xl: '24px' }}
@@ -21,8 +28,9 @@ export function RecipeCollection({ recipes }: { recipes?: Recipe[] }) {
                 </VStack>
             </Show>
             <Hide above='lg'>
-                <VStack alignItems='stretch' px='16px'>
+                <VStack alignItems='stretch' /* px='16px' */>
                     <SimpleGrid
+                        data-test-id={dataTestId}
                         columns={{ base: 1, md: 2 }}
                         columnGap={{ base: '0px', md: '12px' }}
                         rowGap='12px'

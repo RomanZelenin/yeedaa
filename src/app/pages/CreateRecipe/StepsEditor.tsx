@@ -40,39 +40,42 @@ export const StepsEditor = ({
     onClickAddStep: () => void;
     onRemoveNthStep: (i: number) => void;
     onClickNthImage: (i: number) => void;
-}) => (
-    <VStack spacing={{ base: '20px' }} align='stretch'>
-        <Text textStyle='textMdLh6Semibold'>Добавьте шаги приготовления</Text>
-        {steps?.map((step, i) => (
-            <Fragment key={step.id}>
-                <StepCard
-                    index={i}
-                    image={images[i] ?? ''}
-                    formErrors={formErrors}
-                    onClickImage={onClickNthImage}
-                    onClickRemoveStep={onRemoveNthStep}
-                    register={register}
-                    totalSteps={steps.length}
-                />
-                {i == steps.length - 1 && (
-                    <Button
-                        onClick={() => onClickAddStep()}
-                        alignSelf='end'
-                        variant='outline'
-                        borderColor='blackAlpha.600'
-                        rightIcon={
-                            <Center borderRadius='100%' boxSize='14px' bgColor='black'>
-                                <AddIcon boxSize='9px' color='white' />
-                            </Center>
-                        }
-                    >
-                        Новый шаг
-                    </Button>
-                )}
-            </Fragment>
-        ))}
-    </VStack>
-);
+}) => {
+    const { getString } = useResource();
+    return (
+        <VStack spacing={{ base: '20px' }} align='stretch'>
+            <Text textStyle='textMdLh6Semibold'>{getString('add-cooking-steps')}</Text>
+            {steps?.map((step, i) => (
+                <Fragment key={step.id}>
+                    <StepCard
+                        index={i}
+                        image={images[i] ?? ''}
+                        formErrors={formErrors}
+                        onClickImage={onClickNthImage}
+                        onClickRemoveStep={onRemoveNthStep}
+                        register={register}
+                        totalSteps={steps.length}
+                    />
+                    {i == steps.length - 1 && (
+                        <Button
+                            onClick={() => onClickAddStep()}
+                            alignSelf='end'
+                            variant='outline'
+                            borderColor='blackAlpha.600'
+                            rightIcon={
+                                <Center borderRadius='100%' boxSize='14px' bgColor='black'>
+                                    <AddIcon boxSize='9px' color='white' />
+                                </Center>
+                            }
+                        >
+                            {getString('new-step')}
+                        </Button>
+                    )}
+                </Fragment>
+            ))}
+        </VStack>
+    );
+};
 
 const StepCard = ({
     register,
@@ -145,7 +148,7 @@ const StepCard = ({
                         {...getBorderColor(formErrors.steps?.[index]?.description)}
                         _focus={getBorderColor(formErrors.steps?.[index]?.description)}
                         _active={getBorderColor(formErrors.steps?.[index]?.description)}
-                        placeholder='Шаг'
+                        placeholder={getString('step')}
                     />
                 </CardBody>
             </Stack>

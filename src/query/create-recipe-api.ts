@@ -3,7 +3,13 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 
 import { API_BASE_URL, ApiEndpoints, IMAGE_BASE_URL } from './constants';
-import { PartialRecipeQuery, RecipeDraft, RecipesResponse, StatusResponse } from './types';
+import {
+    BloggerRecipesResponse,
+    PartialRecipeQuery,
+    RecipeDraft,
+    RecipesResponse,
+    StatusResponse,
+} from './types';
 
 export const recipeApi = createApi({
     reducerPath: 'recipeApi',
@@ -108,6 +114,21 @@ export const recipeApi = createApi({
             },
             providesTags: ['Recipe'],
         }),
+        getBloggerRecipes: build.query<BloggerRecipesResponse, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.BLOGGER_RECIPES}/${id}`,
+                method: 'GET',
+            }),
+            transformResponse: (response) => {
+                const data = response as BloggerRecipesResponse;
+                const recipes = data.recipes.map((recipe) => ({
+                    ...recipe,
+                    image: IMAGE_BASE_URL + recipe.image,
+                }));
+                return { ...data, recipes: recipes };
+            },
+            providesTags: ['Recipe'],
+        }),
         createRecipeDraft: build.mutation<StatusResponse, RecipeDraft>({
             query: (body) => ({
                 url: `${ApiEndpoints.RECIPE_DRAFT}`,
@@ -191,4 +212,5 @@ export const {
     useGetJuiciestRecipesQuery,
     useGetNewestRecipesQuery,
     useGetRecipeByCategoryQuery,
+    useGetBloggerRecipesQuery,
 } = recipeApi;

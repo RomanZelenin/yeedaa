@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 
 import App from '~/app/App';
+import { BloggerProfilePage } from '~/app/pages/BloggerProfile/BloggerProfilePage';
 import { BlogsPage } from '~/app/pages/Blogs/BlogsPage';
 import CategoryPage from '~/app/pages/Category/CategoryPage';
 import { CreateRecipePage } from '~/app/pages/CreateRecipe/CreateRecipePage';
@@ -24,6 +25,7 @@ export enum ApplicationRoute {
     NEW_RECIPE = '/new-recipe',
     EDIT_RECIPE = '/edit-recipe/:category/:subcategory/:id',
     BLOGS = '/blogs',
+    BLOGGER_PROFILE = '/blogs/:userId',
     ANY = '/*',
 }
 
@@ -76,6 +78,10 @@ export const router = createBrowserRouter(
                 {
                     path: ApplicationRoute.BLOGS,
                     element: <BlogsPage />,
+                },
+                {
+                    path: ApplicationRoute.BLOGGER_PROFILE,
+                    element: <BloggerProfilePage />,
                 },
                 {
                     path: ApplicationRoute.NOT_FOUND,
