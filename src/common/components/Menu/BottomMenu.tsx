@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Link, Text, VStack } from '@chakra-ui/react';
+import { Avatar, Box, Flex, Text, VStack } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { Link as ReactRouterLink } from 'react-router';
 
@@ -9,7 +9,8 @@ import { SearchIcon } from '../Icons/SearchIcon';
 import { WriteIcon } from '../Icons/WriteIcon';
 
 export const BottomMenu = ({ avatar }: { avatar: string }) => {
-    const [selectedMenuIdx, _] = useState(0);
+    const DEFAULT_SELECTED_MENU_ITEM = 0;
+    const [selectedMenuIdx, setSelectedMenuIdx] = useState(DEFAULT_SELECTED_MENU_ITEM);
 
     const items = useMemo(() => {
         const menuItems = [
@@ -21,6 +22,7 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                     />
                 ),
                 title: 'Главная',
+                path: ApplicationRoute.INDEX,
             },
             {
                 icon: (
@@ -30,6 +32,7 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                     />
                 ),
                 title: 'Поиск',
+                path: '#',
             },
             {
                 icon: (
@@ -39,6 +42,7 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                     />
                 ),
                 title: 'Записать',
+                path: ApplicationRoute.NEW_RECIPE,
             },
             {
                 icon: (
@@ -49,6 +53,7 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                     />
                 ),
                 title: 'Мой профиль',
+                path: '#',
             },
         ];
         return menuItems;
@@ -80,16 +85,19 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                             : 'none'
                     }
                 >
-                    <VStack spacing={0}>
-                        <Link as={ReactRouterLink} to={ApplicationRoute.NEW_RECIPE}>
-                            <Box
-                                bgColor={selectedMenuIdx === idx ? 'black' : 'none'}
-                                borderRadius='100%'
-                            >
-                                {it.icon}
-                            </Box>
-                            <Text>{it.title}</Text>
-                        </Link>
+                    <VStack
+                        as={ReactRouterLink}
+                        to={it.path}
+                        spacing={0}
+                        onClick={() => setSelectedMenuIdx(idx)}
+                    >
+                        <Box
+                            bgColor={selectedMenuIdx === idx ? 'black' : 'none'}
+                            borderRadius='100%'
+                        >
+                            {it.icon}
+                        </Box>
+                        <Text>{it.title}</Text>
                     </VStack>
                 </Box>
             ))}

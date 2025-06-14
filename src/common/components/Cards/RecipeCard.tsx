@@ -157,8 +157,8 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                 <VStack w='100%' alignSelf={{ md: 'stretch' }}>
                     <HStack w='100%' justify='space-between' align='start'>
                         <Wrap flex={1}>
-                            {categories?.map((category) => (
-                                <WrapItem>
+                            {categories?.map((category, i) => (
+                                <WrapItem key={i}>
                                     <Tag layerStyle='categoryTag'>
                                         <Image
                                             src={category.icon}
@@ -231,7 +231,6 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                             onClick={() => {
                                                 navigate(`/edit-recipe${location.pathname}`, {
                                                     replace: true,
-                                                    state: recipe,
                                                 });
                                             }}
                                             variant='outline'

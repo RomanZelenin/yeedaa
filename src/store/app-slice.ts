@@ -51,9 +51,6 @@ export const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        setAppError(state, { payload: error }: PayloadAction<ResponseError>) {
-            state.error = error;
-        },
         setAppLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
             state.isLoading = isLoading;
         },
@@ -89,7 +86,6 @@ export const appSlice = createSlice({
 
 export const loadingSelector = (state: ApplicationState) => state.app.isLoading;
 
-export const errorSelector = (state: ApplicationState) => state.app.error;
 export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
 export const blogsSelector = (state: ApplicationState) => state.app.blogs;
@@ -103,7 +99,6 @@ export const bloggersLoading = (state: ApplicationState) => state.app.isBloggers
 export const notificationSelector = (state: ApplicationState) => state.app.notification;
 
 export const {
-    setAppError,
     setAppLoader,
     setAppQuery,
     setRecepies,

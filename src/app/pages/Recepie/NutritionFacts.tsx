@@ -47,8 +47,9 @@ export const NutritionFacts = ({ nutrition }: { nutrition: NutritionValue }) => 
                                 };
                         }
                     })
-                    .map((it) => (
+                    .map((it, i) => (
                         <Flex
+                            key={i}
                             flex={1}
                             direction={{ base: 'column', md: 'row' }}
                             py='16px'

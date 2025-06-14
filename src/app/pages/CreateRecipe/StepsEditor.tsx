@@ -49,7 +49,7 @@ export const StepsEditor = ({
                 <Fragment key={step.id}>
                     <StepCard
                         index={i}
-                        image={images[i] ?? ''}
+                        image={images[i]}
                         formErrors={formErrors}
                         onClickImage={onClickNthImage}
                         onClickRemoveStep={onRemoveNthStep}
@@ -92,7 +92,7 @@ const StepCard = ({
     totalSteps: number;
     onClickRemoveStep: (i: number) => void;
     formErrors: FieldErrors<RecipieFormData>;
-    image: string;
+    image?: string | null | undefined;
 }) => {
     const { getString } = useResource();
     const getBorderColor = (field?: FieldError) =>
@@ -100,7 +100,24 @@ const StepCard = ({
 
     return (
         <Card direction='row' overflow='clip' flex={1}>
-            <Image
+            {image ? (
+                <Image
+                    {...register(`steps.${index}.image`)}
+                    data-test-id={`recipe-steps-image-block-${index}-preview-image`}
+                    onClick={() => onClickImage(index)}
+                    objectFit='cover'
+                    src={image}
+                    w={{ base: '158px', lg: '346px' }}
+                />
+            ) : (
+                <Fallback
+                    data-test-id={`recipe-steps-image-block-${index}`}
+                    onClick={() => onClickImage(index)}
+                    width={{ base: '158px', lg: '346px' }}
+                    height='inherit'
+                />
+            )}
+            {/*  <Image
                 {...register(`steps.${index}.image`)}
                 data-test-id={`recipe-steps-image-block-${index}-preview-image`}
                 onClick={() => onClickImage(index)}
@@ -115,7 +132,7 @@ const StepCard = ({
                         height='inherit'
                     />
                 }
-            />
+            /> */}
             <Stack spacing={{ base: '12px', lg: '16px' }} flex={1} p={{ base: '8px', lg: '24px' }}>
                 <CardHeader p='0px'>
                     <HStack justify='space-between'>

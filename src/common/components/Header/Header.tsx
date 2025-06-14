@@ -19,9 +19,11 @@ export const Header = ({ profile }: { profile: Profile }) => {
             <Flex
                 justifyContent='center'
                 position='fixed'
+                top={0}
+                left={0}
                 bg={!isOpen ? 'lime.50' : 'white'}
                 h={{ base: '64px', md: '80px' }}
-                w='100%'
+                w='100vw'
                 alignItems='center'
                 px='16px'
                 data-test-id='header'

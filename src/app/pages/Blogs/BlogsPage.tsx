@@ -28,29 +28,38 @@ export const BlogsPage = () => {
         limit: limit,
     });
 
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setAppLoader(true));
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+            dispatch(
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
+                    message: 'Попробуйте немного позже.',
+                    type: 'error',
+                }),
+            );
+            navigate(ApplicationRoute.INDEX, { replace: true });
+        }
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
+        }
+    }, [isLoading, isError, isSuccess]);
+
     if (isLoading) {
-        dispatch(setAppLoader(true));
         return null;
     }
 
     if (isError) {
-        dispatch(setAppLoader(false));
-        dispatch(
-            setNotification({
-                _id: crypto.randomUUID(),
-                title: Error.SERVER,
-                message: 'Попробуйте немного позже.',
-                type: 'error',
-            }),
-        );
-        navigate(ApplicationRoute.INDEX, { replace: true });
         return null;
     }
 
     if (isSuccess) {
         const bloggers = data as BloggersResponse;
         const isShowFavoritesBlogs = bloggers.favorites?.length > 0;
-        dispatch(setAppLoader(false));
         return (
             <EmptyConatainer>
                 <>

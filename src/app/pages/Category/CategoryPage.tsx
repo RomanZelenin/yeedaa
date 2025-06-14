@@ -1,13 +1,14 @@
-import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
-import { filterSelector } from '~/app/features/filters/filtersSlice';
+import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
 import { useGetRecipeByCategoryQuery } from '~/query/create-recipe-api';
-import { querySelector, setAppLoader } from '~/store/app-slice';
-import { useAppDispatch, useAppSelector } from '~/store/hooks';
+import { setAppLoader } from '~/store/app-slice';
+import { useAppDispatch } from '~/store/hooks';
 
 import ContentContainer from '../common/Containers/ContentContainer';
 import { CategoryGuard } from './CategoryGuard';
@@ -15,10 +16,9 @@ import { CategoryGuard } from './CategoryGuard';
 export default function CategoryPage() {
     const navigate = useNavigate();
     const { category: categoryName, subcategory: subcategoryName } = useParams();
-
     const { category } = useCurrentCategory({ categoryName, subcategoryName });
-
     const [tabIndex, setTabIndex] = useState(0);
+
     useEffect(
         () =>
             setTabIndex(
@@ -86,29 +86,43 @@ function CategoryTabPanel({
     subcategoryId: string;
     isActive: boolean;
 }) {
+    const { getString } = useResource();
     const dispatch = useAppDispatch();
     const { category, subcategory } = useParams();
-    const filter = useAppSelector(filterSelector);
-    const countSelectedAllergens = useMemo(
-        () => filter.allergens.filter((it) => it.selected).length,
-        [filter],
-    );
-    const query = useAppSelector(querySelector);
+    const [page, setPage] = useState(1);
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [isLoadingNextPage, setNextLoading] = useState(false);
+    const nextPage = () => {
+        setNextLoading(true);
+        setPage(page + 1);
+    };
     const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
         {
-            limit: 10,
+            page: page,
+            limit: 8,
             id: subcategoryId,
-            allergens:
-                countSelectedAllergens > 0
-                    ? filter.allergens
-                          .filter((allergen) => allergen.selected)
-                          .map((allergen) => allergen.title)
-                          .join(',')
-                    : undefined,
-            searchString: query.length > 0 ? query : undefined,
         },
         { skip: !isActive },
     );
+
+    useEffect(() => {
+        if (data?.data) {
+            setRecipes([
+                ...recipes.map((recipe) => {
+                    const idx = data.data.findIndex((it) => it._id === recipe._id);
+                    if (idx !== -1) {
+                        return data.data[idx];
+                    } else {
+                        return recipe;
+                    }
+                }),
+                ...data.data.filter(
+                    (it) => recipes.find((recipe) => recipe._id === it._id) === undefined,
+                ),
+            ]);
+            setNextLoading(false);
+        }
+    }, [data]);
 
     useEffect(() => {
         if (isLoading) {
@@ -127,7 +141,6 @@ function CategoryTabPanel({
     }
 
     if (isSuccess) {
-        const recipes = data.data;
         return (
             <VStack spacing='12px' px='0px'>
                 <Box px='0px' textAlign='start'>
@@ -138,6 +151,24 @@ function CategoryTabPanel({
                         }))}
                     />
                 </Box>
+                {page < data!.meta.totalPages && (
+                    <Button
+                        data-test-id='load-more-button'
+                        textAlign='center'
+                        display='inline-flex'
+                        onClick={() => nextPage()}
+                        bgColor='lime.300'
+                        alignSelf='center'
+                        fontSize='16px'
+                        color='black'
+                        variant='ghost'
+                        flex={1}
+                        px='16px'
+                        py='8px'
+                    >
+                        {isLoadingNextPage ? getString('load') : getString('load-more')}
+                    </Button>
+                )}
             </VStack>
         );
     }

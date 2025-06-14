@@ -14,6 +14,7 @@ export const CookingSteps = ({ steps }: { steps: CookingStep[] }) => {
             </Text>
             {steps.map((it, idx) => (
                 <StepPreparationCard
+                    key={idx}
                     step={it.stepNumber}
                     description={it.description}
                     cover={it.image}

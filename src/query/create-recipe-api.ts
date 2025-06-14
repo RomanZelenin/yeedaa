@@ -106,10 +106,16 @@ export const recipeApi = createApi({
             }),
             transformResponse: (response) => {
                 const data = response as Recipe;
-                const steps = data.steps.map((step) => ({
-                    ...step,
-                    image: IMAGE_BASE_URL + step.image,
-                }));
+                const steps = data.steps.map((step) => {
+                    if (step.image === null) {
+                        return step;
+                    } else {
+                        return {
+                            ...step,
+                            image: IMAGE_BASE_URL + step.image,
+                        };
+                    }
+                });
                 return { ...data, steps: steps, image: IMAGE_BASE_URL + data.image };
             },
             providesTags: ['Recipe'],
@@ -209,6 +215,7 @@ export const {
     useBookmarkRecipeMutation,
     useGetRecipeByIdQuery,
     useGetRecipeQuery,
+    useLazyGetRecipeQuery,
     useGetJuiciestRecipesQuery,
     useGetNewestRecipesQuery,
     useGetRecipeByCategoryQuery,

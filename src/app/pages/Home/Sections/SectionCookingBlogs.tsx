@@ -1,4 +1,5 @@
 import { Button, HStack, Image, SimpleGrid, Stack, Text, VStack } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { Link } from 'react-router';
 
 import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
@@ -35,27 +36,31 @@ export default function SectionCookingBlogs() {
         limit: '',
     });
 
-    if (isLoading) {
-        dispatch(setBloggersLoader(true));
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setBloggersLoader(true));
+        }
+        if (isError) {
+            dispatch(setBloggersLoader(false));
+            dispatch(
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
+                    message: 'Попробуйте немного позже.',
+                    type: 'error',
+                }),
+            );
+        }
+        if (isSuccess) {
+            dispatch(setBloggersLoader(false));
+        }
+    }, [isLoading, isError, isSuccess]);
+
+    if (isLoading || isError) {
         return null;
     }
-
-    if (isError) {
-        dispatch(setBloggersLoader(false));
-        dispatch(
-            setNotification({
-                _id: crypto.randomUUID(),
-                title: Error.SERVER,
-                message: 'Попробуйте немного позже.',
-                type: 'error',
-            }),
-        );
-        return null;
-    }
-
     if (isSuccess) {
         const bloggers = data as BloggersResponse;
-        dispatch(setBloggersLoader(false));
         return (
             <VStack
                 data-test-id='main-page-blogs-box'

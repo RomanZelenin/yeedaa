@@ -147,6 +147,7 @@ export const SaveImageModal = ({ props }: { props: SaveImageModalProps }) => {
                                         data-test-id={props.dataTestIdPreview}
                                         src={preview.toString()}
                                         onClick={handleImageClick}
+                                        width='206px'
                                         height='206px'
                                     />
                                 ) : (

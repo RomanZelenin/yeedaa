@@ -1,4 +1,5 @@
 import { Stack } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import { ListBloggerNotes } from '~/app/pages/BloggerProfile/Sections/ListBloggerNotes';
@@ -48,32 +49,51 @@ export const BloggerProfilePage = () => {
         data: bloggers,
     } = useGetBloggersQuery({ currentUserId: currentUserId, limit: '' });
 
+    useEffect(() => {
+        if (isLoadingBloggerInfo || isLoadingBloggerRecipes || isLoadingBloggers) {
+            dispatch(setAppLoader(true));
+        }
+        if (isErrorBloggerInfo || isErrorBloggerRecipes || isErrorBloggers) {
+            dispatch(setAppLoader(false));
+            if (
+                errorBloggerInfo?.status === StatusCode.NotFound ||
+                errorBloggerRecipes?.status === StatusCode.NotFound
+            ) {
+                navigate(ApplicationRoute.NOT_FOUND, { replace: true });
+            } else {
+                dispatch(
+                    setNotification({
+                        _id: crypto.randomUUID(),
+                        title: Error.SERVER,
+                        message: 'Попробуйте немного позже.',
+                        type: 'error',
+                    }),
+                );
+                navigate(ApplicationRoute.INDEX, { replace: true });
+            }
+        }
+        if (isSuccessBloggerInfo && isSuccessBloggerRecipes && isSuccessBloggers) {
+            dispatch(setAppLoader(false));
+        }
+    }, [
+        isLoadingBloggerInfo,
+        isLoadingBloggerRecipes,
+        isLoadingBloggers,
+        isErrorBloggerInfo,
+        isErrorBloggerRecipes,
+        isErrorBloggers,
+        isSuccessBloggerInfo,
+        isSuccessBloggerRecipes,
+        isSuccessBloggers,
+    ]);
+
     if (isLoadingBloggerInfo || isLoadingBloggerRecipes || isLoadingBloggers) {
-        dispatch(setAppLoader(true));
         return null;
     }
     if (isErrorBloggerInfo || isErrorBloggerRecipes || isErrorBloggers) {
-        dispatch(setAppLoader(false));
-        if (
-            errorBloggerInfo?.status === StatusCode.NotFound ||
-            errorBloggerRecipes?.status === StatusCode.NotFound
-        ) {
-            navigate(ApplicationRoute.NOT_FOUND, { replace: true });
-        } else {
-            dispatch(
-                setNotification({
-                    _id: crypto.randomUUID(),
-                    title: Error.SERVER,
-                    message: 'Попробуйте немного позже.',
-                    type: 'error',
-                }),
-            );
-            navigate(ApplicationRoute.INDEX, { replace: true });
-        }
         return null;
     }
     if (isSuccessBloggerInfo && isSuccessBloggerRecipes && isSuccessBloggers) {
-        dispatch(setAppLoader(false));
         const response = bloggerInfo as BloggerInfoResponse;
         const blogger: Blogger = {
             _id: response.bloggerInfo._id,
