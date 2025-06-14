@@ -1,10 +1,13 @@
 import { CloseIcon } from '@chakra-ui/icons';
-import { Box, Flex, Hide, IconButton, Show, Spacer, useDisclosure } from '@chakra-ui/react';
+import { Box, Flex, Hide, HStack, IconButton, Show, Spacer, useDisclosure } from '@chakra-ui/react';
 
 import { NavigationBreadcrumb } from '../Breadcrumbs/NavigationBreadcrumb';
+import { IconWithCounter } from '../Cards/IconWithCounter';
+import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { BurgerIcon } from '../Icons/BurgerIcon';
+import { LikeIcon } from '../Icons/LikeIcon';
+import { PersonsIcon } from '../Icons/PersonsIcon';
 import { HamburgerMenu } from '../Menu/HamburgerMenu';
-import { ActivityIndicators } from './ActivityIndicators';
 import { Logo } from './Logo';
 import { Profile, ProfileInfo } from './ProfileInfo';
 
@@ -16,9 +19,11 @@ export const Header = ({ profile }: { profile: Profile }) => {
             <Flex
                 justifyContent='center'
                 position='fixed'
+                top={0}
+                left={0}
                 bg={!isOpen ? 'lime.50' : 'white'}
                 h={{ base: '64px', md: '80px' }}
-                w='100%'
+                w='100vw'
                 alignItems='center'
                 px='16px'
                 data-test-id='header'
@@ -29,11 +34,20 @@ export const Header = ({ profile }: { profile: Profile }) => {
                     <Hide above='lg'>
                         <Spacer alignSelf='center' />
                         <Box display={!isOpen ? 'block' : 'none'}>
-                            <ActivityIndicators
-                                bookmarks={profile.activity.bookmarks}
-                                persons={profile.activity.persons}
-                                likes={profile.activity.likes}
-                            />
+                            <HStack spacing='0' px={{ base: '8px', md: '16px' }}>
+                                <IconWithCounter
+                                    icon={<BookmarkIcon boxSize='16px' />}
+                                    count={profile.activity.bookmarks}
+                                />
+                                <IconWithCounter
+                                    icon={<PersonsIcon boxSize='16px' fill='black' />}
+                                    count={profile.activity.persons}
+                                />
+                                <IconWithCounter
+                                    icon={<LikeIcon boxSize='16px' />}
+                                    count={profile.activity.likes}
+                                />
+                            </HStack>
                         </Box>
                         <HamburgerMenu isOpen={isOpen} onClose={onClose} />
                     </Hide>

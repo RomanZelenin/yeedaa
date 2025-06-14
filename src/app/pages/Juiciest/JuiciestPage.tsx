@@ -19,17 +19,16 @@ export default function JuiciestPage() {
         page: page,
     });
     const [recipes, setRecipes] = useState<Recipe[]>([]);
-
-    const [isLoadingNextPage, setTestLoading] = useState(false);
+    const [isLoadingNextPage, setNextLoading] = useState(false);
     const nextPage = () => {
-        setTestLoading(true);
+        setNextLoading(true);
         setPage(page + 1);
     };
 
     useEffect(() => {
         if (data?.data) {
             setRecipes([...recipes, ...data.data]);
-            setTestLoading(false);
+            setNextLoading(false);
         }
     }, [data]);
 

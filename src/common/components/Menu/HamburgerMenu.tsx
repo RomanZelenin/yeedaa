@@ -7,6 +7,8 @@ import {
     DrawerOverlay,
 } from '@chakra-ui/react';
 
+import { Filter } from '~/app/features/filters/filtersSlice';
+
 import { NavigationBreadcrumb } from '../Breadcrumbs/NavigationBreadcrumb';
 import { Footer } from '../Footer/Footer';
 import { MenuItems } from './MenuItems';
@@ -14,6 +16,8 @@ import { MenuItems } from './MenuItems';
 export interface DrawerComponentProps {
     isOpen: boolean;
     onClose: () => void;
+    onClickFindRecipe: (filter: Filter) => void;
+    onClickClearFilter: (filter: Filter) => void;
 }
 
 export const HamburgerMenu = ({ isOpen, onClose }: DrawerComponentProps) => (

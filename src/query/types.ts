@@ -1,5 +1,6 @@
 import { CookingStep, Ingredient, Recipe } from '~/app/mocks/types/type_defenitions';
 import { MeasureUnit } from '~/app/pages/CreateRecipe/IngredientsEditor';
+import { Blogger, Note } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 
 export type StatusResponse = {
     status: number;
@@ -61,4 +62,32 @@ export type RecipeDraft = {
     ingredients?: Ingredient[];
     steps?: CookingStep[];
     categoriesIds?: string[];
+};
+
+export type BloggersQuery = {
+    limit?: string;
+    currentUserId: string;
+};
+
+export type BloggersResponse = {
+    favorites: Blogger[];
+    others: Blogger[];
+};
+
+export type ToggleSubscriptionQuery = {
+    fromUserId: string;
+    toUserId: string;
+};
+
+export type BloggerInfoQuery = {
+    bloggerId: string;
+    currentUserId: string;
+};
+
+export type BloggerRecipesResponse = {
+    notes: Note[];
+    recipes: Recipe[];
+    totalBookmarks: number;
+    totalSubscribers: number;
+    userId: string;
 };

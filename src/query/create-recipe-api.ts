@@ -3,7 +3,13 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 
 import { API_BASE_URL, ApiEndpoints, IMAGE_BASE_URL } from './constants';
-import { PartialRecipeQuery, RecipeDraft, RecipesResponse, StatusResponse } from './types';
+import {
+    BloggerRecipesResponse,
+    PartialRecipeQuery,
+    RecipeDraft,
+    RecipesResponse,
+    StatusResponse,
+} from './types';
 
 export const recipeApi = createApi({
     reducerPath: 'recipeApi',
@@ -100,11 +106,32 @@ export const recipeApi = createApi({
             }),
             transformResponse: (response) => {
                 const data = response as Recipe;
-                const steps = data.steps.map((step) => ({
-                    ...step,
-                    image: IMAGE_BASE_URL + step.image,
-                }));
+                const steps = data.steps.map((step) => {
+                    if (step.image === null) {
+                        return step;
+                    } else {
+                        return {
+                            ...step,
+                            image: IMAGE_BASE_URL + step.image,
+                        };
+                    }
+                });
                 return { ...data, steps: steps, image: IMAGE_BASE_URL + data.image };
+            },
+            providesTags: ['Recipe'],
+        }),
+        getBloggerRecipes: build.query<BloggerRecipesResponse, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.BLOGGER_RECIPES}/${id}`,
+                method: 'GET',
+            }),
+            transformResponse: (response) => {
+                const data = response as BloggerRecipesResponse;
+                const recipes = data.recipes.map((recipe) => ({
+                    ...recipe,
+                    image: IMAGE_BASE_URL + recipe.image,
+                }));
+                return { ...data, recipes: recipes };
             },
             providesTags: ['Recipe'],
         }),
@@ -188,7 +215,9 @@ export const {
     useBookmarkRecipeMutation,
     useGetRecipeByIdQuery,
     useGetRecipeQuery,
+    useLazyGetRecipeQuery,
     useGetJuiciestRecipesQuery,
     useGetNewestRecipesQuery,
     useGetRecipeByCategoryQuery,
+    useGetBloggerRecipesQuery,
 } = recipeApi;

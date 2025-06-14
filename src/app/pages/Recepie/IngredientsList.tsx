@@ -81,7 +81,7 @@ export const IngredientsList = ({
                     </Thead>
                     <Tbody>
                         {ingredientsPerPortion.map((it, idx) => (
-                            <Tr>
+                            <Tr key={idx}>
                                 <Td px='8px' py='10px' textStyle='textSmLh5Medium'>
                                     {it.title}
                                 </Td>

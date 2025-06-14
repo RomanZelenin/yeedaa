@@ -8,6 +8,7 @@ import { Header } from '~/common/components/Header/Header';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
 import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
+import { useScrollToAnchor } from '~/common/hooks/useScrollToAnchor';
 import { ApplicationRoute } from '~/router';
 import { Error, loadingSelector, notificationSelector } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
@@ -17,6 +18,7 @@ export default function App() {
     const isLoading = useAppSelector(loadingSelector);
     const notification = useAppSelector(notificationSelector);
     const accessToken = sessionStorage.getItem('access_token');
+    useScrollToAnchor();
 
     if (accessToken === null) return <Navigate to='/login' replace />;
 

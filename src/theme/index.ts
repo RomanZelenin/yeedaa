@@ -298,6 +298,12 @@ const theme = extendTheme({
             fontSize: '24px',
             lineHeight: '32px',
         },
+        text2xlLh7Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '20px',
+            lineHeight: '28px',
+        },
         text2xlLh8Medium: {
             fontStyle: 'normal',
             fontWeight: 500,
@@ -319,6 +325,12 @@ const theme = extendTheme({
         text4xlLh10Medium: {
             fontStyle: 'normal',
             fontWeight: 500,
+            fontSize: '36px',
+            lineHeight: '40px',
+        },
+        text4xlLh10Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
             fontSize: '36px',
             lineHeight: '40px',
         },

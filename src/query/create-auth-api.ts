@@ -73,6 +73,13 @@ export const authApi = createApi({
                 return response;
             },
         }),
+        checkAuth: build.query<StatusResponse, void>({
+            query: () => ({
+                url: '/auth/check-auth',
+                method: 'GET',
+                headers: [['Authorization', `Bearer ${sessionStorage.getItem('access_token')}`]],
+            }),
+        }),
     }),
 });
 
@@ -82,4 +89,5 @@ export const {
     useForgotPasswordMutation,
     useVerifyOTPMutation,
     useResetPasswordMutation,
+    useCheckAuthQuery,
 } = authApi;

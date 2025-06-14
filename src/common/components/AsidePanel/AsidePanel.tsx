@@ -1,9 +1,12 @@
 import { Box, LinkBox, LinkOverlay, Text, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
+import { IconWithCounter } from '../Cards/IconWithCounter';
+import { BookmarkIcon } from '../Icons/BookmarkIcon';
+import { LikeIcon } from '../Icons/LikeIcon';
+import { PersonsIcon } from '../Icons/PersonsIcon';
 import { WriteIcon } from '../Icons/WriteIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
-import { ProfileNotification } from './ProfileNotification';
 
 export const AsidePanel = ({
     bookmarks,
@@ -17,7 +20,15 @@ export const AsidePanel = ({
     const { getString } = useResource();
     return (
         <VStack pos='fixed' bottom={0} top='80px' justify='space-between'>
-            <ProfileNotification bookmarks={bookmarks} persons={persons} likes={likes} />
+            <VStack spacing='32px' px='8px' pt='16px'>
+                <IconWithCounter icon={<BookmarkIcon boxSize='16px' />} count={bookmarks} />
+                <IconWithCounter
+                    icon={<PersonsIcon boxSize='16px' fill='black' />}
+                    count={persons}
+                />
+                <IconWithCounter icon={<LikeIcon boxSize='16px' />} count={likes} />
+            </VStack>
+
             <LinkBox data-test-id='add-recipe-button'>
                 <LinkOverlay as={Link} to='/new-recipe'>
                     <Box

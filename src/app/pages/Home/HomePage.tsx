@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import {
+    bloggersLoading,
     juiciestRecipesLoading,
     newestRecipesLoading,
     relevantLoading,
@@ -20,12 +21,18 @@ export default function HomePage() {
     const isNewestRecipesLoading = useAppSelector(newestRecipesLoading);
     const isJuiciestRecipesLoading = useAppSelector(juiciestRecipesLoading);
     const isRelevantLoading = useAppSelector(relevantLoading);
+    const isBloggersLoading = useAppSelector(bloggersLoading);
 
     useEffect(() => {
         dispatch(
-            setAppLoader(isNewestRecipesLoading || isJuiciestRecipesLoading || isRelevantLoading),
+            setAppLoader(
+                isNewestRecipesLoading ||
+                    isJuiciestRecipesLoading ||
+                    isRelevantLoading ||
+                    isBloggersLoading,
+            ),
         );
-    }, [isNewestRecipesLoading, isJuiciestRecipesLoading, isRelevantLoading]);
+    }, [isNewestRecipesLoading, isJuiciestRecipesLoading, isRelevantLoading, isBloggersLoading]);
 
     return (
         <ContentContainer title={getString('bon-appetit')}>

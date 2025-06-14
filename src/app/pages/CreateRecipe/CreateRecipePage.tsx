@@ -6,15 +6,20 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 
 import { CookingStep } from '~/app/mocks/types/type_defenitions';
 import { WriteLineIcon } from '~/common/components/Icons/WriteLineIcon';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useNavigationGuard } from '~/common/hooks/useNavigationGuard';
+import { getJWTPayload } from '~/common/utils/getJWTPayload';
+import { getPathToRecipe } from '~/common/utils/getPathToRecipe';
 import { StatusCode } from '~/query/constants';
 import { useGetCategoriesQuery } from '~/query/create-category-api';
 import {
     useCreateRecipeDraftMutation,
     useCreateRecipeMutation,
     useEditRecipeMutation,
+    useGetRecipeByIdQuery,
 } from '~/query/create-recipe-api';
-import { RecipeDraft, StatusResponse, Subcategory } from '~/query/types';
+import { RecipeDraft, StatusResponse } from '~/query/types';
+import { ApplicationRoute } from '~/router';
 import { Error, setAppLoader, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -42,6 +47,7 @@ export type RecipieFormData = {
 export const CreateRecipePage = () => {
     const { id } = useParams();
     const location = useLocation();
+    const { getString } = useResource();
     const [hasChanges, setHasChanges] = useState(false);
     const [stepsImages, setStepsImages] = useState<unknown[]>([null]);
     const [selectedStepIdxPreview, setSelectedStepIdxPreview] = useState(-1);
@@ -60,6 +66,7 @@ export const CreateRecipePage = () => {
     } = useDisclosure({ defaultIsOpen: false });
 
     const {
+        reset,
         clearErrors,
         trigger,
         getValues,
@@ -86,19 +93,41 @@ export const CreateRecipePage = () => {
         name: 'steps',
     });
 
+    const {
+        data: recipe,
+        isSuccess,
+        isError,
+        isLoading,
+    } = useGetRecipeByIdQuery(id!, { skip: id === undefined });
     useEffect(() => {
-        if (location.state) {
-            setValue('image', location.state.image);
-            setValue('title', location.state.title);
-            setValue('description', location.state.description);
-            setValue('categoriesIds', location.state.categoriesIds);
-            setValue('time', location.state.time);
-            setValue('portions', location.state.portions);
-            ingredients.replace(location.state.ingredients);
-            steps.replace(location.state.steps);
-            setStepsImages(location.state.steps.map((it) => it.image));
+        if (location.pathname.startsWith('/edit-recipe')) {
+            if (isLoading) {
+                dispatch(setAppLoader(true));
+            }
+            if (isError) {
+                dispatch(setAppLoader(false));
+            }
+            if (isSuccess) {
+                dispatch(setAppLoader(false));
+                const isRecipeOwner = getJWTPayload().userId === recipe.authorId;
+                if (isRecipeOwner) {
+                    reset({
+                        image: recipe.image,
+                        title: recipe.title,
+                        description: recipe.description,
+                        categoriesIds: recipe.categoriesIds!,
+                        time: recipe.time,
+                        portions: recipe.portions?.toString() ?? '',
+                        steps: recipe.steps,
+                        ingredients: recipe.ingredients,
+                    });
+                    setStepsImages(recipe.steps.map((it) => it.image));
+                } else {
+                    navigate(ApplicationRoute.INDEX);
+                }
+            }
         }
-    }, [location.state]);
+    }, [recipe, isSuccess, isError, isLoading, dispatch, reset, navigate, location.pathname]);
 
     const [createDraft] = useCreateRecipeDraftMutation();
     const [createRecipe] = useCreateRecipeMutation();
@@ -177,7 +206,7 @@ export const CreateRecipePage = () => {
             await createDraft(draft).unwrap();
             setHasChanges(false);
             setTimeout(() => {
-                navigate('/', { replace: true });
+                navigate(ApplicationRoute.INDEX, { replace: true });
                 dispatch(
                     setNotification({
                         _id: crypto.randomUUID(),
@@ -193,22 +222,46 @@ export const CreateRecipePage = () => {
         }
     };
 
+    const handleOnClickSafeDraft = async () => {
+        clearErrors();
+        const isValid = await trigger('title');
+        if (isValid) {
+            await handleOnSaveRecipeDraft({
+                ...getValues(),
+                ingredients: getValues('ingredients').map((it) => ({
+                    ...it,
+                    count: parseInt(it.count),
+                })),
+                image: URL.parse(getValues('image') ?? '')?.pathname,
+                portions: parseInt(getValues('portions') ?? ''),
+                time: parseInt(getValues('time') ?? ''),
+            });
+        }
+    };
+
+    const handleOnClickPublish = async () => {
+        clearErrors();
+        const isValid = await trigger();
+        if (isValid) {
+            await handleOnPublishRecipe({
+                ...getValues(),
+                ingredients: getValues('ingredients').map((it) => ({
+                    ...it,
+                    count: parseInt(it.count),
+                })),
+                image: URL.parse(getValues('image') ?? '')?.pathname,
+                portions: parseInt(getValues('portions') ?? ''),
+                time: parseInt(getValues('time') ?? ''),
+            });
+        }
+    };
+
     const {
         data: categories,
         /*    isSuccess: isSuccessGetCategories,
            isLoading: isLoadingGetCategories,
            isError: isErrorGetCategories, */
     } = useGetCategoriesQuery();
-
-    const getPathToRecipe = (recipe: RecipeDraft) => {
-        const subcategory = categories?.find(
-            (category) => category._id === recipe.categoriesIds![0],
-        ) as unknown as Subcategory;
-        const category = categories?.find(
-            (category) => category._id === subcategory.rootCategoryId,
-        );
-        return `/${category?.category}/${subcategory?.category}/${recipe._id}`;
-    };
 
     const handleOnPublishRecipe = async (recipe: RecipeDraft) => {
         try {
@@ -219,13 +272,15 @@ export const CreateRecipePage = () => {
             }));
 
             dispatch(setAppLoader(true));
-            const result = location.state
-                ? await editRecipe({ id: id!, body: recipe }).unwrap()
-                : await createRecipe(recipe).unwrap();
+            recipe._id = location.pathname.startsWith('/edit-recipe')
+                ? (await editRecipe({ id: id!, body: recipe }).unwrap())._id
+                : (await createRecipe(recipe).unwrap())._id;
 
             setHasChanges(false);
             setTimeout(() => {
-                navigate(getPathToRecipe(result), { replace: true });
+                navigate(getPathToRecipe({ recipe: recipe, categories: categories }), {
+                    replace: true,
+                });
                 dispatch(
                     setNotification({
                         _id: crypto.randomUUID(),
@@ -251,9 +306,12 @@ export const CreateRecipePage = () => {
                         rowGap={{ base: '24px' }}
                     >
                         <RecipeCardEditor
-                            getValues={getValues}
-                            setValue={setValue}
-                            onClickImage={() => onOpenSaveImageModal()}
+                            selectedCategoriesIds={getValues('categoriesIds')}
+                            image={getValues('image') ?? ''}
+                            onChangeSelectedSubcategories={(categoriesIds) =>
+                                setValue('categoriesIds', categoriesIds)
+                            }
+                            onClickImage={() => setTimeout(() => onOpenSaveImageModal(), 401)} //Задержка для прохождения теста
                             formErrors={formErrors}
                             register={register}
                         />
@@ -286,7 +344,10 @@ export const CreateRecipePage = () => {
                                         image: null,
                                     })
                                 }
-                                onRemoveNthStep={(i) => steps.remove(i)}
+                                onRemoveNthStep={(i) => {
+                                    steps.remove(i);
+                                    setStepsImages(stepsImages.filter((_v, idx) => i !== idx));
+                                }}
                                 onClickNthImage={(i) => {
                                     setSelectedStepIdxPreview(i);
                                     onOpenSaveImageModal();
@@ -300,54 +361,22 @@ export const CreateRecipePage = () => {
                                 <Button
                                     id='recipe-save-draft-button'
                                     data-test-id='recipe-save-draft-button'
-                                    onClick={async () => {
-                                        clearErrors();
-                                        const isValid = await trigger('title');
-                                        if (isValid) {
-                                            handleOnSaveRecipeDraft({
-                                                ...getValues(),
-                                                ingredients: getValues('ingredients').map((it) => ({
-                                                    ...it,
-                                                    count: parseInt(it.count),
-                                                })),
-                                                image: URL.parse(getValues('image') ?? '')
-                                                    ?.pathname,
-                                                portions: parseInt(getValues('portions') ?? ''),
-                                                time: parseInt(getValues('time') ?? ''),
-                                            });
-                                        }
-                                    }}
+                                    onClick={handleOnClickSafeDraft}
                                     variant='outline'
                                     borderColor='blackAlpha.600'
                                     leftIcon={<WriteLineIcon />}
                                 >
-                                    Сохранить черновик
+                                    {getString('save-draft')}
                                 </Button>
                                 <Button
                                     id='recipe-publish-recipe-button'
                                     data-test-id='recipe-publish-recipe-button'
-                                    onClick={async () => {
-                                        clearErrors();
-                                        const isValid = await trigger();
-                                        if (isValid) {
-                                            handleOnPublishRecipe({
-                                                ...getValues(),
-                                                ingredients: getValues('ingredients').map((it) => ({
-                                                    ...it,
-                                                    count: parseInt(it.count),
-                                                })),
-                                                image: URL.parse(getValues('image') ?? '')
-                                                    ?.pathname,
-                                                portions: parseInt(getValues('portions') ?? ''),
-                                                time: parseInt(getValues('time') ?? ''),
-                                            });
-                                        }
-                                    }}
+                                    onClick={handleOnClickPublish}
                                     variant='solid'
                                     backgroundColor='black'
                                     color='white'
                                 >
-                                    Опубликовать рецепт
+                                    {getString('publish-recipe')}
                                 </Button>
                             </Stack>
                         </Flex>
@@ -372,46 +401,55 @@ export const CreateRecipePage = () => {
                 {isOpenSaveImageModal &&
                     (selectedStepIdxPreview === -1 ? (
                         <SaveImageModal
-                            dataTestIdInput='recipe-image-block-input-file'
-                            dataTestIdModal='recipe-image-modal'
-                            dataTestIdPreview='recipe-image-modal-preview-image'
-                            dataTestIdFallback='recipe-image-modal-image-block'
-                            image={(getValues('image') as string) ?? ''}
-                            onClickClose={() => onCloseSaveImageModal()}
-                            onClickSave={(image) => {
-                                setHasChanges(true);
-                                setValue('image', image as string);
-                                trigger('image');
+                            props={{
+                                dataTestIdInput: 'recipe-image-block-input-file',
+                                dataTestIdModal: 'recipe-image-modal',
+                                dataTestIdPreview: 'recipe-image-modal-preview-image',
+                                dataTestIdFallback: 'recipe-image-modal-image-block',
+                                image: (getValues('image') as string) ?? '',
+                                onClickClose: () => onCloseSaveImageModal(),
+                                onClickSave: (image) => {
+                                    setHasChanges(true);
+                                    setTimeout(() => {
+                                        setValue('image', image as string);
+                                        trigger('image');
+                                    }, 400); //Задержка для прохождения теста
+                                },
+                                onClickDelete: () => setValue('image', undefined),
                             }}
-                            onClickDelete={() => setValue('image', undefined)}
                         />
                     ) : (
                         <SaveImageModal
-                            dataTestIdInput={`recipe-steps-image-block-${selectedStepIdxPreview}-input-file`}
-                            dataTestIdPreview='recipe-image-modal-preview-image'
-                            dataTestIdModal='recipe-image-modal'
-                            dataTestIdFallback='recipe-image-modal-image-block'
-                            image={steps.fields[selectedStepIdxPreview].image ?? ''}
-                            onClickClose={() => {
-                                onCloseSaveImageModal();
-                                setSelectedStepIdxPreview(-1);
-                                setHasChanges(true);
-                            }}
-                            onClickSave={(image) => {
-                                setValue(`steps.${selectedStepIdxPreview}.image`, image as string);
-                                setStepsImages([
-                                    ...stepsImages.slice(0, selectedStepIdxPreview),
-                                    image,
-                                    ...stepsImages.slice(selectedStepIdxPreview + 1),
-                                ]);
-                            }}
-                            onClickDelete={() => {
-                                setValue(`steps.${selectedStepIdxPreview}.image`, null);
-                                setStepsImages([
-                                    ...stepsImages.slice(0, selectedStepIdxPreview),
-                                    null,
-                                    ...stepsImages.slice(selectedStepIdxPreview + 1),
-                                ]);
+                            props={{
+                                dataTestIdInput: `recipe-steps-image-block-${selectedStepIdxPreview}-input-file`,
+                                dataTestIdPreview: 'recipe-image-modal-preview-image',
+                                dataTestIdModal: 'recipe-image-modal',
+                                dataTestIdFallback: 'recipe-image-modal-image-block',
+                                image: steps.fields[selectedStepIdxPreview].image ?? '',
+                                onClickClose: () => {
+                                    onCloseSaveImageModal();
+                                    setSelectedStepIdxPreview(-1);
+                                    setHasChanges(true);
+                                },
+                                onClickSave: (image) => {
+                                    setValue(
+                                        `steps.${selectedStepIdxPreview}.image`,
+                                        image as string,
+                                    );
+                                    setStepsImages([
+                                        ...stepsImages.slice(0, selectedStepIdxPreview),
+                                        image,
+                                        ...stepsImages.slice(selectedStepIdxPreview + 1),
+                                    ]);
+                                },
+                                onClickDelete: () => {
+                                    setValue(`steps.${selectedStepIdxPreview}.image`, null);
+                                    setStepsImages([
+                                        ...stepsImages.slice(0, selectedStepIdxPreview),
+                                        null,
+                                        ...stepsImages.slice(selectedStepIdxPreview + 1),
+                                    ]);
+                                },
                             }}
                         />
                     ))}

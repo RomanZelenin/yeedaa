@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import { filtersSlice } from '~/app/features/filters/filtersSlice';
 import { authApi } from '~/query/create-auth-api';
+import { bloggersApi } from '~/query/create-bloggers-api';
 import { categoryApi } from '~/query/create-category-api';
 import { fileApi } from '~/query/create-file-api';
 import { measureUnitsApi } from '~/query/create-measureUnits-api';
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     [recipeApi.reducerPath]: recipeApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer,
     [fileApi.reducerPath]: fileApi.reducer,
+    [bloggersApi.reducerPath]: bloggersApi.reducer,
     [measureUnitsApi.reducerPath]: measureUnitsApi.reducer,
     [filtersSlice.name]: filtersSlice.reducer,
 });
@@ -28,6 +30,7 @@ export const store = configureStore({
             .concat(recipeApi.middleware)
             .concat(categoryApi.middleware)
             .concat(fileApi.middleware)
-            .concat(measureUnitsApi.middleware),
+            .concat(measureUnitsApi.middleware)
+            .concat(bloggersApi.middleware),
     devTools: !isProduction,
 });

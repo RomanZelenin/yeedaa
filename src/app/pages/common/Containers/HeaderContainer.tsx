@@ -16,26 +16,24 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
-import { filterSelector } from '~/app/features/filters/filtersSlice';
+import { Filter, filterSelector, setFilter } from '~/app/features/filters/filtersSlice';
 import { FilterDrawer } from '~/common/components/Drawer/FilterDrawer';
 import { FilterIcon } from '~/common/components/Icons/FilterIcon';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { AllergySelectorWithSwitcher } from '~/common/components/Selector /AllergySelectorWithSwitcher';
+import { useLazyGetRecipeQuery } from '~/query/create-recipe-api';
+import { RecipeQuery } from '~/query/types';
 import {
     Error,
-    isSearchSelector,
-    notificationSelector,
-    querySelector,
     recipesSelector,
-    removeNotification,
     setAppQuery,
-    setIsSearch,
+    setNotification,
     setRecepies,
 } from '~/store/app-slice';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function HeaderContainer({ title, subtitle }: { title: string; subtitle?: string }) {
-    const dispatcher = useAppDispatch();
+    const dispatch = useAppDispatch();
     const { getString } = useResource();
     const {
         isOpen: filterDrawerIsOpen,
@@ -43,32 +41,56 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
         onClose: filterDrawerOnClose,
     } = useDisclosure();
 
+    //const { category: categoryName, subcategory: subcategoryName } = useParams();
     const [isSearchInputInFocus, setIsSearchInputActive] = useState(false);
     const countRecipes = useAppSelector(recipesSelector).length;
-    const isSearch = useAppSelector(isSearchSelector);
     const [searchIsActive, setSearchIsActive] = useState(false);
+    const [isRecipesNotFound, setIsRecipesNotFound] = useState(false);
+    const [inputQuery, setInputQuery] = useState('');
+    const [isLoadingRecipes, setIsLoadingRecipes] = useState(false);
 
-    const query = useAppSelector(querySelector);
-    const [inputQuery, setInputQuery] = useState(query);
-    useEffect(() => {
-        setInputQuery(query);
-    }, [query]);
-
-    //const error = useAppSelector(errorSelector);
-    const notification = useAppSelector(notificationSelector);
     const filter = useAppSelector(filterSelector);
-    const allergens = filter.allergens
-        .filter((allergen) => allergen.selected)
-        .map((allergen) => allergen.title);
+    const query = parseFilterToQuery(filter, inputQuery);
 
     useEffect(() => {
-        if (inputQuery.length >= 3 || allergens.length > 0) {
-            setSearchIsActive(true);
-        } else {
-            setSearchIsActive(false);
+        setSearchIsActive(
+            inputQuery.length >= 3 ||
+                (query.allergens !== undefined && query.allergens!.length > 0),
+        );
+        if (inputQuery.length === 0) {
+            dispatch(setRecepies([]));
         }
-    }, [inputQuery, allergens]);
+        /*  if (filter.allergens.length > 0) {
+            handleSearchRecipes(query)
+        }  */
+    }, [inputQuery.length, query.allergens]);
 
+    const [fetchRecipes] = useLazyGetRecipeQuery();
+    const handleSearchRecipes = async (query: Partial<RecipeQuery>) => {
+        try {
+            setIsRecipesNotFound(false);
+            setIsLoadingRecipes(true);
+            dispatch(setAppQuery(query.searchString ?? ''));
+            const result = await fetchRecipes(query).unwrap();
+            if (result.data.length === 0) {
+                setIsRecipesNotFound(true);
+            }
+            dispatch(setRecepies(result.data));
+        } catch (_error) {
+            dispatch(
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: Error.SERVER,
+                    message: 'Попробуйте поискать снова попозже',
+                    type: 'error',
+                }),
+            );
+            setInputQuery('');
+            dispatch(setRecepies([]));
+        } finally {
+            setIsLoadingRecipes(false);
+        }
+    };
     return (
         <VStack
             spacing={0}
@@ -76,13 +98,13 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             px={{ base: '16px', md: '0px' }}
             borderRadius={{ base: '0px 0px 8px 8px', xl: '0px 0px 24px 24px' }}
             boxShadow={
-                isSearchInputInFocus || isSearch
+                isSearchInputInFocus || isLoadingRecipes
                     ? '0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)'
                     : 'none'
             }
         >
             <Box textAlign='center'>
-                {notification?.title === Error.RECEPIES_NOT_FOUND ? (
+                {isRecipesNotFound ? (
                     <>
                         <Text textStyle='textMdLh6Semibold'>
                             По вашему запросу ничего не найдено.
@@ -104,7 +126,7 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             </Box>
 
             <VStack
-                display={isSearch ? 'none' : 'flex'}
+                display={isLoadingRecipes ? 'none' : 'flex'}
                 width={{ base: '100%', lg: '33em' }}
                 mt={{ base: '16px', lg: '32px' }}
             >
@@ -141,14 +163,11 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                             onFocus={() => setIsSearchInputActive(true)}
                             onBlur={() => setIsSearchInputActive(false)}
                             onInput={(e) => {
-                                dispatcher(removeNotification());
-                                dispatcher(setRecepies([]));
                                 setInputQuery((e.target as HTMLInputElement).value);
                             }}
-                            onKeyDown={(e) => {
+                            onKeyDown={async (e) => {
                                 if (e.key === 'Enter' && inputQuery.length >= 3) {
-                                    dispatcher(setIsSearch(true));
-                                    dispatcher(setAppQuery(inputQuery));
+                                    await handleSearchRecipes(query);
                                 }
                             }}
                             h='100%'
@@ -164,9 +183,8 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                                 minW={0}
                                 onClick={() => {
                                     setInputQuery('');
-                                    dispatcher(setAppQuery(''));
-                                    dispatcher(removeNotification());
-                                    dispatcher(setRecepies([]));
+                                    setIsRecipesNotFound(false);
+                                    dispatch(setRecepies([]));
                                 }}
                                 flex={1}
                                 icon={<CloseIcon boxSize={{ base: '8px', lg: '10px' }} />}
@@ -187,9 +205,8 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
                                 }
                                 aria-label='Search'
                                 isDisabled={!searchIsActive}
-                                onClick={() => {
-                                    dispatcher(setIsSearch(true));
-                                    dispatcher(setAppQuery(inputQuery));
+                                onClick={async () => {
+                                    await handleSearchRecipes(query);
                                 }}
                             />
                         </InputRightElement>
@@ -204,12 +221,53 @@ export default function HeaderContainer({ title, subtitle }: { title: string; su
             <Center
                 data-test-id='loader-search-block'
                 boxSize='134px'
-                display={isSearch ? 'flex' : 'none'}
+                display={isLoadingRecipes ? 'flex' : 'none'}
                 bgGradient='radial(30% 30% at 50% 50%, rgba(196, 255, 97, 0.7) 0%, rgba(255, 255, 255, 0) 100%) lime.50'
             >
                 <Spinner size='lg' boxSize='24px' minW={0} />
             </Center>
-            <FilterDrawer isOpen={filterDrawerIsOpen} onClose={filterDrawerOnClose} />
+            <FilterDrawer
+                isOpen={filterDrawerIsOpen}
+                onClose={filterDrawerOnClose}
+                onClickClearFilter={async (_filter) => {}}
+                onClickFindRecipe={async (filter) => {
+                    dispatch(setFilter(filter));
+                    const query = parseFilterToQuery(filter, inputQuery);
+                    handleSearchRecipes(query);
+                    filterDrawerOnClose();
+                }}
+            />
         </VStack>
     );
 }
+
+const parseFilterToQuery = (filter: Filter, searchString: string) => {
+    const { subcategoriesIds, allergens, garnish, meat } = {
+        subcategoriesIds: filter.categories
+            .filter((it) => it.selected)
+            .map((it) => it._id)
+            .join(','),
+        allergens: filter.allergens
+            .filter((it) => it.selected)
+            .map((it) => it.title)
+            .join(','),
+        garnish: filter.side
+            .filter((it) => it.selected)
+            .map((it) => it.title)
+            .join(','),
+        meat: filter.meat
+            .filter((it) => it.selected)
+            .map((it) => it.title)
+            .join(','),
+    };
+
+    const query = {
+        searchString: searchString.length > 0 ? searchString : undefined,
+        allergens: allergens.length > 0 ? allergens : undefined,
+        subcategoriesIds: subcategoriesIds.length > 0 ? subcategoriesIds : undefined,
+        garnish: garnish.length > 0 ? garnish : undefined,
+        meat: meat.length > 0 ? meat : undefined,
+    };
+
+    return query;
+};

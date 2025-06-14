@@ -40,39 +40,42 @@ export const StepsEditor = ({
     onClickAddStep: () => void;
     onRemoveNthStep: (i: number) => void;
     onClickNthImage: (i: number) => void;
-}) => (
-    <VStack spacing={{ base: '20px' }} align='stretch'>
-        <Text textStyle='textMdLh6Semibold'>Добавьте шаги приготовления</Text>
-        {steps?.map((step, i) => (
-            <Fragment key={step.id}>
-                <StepCard
-                    index={i}
-                    image={images[i] ?? ''}
-                    formErrors={formErrors}
-                    onClickImage={onClickNthImage}
-                    onClickRemoveStep={onRemoveNthStep}
-                    register={register}
-                    totalSteps={steps.length}
-                />
-                {i == steps.length - 1 && (
-                    <Button
-                        onClick={() => onClickAddStep()}
-                        alignSelf='end'
-                        variant='outline'
-                        borderColor='blackAlpha.600'
-                        rightIcon={
-                            <Center borderRadius='100%' boxSize='14px' bgColor='black'>
-                                <AddIcon boxSize='9px' color='white' />
-                            </Center>
-                        }
-                    >
-                        Новый шаг
-                    </Button>
-                )}
-            </Fragment>
-        ))}
-    </VStack>
-);
+}) => {
+    const { getString } = useResource();
+    return (
+        <VStack spacing={{ base: '20px' }} align='stretch'>
+            <Text textStyle='textMdLh6Semibold'>{getString('add-cooking-steps')}</Text>
+            {steps?.map((step, i) => (
+                <Fragment key={step.id}>
+                    <StepCard
+                        index={i}
+                        image={images[i]}
+                        formErrors={formErrors}
+                        onClickImage={onClickNthImage}
+                        onClickRemoveStep={onRemoveNthStep}
+                        register={register}
+                        totalSteps={steps.length}
+                    />
+                    {i == steps.length - 1 && (
+                        <Button
+                            onClick={() => onClickAddStep()}
+                            alignSelf='end'
+                            variant='outline'
+                            borderColor='blackAlpha.600'
+                            rightIcon={
+                                <Center borderRadius='100%' boxSize='14px' bgColor='black'>
+                                    <AddIcon boxSize='9px' color='white' />
+                                </Center>
+                            }
+                        >
+                            {getString('new-step')}
+                        </Button>
+                    )}
+                </Fragment>
+            ))}
+        </VStack>
+    );
+};
 
 const StepCard = ({
     register,
@@ -89,7 +92,7 @@ const StepCard = ({
     totalSteps: number;
     onClickRemoveStep: (i: number) => void;
     formErrors: FieldErrors<RecipieFormData>;
-    image: string;
+    image?: string | null | undefined;
 }) => {
     const { getString } = useResource();
     const getBorderColor = (field?: FieldError) =>
@@ -97,7 +100,24 @@ const StepCard = ({
 
     return (
         <Card direction='row' overflow='clip' flex={1}>
-            <Image
+            {image ? (
+                <Image
+                    {...register(`steps.${index}.image`)}
+                    data-test-id={`recipe-steps-image-block-${index}-preview-image`}
+                    onClick={() => onClickImage(index)}
+                    objectFit='cover'
+                    src={image}
+                    w={{ base: '158px', lg: '346px' }}
+                />
+            ) : (
+                <Fallback
+                    data-test-id={`recipe-steps-image-block-${index}`}
+                    onClick={() => onClickImage(index)}
+                    width={{ base: '158px', lg: '346px' }}
+                    height='inherit'
+                />
+            )}
+            {/*  <Image
                 {...register(`steps.${index}.image`)}
                 data-test-id={`recipe-steps-image-block-${index}-preview-image`}
                 onClick={() => onClickImage(index)}
@@ -112,7 +132,7 @@ const StepCard = ({
                         height='inherit'
                     />
                 }
-            />
+            /> */}
             <Stack spacing={{ base: '12px', lg: '16px' }} flex={1} p={{ base: '8px', lg: '24px' }}>
                 <CardHeader p='0px'>
                     <HStack justify='space-between'>
@@ -145,7 +165,7 @@ const StepCard = ({
                         {...getBorderColor(formErrors.steps?.[index]?.description)}
                         _focus={getBorderColor(formErrors.steps?.[index]?.description)}
                         _active={getBorderColor(formErrors.steps?.[index]?.description)}
-                        placeholder='Шаг'
+                        placeholder={getString('step')}
                     />
                 </CardBody>
             </Stack>

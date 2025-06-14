@@ -2,6 +2,8 @@ import { Avatar, Box, Flex, VStack } from '@chakra-ui/react';
 import { memo } from 'react';
 
 export type Profile = {
+    _id?: string;
+    isFavorite?: boolean;
     avatar?: string;
     firstName: string;
     lastName: string;

@@ -26,7 +26,7 @@ export const MultiSelectDropdown = ({
     id?: string;
     placeholder: string;
     items: SelectItem[];
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, id?: string) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, idx?: number) => void;
 }) => {
     const { getString } = useResource();
     const selectedItems = useMemo(() => items.filter((it) => it.selected), [items]);
@@ -71,8 +71,7 @@ export const MultiSelectDropdown = ({
                             </>
                         )}
                     </MenuButton>
-
-                    <MenuList zIndex='popover' py='4px'>
+                    <MenuList zIndex='popover' py='4px' maxH='350px' overflowY='auto'>
                         {items.map((it, i) => (
                             <MenuItem
                                 h='32px'
@@ -87,7 +86,7 @@ export const MultiSelectDropdown = ({
                                     variant='lime'
                                     value={it.title}
                                     isChecked={it.selected}
-                                    onChange={(e) => onChange(e, it._id)}
+                                    onChange={(e) => onChange(e, i)}
                                     mr={2}
                                 >
                                     <Text textStyle='textSmLh5'>{getString(it.title)}</Text>

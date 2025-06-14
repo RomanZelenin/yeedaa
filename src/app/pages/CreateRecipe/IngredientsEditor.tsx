@@ -21,6 +21,7 @@ import { FieldArrayWithId, FieldError, FieldErrors, UseFormRegister } from 'reac
 
 import { BasketIcon } from '~/common/components/Icons/BasketIcon';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { useGetMeasureUnits } from '~/common/hooks/useGetMeasureUnits';
 
 import { RecipieFormData } from './CreateRecipePage';
@@ -148,6 +149,7 @@ const DesktopIngredientsTable = ({
     onClickRemoveNthIngredient: (i: number) => void;
     onClickAddIngredient: () => void;
 }) => {
+    const { getString } = useResource();
     const [ingredientMeasureUnit, setIngredientMeasureUnit] = useState(
         ingredients.map((it) => it.measureUnit),
     );
@@ -163,7 +165,7 @@ const DesktopIngredientsTable = ({
                                 color='lime.600'
                                 textAlign='start'
                             >
-                                Ингредиент
+                                {getString('ingredient')}
                             </Text>
                         </Th>
                         <Th px='0px' isNumeric>
@@ -174,7 +176,7 @@ const DesktopIngredientsTable = ({
                                     color='lime.600'
                                     textAlign='end'
                                 >
-                                    Количество
+                                    {getString('amount')}
                                 </Text>
                             </HStack>
                         </Th>
@@ -186,7 +188,7 @@ const DesktopIngredientsTable = ({
                                     color='lime.600'
                                     textAlign='end'
                                 >
-                                    Единица измерения
+                                    {getString('measure-unit')}
                                 </Text>
                             </HStack>
                         </Th>
@@ -227,7 +229,7 @@ const DesktopIngredientsTable = ({
                                     }}
                                     {...getInputStyles(formErrors.ingredients?.[i]?.measureUnit)}
                                     data-test-id={`recipe-ingredients-measureUnit-${i}`}
-                                    placeholder='Единица измерения'
+                                    placeholder={getString('measure-unit')}
                                 >
                                     {measureUnits.map((measureUnit) => (
                                         <option key={measureUnit._id} value={measureUnit.name}>

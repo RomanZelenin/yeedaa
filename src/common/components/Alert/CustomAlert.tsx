@@ -42,8 +42,12 @@ export const CustomAlert = ({
         >
             <AlertIcon />
             <Box>
-                <AlertTitle>{notification.title}</AlertTitle>
-                <AlertDescription>{notification.message}</AlertDescription>
+                <AlertTitle data-test-id='error-notification-title'>
+                    {notification.title}
+                </AlertTitle>
+                <AlertDescription data-test-id='error-notification-description'>
+                    {notification.message}
+                </AlertDescription>
             </Box>
             <CloseButton
                 boxSize='12px'

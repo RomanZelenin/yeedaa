@@ -37,6 +37,7 @@ const initialState = {
     isNewestRecipesLoading: false,
     isJuiciestRecipesLoading: false,
     isRelevantLoading: false,
+    isBloggersLoading: false,
     error: NONE_ERROR_RESPONSE,
     query: '' as string,
     recipes: [] as Recipe[],
@@ -50,9 +51,6 @@ export const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        setAppError(state, { payload: error }: PayloadAction<ResponseError>) {
-            state.error = error;
-        },
         setAppLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
             state.isLoading = isLoading;
         },
@@ -64,6 +62,9 @@ export const appSlice = createSlice({
         },
         setRelevantLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
             state.isRelevantLoading = isLoading;
+        },
+        setBloggersLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
+            state.isBloggersLoading = isLoading;
         },
         setAppQuery(state, { payload: query }: PayloadAction<string>) {
             state.query = query;
@@ -85,7 +86,6 @@ export const appSlice = createSlice({
 
 export const loadingSelector = (state: ApplicationState) => state.app.isLoading;
 
-export const errorSelector = (state: ApplicationState) => state.app.error;
 export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
 export const blogsSelector = (state: ApplicationState) => state.app.blogs;
@@ -94,17 +94,18 @@ export const isSearchSelector = (state: ApplicationState) => state.app.isSearch;
 export const newestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
 export const juiciestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
 export const relevantLoading = (state: ApplicationState) => state.app.isRelevantLoading;
+export const bloggersLoading = (state: ApplicationState) => state.app.isBloggersLoading;
 
 export const notificationSelector = (state: ApplicationState) => state.app.notification;
 
 export const {
-    setAppError,
     setAppLoader,
     setAppQuery,
     setRecepies,
     setNewestRecipesLoader,
     setJuiciestRecipesLoader,
     setRelevantLoader,
+    setBloggersLoader,
     setIsSearch,
     setNotification,
     removeNotification,

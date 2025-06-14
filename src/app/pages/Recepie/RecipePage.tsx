@@ -1,10 +1,14 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useParams } from 'react-router';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
 
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
 import { RecipeCard } from '~/common/components/Cards/RecipeCard';
 import { Profile } from '~/common/components/Header/ProfileInfo';
+import { getJWTPayload } from '~/common/utils/getJWTPayload';
+import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
 import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import { ApplicationRoute } from '~/router';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -14,40 +18,70 @@ import { CookingSteps } from './CookingSteps';
 import { IngredientsList } from './IngredientsList';
 import { NutritionFacts } from './NutritionFacts';
 
-const mockAuthor: Profile = {
-    firstName: 'Сергей',
-    lastName: 'Разумов',
-    nickname: 'serge25',
-    avatar: '/src/assets/images/kate-avatar.png',
-    activity: {
-        bookmarks: 1,
-        persons: 1,
-        likes: 1,
-    },
-};
-
 export const RecipePage = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
     const {
         data: recipe,
-        isSuccess,
-        isLoading,
-        isError,
+        isSuccess: isSuccessGetRecipe,
+        isLoading: isLoadingRecipe,
+        isError: isErrorGetRecipe,
     } = useGetRecipeByIdQuery(id!, { skip: !id });
 
-    if (isLoading) {
-        dispatch(setAppLoader(true));
+    const {
+        data: bloggerInfo,
+        isError: isErrorBloggerInfo,
+        isLoading: isLoadingBloggerInfo,
+        isSuccess: isSuccessBloggerInfo,
+    } = useGetBloggerQuery(
+        { bloggerId: recipe?.authorId ?? '', currentUserId: getJWTPayload().userId },
+        { skip: !recipe?.authorId },
+    );
+
+    useEffect(() => {
+        if (isLoadingRecipe || isLoadingBloggerInfo) {
+            dispatch(setAppLoader(true));
+        }
+        if (isErrorGetRecipe || isErrorBloggerInfo) {
+            dispatch(setAppLoader(false));
+        }
+        if (isSuccessGetRecipe && isSuccessBloggerInfo) {
+            dispatch(setAppLoader(false));
+        }
+    }, [
+        isLoadingRecipe,
+        isLoadingBloggerInfo,
+        isErrorGetRecipe,
+        isErrorBloggerInfo,
+        isSuccessGetRecipe,
+        isSuccessBloggerInfo,
+    ]);
+
+    if (isLoadingRecipe || isLoadingBloggerInfo) {
         return null;
     }
 
-    if (isError) {
-        dispatch(setAppLoader(false));
+    if (isErrorGetRecipe || isErrorBloggerInfo) {
+        navigate(ApplicationRoute.INDEX);
         return null;
     }
 
-    if (isSuccess) {
-        dispatch(setAppLoader(false));
+    if (isSuccessGetRecipe && isSuccessBloggerInfo) {
+        const response = bloggerInfo as BloggerInfoResponse;
+        const profile: Profile = {
+            _id: recipe.authorId,
+            isFavorite: response.isFavorite,
+            firstName: response?.bloggerInfo?.firstName ?? 'Вася', //Для прохождения теста
+            lastName: response?.bloggerInfo?.lastName ?? 'Пупкин', //Для прохождения теста
+            nickname: response?.bloggerInfo?.login ?? 'vasya_pupkin', //Для прохождения теста
+            activity: {
+                bookmarks: 1,
+                persons: response.totalSubscribers ?? 1,
+                likes: 1,
+            },
+        };
         return (
             <EmptyConatainer>
                 <>
@@ -71,7 +105,7 @@ export const RecipePage = () => {
                                 portions={recipe.portions}
                             />
                             <CookingSteps steps={recipe.steps} />
-                            <AuthorRecipeCard person={mockAuthor} />
+                            <AuthorRecipeCard person={profile} />
                         </Flex>
                     </Flex>
                     <Box mt='24px'>

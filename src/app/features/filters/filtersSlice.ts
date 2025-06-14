@@ -29,24 +29,9 @@ const DEFAULT_ALLERGENS: SelectItem[] = [
     { title: 'Шоколад', selected: false },
 ];
 
-const DEFAULT_AUTHORS = [
-    { title: 'Елена Мин', selected: false },
-    { title: 'Мирием Чонишвили', selected: false },
-    { title: 'Елена Прекрасная', selected: false },
-];
+const DEFAULT_AUTHORS: SelectItem[] = [];
 
-const DEFAULT_CATEGORIES = [
-    { title: 'Салаты', selected: false },
-    { title: 'Закуски', selected: false },
-    { title: 'Первые блюда', selected: false },
-    { title: 'Веганская кухня', selected: false },
-    { title: 'Детские блюда', selected: false },
-    { title: 'Лечебное питание', selected: false },
-    { title: 'Национальные', selected: false },
-    { title: 'Соусы', selected: false },
-    { title: 'Напитки', selected: false },
-    { title: 'Заготовки', selected: false },
-];
+const DEFAULT_CATEGORIES: SelectItem[] = [];
 
 const DEFAULT_MEAT = [
     { title: 'Курица', selected: false },
@@ -95,22 +80,6 @@ export const filtersSlice = createSlice({
             state.allergens = allergens;
         },
 
-        sideFilterAdded(state, { payload: side }: PayloadAction<SelectItem[]>) {
-            state.side = side;
-        },
-
-        meatFilterAdded(state, { payload: meat }: PayloadAction<SelectItem[]>) {
-            state.meat = meat;
-        },
-
-        authorsFilterAdded(state, { payload: authors }: PayloadAction<SelectItem[]>) {
-            state.authors = authors;
-        },
-
-        categoriesFilterAdded(state, { payload: categories }: PayloadAction<SelectItem[]>) {
-            state.categories = categories;
-        },
-
         setFilter(state, { payload: filter }: PayloadAction<Filter>) {
             state.allergens = filter.allergens;
             state.authors = filter.authors;
@@ -124,12 +93,5 @@ export const filtersSlice = createSlice({
 
 export const filterSelector = (state: ApplicationState) => state.filters;
 
-export const {
-    statusExcludeAllergensChanged,
-    setFilter,
-    allergensFilterAdded,
-    sideFilterAdded,
-    meatFilterAdded,
-    authorsFilterAdded,
-    categoriesFilterAdded,
-} = filtersSlice.actions;
+export const { statusExcludeAllergensChanged, setFilter, allergensFilterAdded } =
+    filtersSlice.actions;

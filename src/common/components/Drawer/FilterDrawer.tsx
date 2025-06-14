@@ -24,15 +24,13 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-    DEFAULT_FILTER,
-    filterSelector,
-    SelectItem,
-    setFilter,
-} from '~/app/features/filters/filtersSlice';
-import { setIsSearch } from '~/store/app-slice';
+import { filterSelector, SelectItem, setFilter } from '~/app/features/filters/filtersSlice';
+import { useGetCategories } from '~/common/hooks/useGetCategories';
+import { getJWTPayload } from '~/common/utils/getJWTPayload';
+import { useGetBloggersQuery } from '~/query/create-bloggers-api';
+import { BloggersResponse } from '~/query/types';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { PlusIcon } from '../Icons/PlusIcon';
@@ -42,20 +40,79 @@ import { CustomCheckboxGroup } from './CustomCheckboxGroup';
 import { FilterTag } from './FilterTag';
 import { MultiSelectDropdown } from './MultiSelectDropdown';
 
-export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
+type FilterType = 'allergens' | 'categories' | 'meat' | 'side' | 'authors';
+
+export const FilterDrawer = ({
+    isOpen,
+    onClose,
+    onClickFindRecipe,
+    onClickClearFilter,
+}: DrawerComponentProps) => {
+    const { getString } = useResource();
     const dispatcher = useAppDispatch();
+    const { categories, isSuccess: isSuccessGetCategories } = useGetCategories();
+    const { data: bloggers, isSuccess: isSuccessGetAuthors } = useGetBloggersQuery({
+        currentUserId: getJWTPayload().userId,
+        limit: 'all',
+    });
 
     const filter = useAppSelector(filterSelector);
-    const [_filter, _setFilter] = useState(filter);
+    const [localFilter, setLocalFilter] = useState(filter);
 
-    const { getString } = useResource();
+    useEffect(() => {
+        setLocalFilter({
+            ...localFilter,
+            isExcludeAllergens: filter.isExcludeAllergens,
+            allergens: filter.allergens,
+        });
+    }, [filter.isExcludeAllergens, filter.allergens]);
+
+    useEffect(() => {
+        if (isSuccessGetCategories && isSuccessGetAuthors) {
+            const authors = bloggers as BloggersResponse;
+            const allAuthors = (
+                authors?.others?.map((it) => ({
+                    _id: it._id,
+                    title: `${it.firstName} ${it.lastName}`,
+                    selected: false,
+                })) ?? []
+            ).concat(
+                authors?.favorites?.map((it) => ({
+                    _id: it._id,
+                    title: `${it.firstName} ${it.lastName}`,
+                    selected: false,
+                })) ?? [],
+            );
+            dispatcher(
+                setFilter({
+                    ...filter,
+                    authors: allAuthors,
+                    categories: categories.map((it) => ({
+                        _id: it._id,
+                        title: it.title,
+                        selected: false,
+                    })),
+                }),
+            );
+            setLocalFilter({
+                ...localFilter,
+                authors: allAuthors,
+                categories: categories.map((it) => ({
+                    _id: it._id,
+                    title: it.title,
+                    selected: false,
+                })),
+            });
+        }
+    }, [isSuccessGetCategories, isSuccessGetAuthors]);
+
     const onChangeCheckboxGroup = (
         e: React.ChangeEvent<HTMLInputElement>,
-        groupName: 'allergens' | 'categories' | 'meat' | 'side' | 'authors',
+        groupName: FilterType,
     ) => {
-        _setFilter({
-            ..._filter,
-            [`${groupName}`]: _filter[`${groupName}`].map((it) => {
+        setLocalFilter({
+            ...localFilter,
+            [`${groupName}`]: localFilter[`${groupName}`].map((it) => {
                 if (it.title === e.target.value) {
                     return { ...it, selected: !it.selected };
                 } else {
@@ -65,11 +122,11 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
         });
     };
 
-    const handleOnClickCloseTag = (key: string, item: SelectItem) => {
-        _setFilter({
-            ..._filter,
+    const handleOnClickCloseTag = (key: FilterType, item: SelectItem) => {
+        setLocalFilter({
+            ...localFilter,
             [`${key}`]: [
-                ..._filter[`${key}`].map((e) =>
+                ...localFilter[`${key}`].map((e) =>
                     e.title === item.title
                         ? {
                               ...e,
@@ -82,38 +139,42 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
     };
 
     const handleOnAddCustomAllergen = (customAllergen: SelectItem) => {
-        const i = _filter.allergens.findIndex(
+        const i = localFilter.allergens.findIndex(
             (allergen) => allergen.title === customAllergen.title,
         );
 
         if (i == -1) {
-            _setFilter({
-                ..._filter,
-                allergens: [..._filter.allergens, customAllergen],
+            setLocalFilter({
+                ...localFilter,
+                allergens: [...localFilter.allergens, customAllergen],
             });
         } else {
-            _setFilter({
-                ..._filter,
+            setLocalFilter({
+                ...localFilter,
                 allergens: [
-                    ..._filter.allergens.slice(0, i),
+                    ...localFilter.allergens.slice(0, i),
                     customAllergen,
-                    ..._filter.allergens.slice(i + 1),
+                    ...localFilter.allergens.slice(i + 1),
                 ],
             });
         }
     };
 
-    const isFilterAcitve =
-        _filter.allergens.filter((it) => it.selected).length !== 0 ||
-        _filter.categories.filter((it) => it.selected).length !== 0 ||
-        _filter.meat.filter((it) => it.selected).length !== 0 ||
-        _filter.side.filter((it) => it.selected).length !== 0;
+    const isFilterAcitve = useMemo(
+        () =>
+            localFilter.allergens.filter((it) => it.selected).length !== 0 ||
+            localFilter.categories.filter((it) => it.selected).length !== 0 ||
+            localFilter.meat.filter((it) => it.selected).length !== 0 ||
+            localFilter.side.filter((it) => it.selected).length !== 0 ||
+            localFilter.authors.filter((it) => it.selected).length !== 0,
+        [localFilter],
+    );
 
     useEffect(() => {
         if (!isOpen)
-            _setFilter({
-                ..._filter,
-                categories: [..._filter.categories.map((it) => ({ ...it, selected: false }))],
+            setLocalFilter({
+                ...localFilter,
+                categories: [...localFilter.categories.map((it) => ({ ...it, selected: false }))],
             });
     }, [isOpen]);
 
@@ -151,41 +212,44 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             <MultiSelectDropdown
                                 id='категория'
                                 placeholder={getString('categories')}
-                                items={_filter.categories}
+                                items={localFilter.categories}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'categories')}
                             />
                             <MultiSelectDropdown
                                 placeholder={getString('search-by-author')}
-                                items={_filter.authors}
+                                items={localFilter.authors}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'authors')}
                             />
                             <CustomCheckboxGroup
                                 title={`${getString('type-of-meat')}:`}
-                                items={_filter.meat}
+                                items={localFilter.meat}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'meat')}
                             />
                             <CustomCheckboxGroup
                                 title={`${getString('type-of-garnish')}:`}
-                                items={_filter.side}
+                                items={localFilter.side}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'side')}
                             />
 
                             <AllergySelectorFilterWithSwitcher
-                                isExcludeAllergens={_filter.isExcludeAllergens}
-                                items={_filter.allergens}
+                                isExcludeAllergens={localFilter.isExcludeAllergens}
+                                items={localFilter.allergens}
                                 onAddCustomAllergen={handleOnAddCustomAllergen}
                                 onChange={(e) => onChangeCheckboxGroup(e, 'allergens')}
                                 onChangeExcludeAllergens={(isExclude) => {
-                                    _setFilter({ ..._filter, isExcludeAllergens: isExclude });
+                                    setLocalFilter({
+                                        ...localFilter,
+                                        isExcludeAllergens: isExclude,
+                                    });
                                 }}
                             />
 
                             <Wrap display='flex' spacing='8px' flex={1} alignItems='end'>
-                                {Object.entries(_filter)
-                                    .filter((it) => it[0] !== 'isExcludeAllergens')
+                                {Object.entries(localFilter)
+                                    ?.filter((it) => it[0] !== 'isExcludeAllergens')
                                     .map(([key, value]) =>
                                         (value as SelectItem[])
-                                            .filter((it) => it.selected)
+                                            ?.filter((it) => it.selected)
                                             .map((it) => (
                                                 <WrapItem>
                                                     <FilterTag
@@ -207,8 +271,32 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             mr={3}
                             data-test-id='clear-filter-button'
                             onClick={() => {
-                                dispatcher(setFilter(DEFAULT_FILTER));
-                                _setFilter(DEFAULT_FILTER);
+                                const resetedFilter = {
+                                    categories: localFilter.categories.map((it) => ({
+                                        ...it,
+                                        selected: false,
+                                    })),
+                                    authors: localFilter.authors.map((it) => ({
+                                        ...it,
+                                        selected: false,
+                                    })),
+                                    meat: localFilter.meat.map((it) => ({
+                                        ...it,
+                                        selected: false,
+                                    })),
+                                    side: localFilter.side.map((it) => ({
+                                        ...it,
+                                        selected: false,
+                                    })),
+                                    allergens: localFilter.allergens.map((it) => ({
+                                        ...it,
+                                        selected: false,
+                                    })),
+                                    isExcludeAllergens: false,
+                                };
+                                dispatcher(setFilter(resetedFilter));
+                                setLocalFilter(resetedFilter);
+                                onClickClearFilter(resetedFilter);
                             }}
                         >
                             <Text
@@ -225,9 +313,7 @@ export const FilterDrawer = ({ isOpen, onClose }: DrawerComponentProps) => {
                             data-test-id='find-recipe-button'
                             disabled={!isFilterAcitve}
                             onClick={() => {
-                                dispatcher(setFilter(_filter));
-                                dispatcher(setIsSearch(true));
-                                onClose();
+                                onClickFindRecipe(localFilter);
                             }}
                         >
                             <Text
@@ -267,7 +353,7 @@ const AllergySelectorFilterWithSwitcher = ({
         onAddCustomAllergen({ title: formattedItem, selected: true });
     };
 
-    const refInput = useRef(null);
+    const refInput = useRef<HTMLInputElement>(null);
     return (
         <>
             <Stack flex={1} columnGap='12px' align='baseline'>
@@ -286,7 +372,6 @@ const AllergySelectorFilterWithSwitcher = ({
                     {({ isOpen }) => (
                         <>
                             <MenuButton
-                                onClick={() => console.log('click')}
                                 data-test-id='allergens-menu-button-filter'
                                 as={Button}
                                 variant='lime'
