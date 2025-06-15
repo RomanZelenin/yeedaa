@@ -1,6 +1,6 @@
 import { Button, Input, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
 import { CustomAlert } from '~/common/components/Alert/CustomAlert';
@@ -46,7 +46,7 @@ export const AccountRecoveryForm = ({
         mode: 'onChange',
     });
 
-    const [resetPassword] = useResetPasswordMutation();
+    const [resetPassword, { isLoading, isSuccess, isError, error }] = useResetPasswordMutation();
     const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.InternalServerError:
@@ -67,28 +67,19 @@ export const AccountRecoveryForm = ({
         }
     }, []);
 
-    const onSubmit = useCallback(
-        async ({
-            data,
-        }: {
-            formData?: FormData;
-            data: RecoveryFormData;
-            formDataJson?: string;
-            event?: React.BaseSyntheticEvent;
-        }) => {
-            try {
-                dispatch(setAppLoader(true));
-                await resetPassword(data).unwrap();
-                console.log(data);
-                onSuccess();
-            } catch (e) {
-                handleOnError(e as StatusResponse);
-            } finally {
-                dispatch(setAppLoader(false));
-            }
-        },
-        [dispatch, resetPassword],
-    );
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setAppLoader(true));
+        }
+        if (isSuccess) {
+            onSuccess();
+            dispatch(setAppLoader(false));
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+            handleOnError(error as StatusResponse);
+        }
+    }, [isLoading, isError, isSuccess, error]);
 
     return (
         <>
@@ -104,14 +95,12 @@ export const AccountRecoveryForm = ({
             </Text>
             <Form
                 onSubmit={() => {
-                    onSubmit({
-                        data: {
-                            email: email,
-                            login: getValues().login,
-                            password: getValues().password,
-                            passwordConfirm: getValues().passwordConfirm,
-                        },
-                    });
+                    resetPassword({
+                        email: email,
+                        login: getValues().login,
+                        password: getValues().password,
+                        passwordConfirm: getValues().passwordConfirm,
+                    } as RecoveryFormData);
                 }}
                 control={control}
             >

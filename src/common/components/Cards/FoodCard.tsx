@@ -16,6 +16,7 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { Link } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
@@ -37,16 +38,12 @@ import { IconWithCounter } from './IconWithCounter';
 export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-    const [bookmarkRecipe] = useBookmarkRecipeMutation();
+    const [bookmarkRecipe, { isError, error }] = useBookmarkRecipeMutation();
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     const dispatch = useAppDispatch();
 
     const handleOnBookmarkRecipe = async () => {
-        try {
-            await bookmarkRecipe(recipe._id).unwrap();
-        } catch (e) {
-            handleOnActionRecipeError(e as StatusResponse);
-        }
+        bookmarkRecipe(recipe._id);
     };
 
     const handleOnActionRecipeError = (response?: StatusResponse) => {
@@ -72,6 +69,12 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                 );
         }
     };
+
+    useEffect(() => {
+        if (isError) {
+            handleOnActionRecipeError(error as StatusResponse);
+        }
+    }, [isError, error]);
 
     return (
         <Card
@@ -188,17 +191,12 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
 export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-    const [bookmarkRecipe] = useBookmarkRecipeMutation();
+    const [bookmarkRecipe, { isError, error }] = useBookmarkRecipeMutation();
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
-
     const dispatch = useAppDispatch();
 
-    const handleOnBookmarkRecipe = async () => {
-        try {
-            await bookmarkRecipe(recipe._id).unwrap();
-        } catch (e) {
-            handleOnActionRecipeError(e as StatusResponse);
-        }
+    const handleOnBookmarkRecipe = () => {
+        bookmarkRecipe(recipe._id);
     };
 
     const handleOnActionRecipeError = (response?: StatusResponse) => {
@@ -224,6 +222,12 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                 );
         }
     };
+
+    useEffect(() => {
+        if (isError) {
+            handleOnActionRecipeError(error as StatusResponse);
+        }
+    }, [isError, error]);
 
     return (
         <Card

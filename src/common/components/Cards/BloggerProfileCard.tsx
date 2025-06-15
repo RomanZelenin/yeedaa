@@ -1,5 +1,5 @@
 import { Avatar, Button, Center, Image, Spinner, Stack, Text, Tooltip } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Blogger } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 import personCheckIcon from '~/assets/icons/person-check.svg';
@@ -17,17 +17,33 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [isFavorite, setIsFavorite] = useState(blogger.isFavorite);
-    const [toggleSubscription] = useToggleSubscriptionMutation();
+    const [
+        toggleSubscription,
+        {
+            isError: isErrorToggleSubscription,
+            isLoading: isLoadingToggleSubscription,
+            isSuccess: isSuccessToggleSubscription,
+            error: errorToggleSubscription,
+        },
+    ] = useToggleSubscriptionMutation();
 
-    const handleOnToggleSubscriprion = async () => {
-        try {
+    const handleOnToggleSubscriprion = () => {
+        toggleSubscription({
+            fromUserId: getJWTPayload().userId,
+            toUserId: blogger._id,
+        });
+    };
+
+    useEffect(() => {
+        if (isLoadingToggleSubscription) {
             setIsLoading(true);
-            await toggleSubscription({
-                fromUserId: getJWTPayload().userId,
-                toUserId: blogger._id,
-            }).unwrap();
+        }
+        if (isSuccessToggleSubscription) {
+            setIsLoading(false);
             setIsFavorite(!isFavorite);
-        } catch (_e) {
+        }
+        if (isErrorToggleSubscription) {
+            setIsLoading(false);
             dispatch(
                 setNotification({
                     _id: crypto.randomUUID(),
@@ -36,10 +52,13 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
                     type: 'error',
                 }),
             );
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [
+        isErrorToggleSubscription,
+        isLoadingToggleSubscription,
+        isSuccessToggleSubscription,
+        errorToggleSubscription,
+    ]);
 
     return (
         <>

@@ -96,7 +96,7 @@ export const BloggerProfilePage = () => {
     if (isSuccessBloggerInfo && isSuccessBloggerRecipes && isSuccessBloggers) {
         const response = bloggerInfo as BloggerInfoResponse;
         const blogger: Blogger = {
-            _id: response.bloggerInfo._id,
+            _id: userId!,
             bookmarksCount: response.totalBookmarks,
             subscribersCount: response.totalSubscribers,
             firstName: response.bloggerInfo.firstName,

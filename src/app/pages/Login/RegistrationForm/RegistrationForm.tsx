@@ -66,7 +66,7 @@ export const RegistrationForm = () => {
                 <LoginAndPassword
                     onClickRegister={() => {
                         if (progress === 100) {
-                            onSubmit({ data: getValues() });
+                            singnup(getValues());
                         }
                     }}
                     register={register}
@@ -91,7 +91,7 @@ export const RegistrationForm = () => {
         return (100 / numFields) * numValidFields;
     };
 
-    const [singnup] = useSignupMutation();
+    const [singnup, { isLoading, isError, isSuccess, error }] = useSignupMutation();
     const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.BadRequest:
@@ -124,28 +124,21 @@ export const RegistrationForm = () => {
                 );
         }
     }, []);
-    const onSubmit = useCallback(
-        async ({
-            data,
-        }: {
-            formData?: FormData;
-            data: RegistrationFormData;
-            formDataJson?: string;
-            event?: React.BaseSyntheticEvent;
-        }) => {
-            try {
-                dispatch(removeNotification());
-                dispatch(setAppLoader(true));
-                await singnup(data as RegistrationFormData).unwrap();
-                setIsShowSuccessModalDialog(true);
-            } catch (e) {
-                handleOnError(e as StatusResponse);
-            } finally {
-                dispatch(setAppLoader(false));
-            }
-        },
-        [dispatch, singnup],
-    );
+
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(removeNotification());
+            dispatch(setAppLoader(true));
+        }
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
+            setIsShowSuccessModalDialog(true);
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+            handleOnError(error as StatusResponse);
+        }
+    }, [isLoading, isError, isSuccess, error]);
 
     const progress = getProgress();
     return (

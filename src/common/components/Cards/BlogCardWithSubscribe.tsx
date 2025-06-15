@@ -13,7 +13,7 @@ import {
     Stack,
     Text,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { Blogger } from '~/app/pages/Home/Sections/SectionCookingBlogs';
@@ -33,16 +33,32 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [toggleSubscription] = useToggleSubscriptionMutation();
+    const [
+        toggleSubscription,
+        {
+            isError: isErrorToggleSubscription,
+            isLoading: isLoadingToggleSubscription,
+            isSuccess: isSuccessToggleSubscription,
+            error: errorToggleSubscription,
+        },
+    ] = useToggleSubscriptionMutation();
 
-    const handleOnToggleSubscriprion = async () => {
-        try {
+    const handleOnToggleSubscriprion = () => {
+        toggleSubscription({
+            fromUserId: getJWTPayload().userId,
+            toUserId: blogger._id,
+        });
+    };
+
+    useEffect(() => {
+        if (isLoadingToggleSubscription) {
             setIsLoading(true);
-            await toggleSubscription({
-                fromUserId: getJWTPayload().userId,
-                toUserId: blogger._id,
-            }).unwrap();
-        } catch (_e) {
+        }
+        if (isSuccessToggleSubscription) {
+            setIsLoading(false);
+        }
+        if (isErrorToggleSubscription) {
+            setIsLoading(false);
             dispatch(
                 setNotification({
                     _id: crypto.randomUUID(),
@@ -51,10 +67,13 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
                     type: 'error',
                 }),
             );
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [
+        isErrorToggleSubscription,
+        isLoadingToggleSubscription,
+        isSuccessToggleSubscription,
+        errorToggleSubscription,
+    ]);
 
     return (
         <Card

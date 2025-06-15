@@ -129,7 +129,15 @@ export const CreateRecipePage = () => {
         }
     }, [recipe, isSuccess, isError, isLoading, dispatch, reset, navigate, location.pathname]);
 
-    const [createDraft] = useCreateRecipeDraftMutation();
+    const [
+        createDraft,
+        {
+            isError: isErrorCreateRecipeDraft,
+            isSuccess: isSuccessCreateRecipeDraft,
+            isLoading: isLoadingCreateRecipeDraft,
+            error: errorCreateRecipeDraft,
+        },
+    ] = useCreateRecipeDraftMutation();
     const [createRecipe] = useCreateRecipeMutation();
     const [editRecipe] = useEditRecipeMutation();
 
@@ -199,11 +207,12 @@ export const CreateRecipePage = () => {
                 );
         }
     };
-
-    const handleOnSaveRecipeDraft = async (draft: RecipeDraft) => {
-        try {
+    useEffect(() => {
+        if (isLoadingCreateRecipeDraft) {
             dispatch(setAppLoader(true));
-            await createDraft(draft).unwrap();
+        }
+        if (isSuccessCreateRecipeDraft) {
+            dispatch(setAppLoader(false));
             setHasChanges(false);
             setTimeout(() => {
                 navigate(ApplicationRoute.INDEX, { replace: true });
@@ -215,35 +224,23 @@ export const CreateRecipePage = () => {
                     }),
                 );
             }, 0);
-        } catch (e) {
-            handleOnSaveRecipeDraftError(e as StatusResponse);
-        } finally {
-            dispatch(setAppLoader(false));
         }
-    };
+        if (isErrorCreateRecipeDraft) {
+            dispatch(setAppLoader(false));
+            handleOnSaveRecipeDraftError(errorCreateRecipeDraft as StatusResponse);
+        }
+    }, [
+        isErrorCreateRecipeDraft,
+        isSuccessCreateRecipeDraft,
+        isLoadingCreateRecipeDraft,
+        errorCreateRecipeDraft,
+    ]);
 
     const handleOnClickSafeDraft = async () => {
         clearErrors();
         const isValid = await trigger('title');
         if (isValid) {
-            await handleOnSaveRecipeDraft({
-                ...getValues(),
-                ingredients: getValues('ingredients').map((it) => ({
-                    ...it,
-                    count: parseInt(it.count),
-                })),
-                image: URL.parse(getValues('image') ?? '')?.pathname,
-                portions: parseInt(getValues('portions') ?? ''),
-                time: parseInt(getValues('time') ?? ''),
-            });
-        }
-    };
-
-    const handleOnClickPublish = async () => {
-        clearErrors();
-        const isValid = await trigger();
-        if (isValid) {
-            await handleOnPublishRecipe({
+            createDraft({
                 ...getValues(),
                 ingredients: getValues('ingredients').map((it) => ({
                     ...it,
@@ -263,36 +260,50 @@ export const CreateRecipePage = () => {
            isError: isErrorGetCategories, */
     } = useGetCategoriesQuery();
 
-    const handleOnPublishRecipe = async (recipe: RecipeDraft) => {
-        try {
-            recipe.steps = (recipe as RecipeDraft).steps?.map((it, i) => ({
-                ...it,
-                stepNumber: i + 1,
-                image: URL.parse(stepsImages[i] as string)?.pathname ?? null,
-            }));
+    const handleOnClickPublish = async () => {
+        clearErrors();
+        const isValid = await trigger();
+        if (isValid) {
+            try {
+                const recipe: RecipeDraft = {
+                    ...getValues(),
+                    ingredients: getValues('ingredients').map((it) => ({
+                        ...it,
+                        count: parseInt(it.count),
+                    })),
+                    image: URL.parse(getValues('image') ?? '')?.pathname,
+                    portions: parseInt(getValues('portions') ?? ''),
+                    time: parseInt(getValues('time') ?? ''),
+                };
+                recipe.steps = (recipe as RecipeDraft).steps?.map((it, i) => ({
+                    ...it,
+                    stepNumber: i + 1,
+                    image: URL.parse(stepsImages[i] as string)?.pathname ?? null,
+                }));
 
-            dispatch(setAppLoader(true));
-            recipe._id = location.pathname.startsWith('/edit-recipe')
-                ? (await editRecipe({ id: id!, body: recipe }).unwrap())._id
-                : (await createRecipe(recipe).unwrap())._id;
+                dispatch(setAppLoader(true));
+                recipe._id = location.pathname.startsWith('/edit-recipe')
+                    ? (await editRecipe({ id: id!, body: recipe }).unwrap())._id
+                    : (await createRecipe(recipe).unwrap())._id;
 
-            setHasChanges(false);
-            setTimeout(() => {
-                navigate(getPathToRecipe({ recipe: recipe, categories: categories }), {
-                    replace: true,
-                });
-                dispatch(
-                    setNotification({
-                        _id: crypto.randomUUID(),
-                        title: 'Рецепт успешно опубликован',
-                        type: 'success',
-                    }),
-                );
-            }, 0);
-        } catch (e) {
-            handleOnPublishRecipeError(e as StatusResponse);
-        } finally {
-            dispatch(setAppLoader(false));
+                setHasChanges(false);
+                setTimeout(() => {
+                    navigate(getPathToRecipe({ recipe: recipe, categories: categories }), {
+                        replace: true,
+                    });
+                    dispatch(
+                        setNotification({
+                            _id: crypto.randomUUID(),
+                            title: 'Рецепт успешно опубликован',
+                            type: 'success',
+                        }),
+                    );
+                }, 0);
+            } catch (e) {
+                handleOnPublishRecipeError(e as StatusResponse);
+            } finally {
+                dispatch(setAppLoader(false));
+            }
         }
     };
 
@@ -392,7 +403,7 @@ export const CreateRecipePage = () => {
                             const isValid = await trigger('title');
                             if (isValid) {
                                 setHasChanges(false);
-                                handleOnSaveRecipeDraft(getValues());
+                                createDraft(getValues());
                             }
                             handleCancel();
                         }}

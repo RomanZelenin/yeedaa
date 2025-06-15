@@ -11,7 +11,7 @@ import {
     Text,
     VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import personCheckIcon from '~/assets/icons/person-check.svg';
@@ -29,16 +29,32 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
     const { getString } = useResource();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
-    const [toggleSubscription] = useToggleSubscriptionMutation();
+    const [
+        toggleSubscription,
+        {
+            isError: isErrorToggleSubscription,
+            isLoading: isLoadingToggleSubscription,
+            isSuccess: isSuccessToggleSubscription,
+            error: errorToggleSubscription,
+        },
+    ] = useToggleSubscriptionMutation();
 
-    const handleOnToggleSubscriprion = async () => {
-        try {
+    const handleOnToggleSubscriprion = () => {
+        toggleSubscription({
+            fromUserId: getJWTPayload().userId,
+            toUserId: person._id!,
+        });
+    };
+
+    useEffect(() => {
+        if (isLoadingToggleSubscription) {
             setIsLoading(true);
-            await toggleSubscription({
-                fromUserId: getJWTPayload().userId,
-                toUserId: person._id!,
-            }).unwrap();
-        } catch (_e) {
+        }
+        if (isSuccessToggleSubscription) {
+            setIsLoading(false);
+        }
+        if (isErrorToggleSubscription) {
+            setIsLoading(false);
             dispatch(
                 setNotification({
                     _id: crypto.randomUUID(),
@@ -47,10 +63,13 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                     type: 'error',
                 }),
             );
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [
+        isErrorToggleSubscription,
+        isLoadingToggleSubscription,
+        isSuccessToggleSubscription,
+        errorToggleSubscription,
+    ]);
 
     return (
         <>

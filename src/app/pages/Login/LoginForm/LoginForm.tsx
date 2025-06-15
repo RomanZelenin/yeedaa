@@ -1,6 +1,6 @@
 import { Box, Button, Input, Link, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
@@ -44,7 +44,7 @@ export const LoginForm = () => {
         resolver: yupResolver(loginFormSchema),
         mode: 'onChange',
     });
-    const [login] = useLoginMutation();
+    const [login, { isLoading, isError, isSuccess, error }] = useLoginMutation();
     const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.Unauthorized:
@@ -81,33 +81,31 @@ export const LoginForm = () => {
                 );
         }
     }, []);
-    const onSubmit = useCallback(
-        async ({
-            data,
-        }: {
-            formData?: FormData;
-            data: LoginFormData;
-            formDataJson?: string;
-            event?: React.BaseSyntheticEvent;
-        }) => {
-            try {
-                dispatch(setAppLoader(true));
-                await login(data as LoginFormData).unwrap();
-                naviagate('/', { replace: true });
-            } catch (e) {
-                handleOnError(e as StatusResponse);
-            } finally {
-                dispatch(setAppLoader(false));
-            }
-        },
-        [dispatch, login],
-    );
+
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setAppLoader(true));
+        }
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
+            naviagate('/', { replace: true });
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+            handleOnError(error as StatusResponse);
+        }
+    }, [isLoading, isError, isSuccess, error]);
+
     const isIncorrectLoginOrPassword =
         formErrors.login || notification?.title === Error.INCORRECT_LOGIN_OR_PASSWORD;
 
     return (
         <>
-            <Form onSubmit={onSubmit} control={control} data-test-id='sign-in-form'>
+            <Form
+                onSubmit={({ data }) => login(data as LoginFormData)}
+                control={control}
+                data-test-id='sign-in-form'
+            >
                 <Stack spacing={{ base: '4px' }}>
                     <label htmlFor='login'>
                         <Text textStyle='textMdLh6Normal'>Логин для входа на сайт</Text>
@@ -204,7 +202,7 @@ export const LoginForm = () => {
                 <LoginFailedModal
                     onClickRepeat={() => {
                         setIsShowLoginFailed(false);
-                        onSubmit({ data: getValues() });
+                        login(getValues());
                     }}
                 />
             )}
