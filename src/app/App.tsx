@@ -22,6 +22,12 @@ export default function App() {
 
     if (accessToken === null) return <Navigate to='/login' replace />;
 
+    const isShowAsidePanel =
+        location.pathname !== ApplicationRoute.NEW_RECIPE &&
+        location.pathname.split('/')[1] !== ApplicationRoute.EDIT_RECIPE.split('/')[1];
+
+    const isShowNotification = notification && notification.title !== Error.RECEPIES_NOT_FOUND;
+
     return (
         <>
             <AppLoader isLoading={isLoading}>
@@ -61,20 +67,18 @@ export default function App() {
                         </Grid>
                     </GridItem>
                     <GridItem area='aside' hideBelow='lg'>
-                        {location.pathname !== ApplicationRoute.NEW_RECIPE &&
-                            location.pathname.split('/')[1] !==
-                                ApplicationRoute.EDIT_RECIPE.split('/')[1] && (
-                                <AsidePanel
-                                    bookmarks={profile.activity.bookmarks}
-                                    persons={profile.activity.persons}
-                                    likes={profile.activity.likes}
-                                />
-                            )}
+                        {isShowAsidePanel && (
+                            <AsidePanel
+                                bookmarks={profile.activity.bookmarks}
+                                persons={profile.activity.persons}
+                                likes={profile.activity.likes}
+                            />
+                        )}
                     </GridItem>
                     <GridItem area='footer' hideFrom='lg'>
                         <BottomMenu avatar={profile.avatar} />
                     </GridItem>
-                    {notification && notification.title !== Error.RECEPIES_NOT_FOUND && (
+                    {isShowNotification && (
                         <CustomAlert
                             position='fixed'
                             key={notification._id}

@@ -74,6 +74,11 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: '#',
                     });
                 }
+            } else if (location.pathname.startsWith(ApplicationRoute.PROFILE)) {
+                breadcrumbs.push({
+                    title: getString('my-profile'),
+                    path: ApplicationRoute.PROFILE,
+                });
             }
         }
         setBreadcrumbs(breadcrumbs);

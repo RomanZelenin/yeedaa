@@ -45,15 +45,9 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                 path: ApplicationRoute.NEW_RECIPE,
             },
             {
-                icon: (
-                    <Avatar
-                        src={avatar}
-                        boxSize='40px'
-                        filter={selectedMenuIdx === 3 ? 'invert(100%)' : 'none'}
-                    />
-                ),
+                icon: <Avatar src={avatar} boxSize='40px' />,
                 title: 'Мой профиль',
-                path: '#',
+                path: ApplicationRoute.PROFILE,
             },
         ];
         return menuItems;
