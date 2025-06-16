@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { RecipeCollection } from '~/common/components/RecipeCollection/RecipeCollection';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
+import { useGetCategoryAndSubcategoryByName } from '~/common/hooks/useGetCategoryAndSubcategoryByName';
 import { useGetRecipeByCategoryQuery } from '~/query/create-recipe-api';
 import { setAppLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
@@ -16,7 +16,7 @@ import { CategoryGuard } from './CategoryGuard';
 export default function CategoryPage() {
     const navigate = useNavigate();
     const { category: categoryName, subcategory: subcategoryName } = useParams();
-    const { category } = useCurrentCategory({ categoryName, subcategoryName });
+    const { category } = useGetCategoryAndSubcategoryByName({ categoryName, subcategoryName });
     const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(
@@ -98,60 +98,39 @@ function CategoryTabPanel({
     };
     const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
         {
-            page: page,
-            limit: 8,
+            page: 1,
+            limit: 8 * page,
             id: subcategoryId,
         },
         { skip: !isActive },
     );
 
     useEffect(() => {
-        if (data?.data) {
-            setRecipes([
-                ...recipes.map((recipe) => {
-                    const idx = data.data.findIndex((it) => it._id === recipe._id);
-                    if (idx !== -1) {
-                        return data.data[idx];
-                    } else {
-                        return recipe;
-                    }
-                }),
-                ...data.data.filter(
-                    (it) => recipes.find((recipe) => recipe._id === it._id) === undefined,
-                ),
-            ]);
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
+            setRecipes(
+                data.data.map((recipe) => ({
+                    ...recipe,
+                    path: `/${category}/${subcategory}/${recipe._id}`,
+                })),
+            );
             setNextLoading(false);
         }
-    }, [data]);
-
-    useEffect(() => {
         if (isLoading) {
             dispatch(setAppLoader(true));
         }
         if (isError) {
             dispatch(setAppLoader(false));
         }
-        if (isSuccess) {
-            dispatch(setAppLoader(false));
-        }
-    }, [isLoading, isError, isSuccess]);
-
-    if (isLoading || isError) {
-        return null;
-    }
+    }, [data, isLoading, isError, isSuccess]);
 
     if (isSuccess) {
         return (
             <VStack spacing='12px' px='0px'>
                 <Box px='0px' textAlign='start'>
-                    <RecipeCollection
-                        recipes={recipes.map((recipe) => ({
-                            ...recipe,
-                            path: `/${category}/${subcategory}/${recipe._id}`,
-                        }))}
-                    />
+                    <RecipeCollection recipes={recipes} />
                 </Box>
-                {page < data!.meta.totalPages && (
+                {1 < data!.meta.totalPages && (
                     <Button
                         data-test-id='load-more-button'
                         textAlign='center'

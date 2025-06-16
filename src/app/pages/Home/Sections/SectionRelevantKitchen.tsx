@@ -1,37 +1,38 @@
 import { Box, Divider, GridItem, SimpleGrid, Text, VStack } from '@chakra-ui/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 import {
     VegeterianKitchenCard,
     VegeterianKitchenCompactCard,
 } from '~/common/components/Cards/VegeterianKitchenCard';
-import { useRandomCategory } from '~/common/hooks/useRandomCategory';
+import { useGetRandomCategory } from '~/common/hooks/useGetRandomCategory';
 import { useGetRecipeByCategoryQuery } from '~/query/create-recipe-api';
 import { Error, setNotification, setRelevantLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionRelevantKitchen() {
     const dispatch = useAppDispatch();
-    const category = useRandomCategory();
-    const subcategoriesIds = useMemo(
-        () => category?.subCategories?.map((subcategory) => subcategory._id),
-        [category],
-    );
     const {
-        data: recipes,
-        isLoading,
-        isSuccess,
-        isError,
+        randomCategory,
+        isError: isErrorRandomCategory,
+        isLoading: isLoadingRandomCategory,
+        isSuccess: isSuccessRandomCategory,
+    } = useGetRandomCategory();
+    const {
+        data: recipesFromRandomCategory,
+        isLoading: isLoadingRecipesFromRandomCategory,
+        isSuccess: isSuccessRecipesFromRandomCategory,
+        isError: isErrorRecipesFromRandomCategory,
     } = useGetRecipeByCategoryQuery(
-        { id: subcategoriesIds?.[0], limit: 5 },
-        { skip: !subcategoriesIds?.[0] },
+        { id: randomCategory?.subCategories?.map((subcategory) => subcategory._id)[0], limit: 5 },
+        { skip: !isSuccessRandomCategory },
     );
 
     useEffect(() => {
-        if (isLoading) {
+        if (isLoadingRecipesFromRandomCategory || isLoadingRandomCategory) {
             dispatch(setRelevantLoader(true));
         }
-        if (isError) {
+        if (isErrorRecipesFromRandomCategory || isErrorRandomCategory) {
             dispatch(setRelevantLoader(false));
             dispatch(
                 setNotification({
@@ -42,12 +43,24 @@ export default function SectionRelevantKitchen() {
                 }),
             );
         }
-        if (isSuccess) {
+        if (isSuccessRecipesFromRandomCategory && isSuccessRandomCategory) {
             dispatch(setRelevantLoader(false));
         }
-    }, [isLoading, isError, isSuccess]);
+    }, [
+        isLoadingRecipesFromRandomCategory,
+        isErrorRecipesFromRandomCategory,
+        isSuccessRecipesFromRandomCategory,
+        isLoadingRandomCategory,
+        isErrorRandomCategory,
+        isSuccessRandomCategory,
+    ]);
 
-    if (isLoading || isError) {
+    if (
+        isLoadingRecipesFromRandomCategory ||
+        isLoadingRandomCategory ||
+        isErrorRecipesFromRandomCategory ||
+        isErrorRandomCategory
+    ) {
         return null;
     }
 
@@ -65,7 +78,7 @@ export default function SectionRelevantKitchen() {
                         fontWeight='500'
                         lineHeight={{ base: '32px', lg: '40px', xl: '48px' }}
                     >
-                        {category?.title}
+                        {randomCategory?.title}
                     </Text>
                 </GridItem>
                 <GridItem colSpan={{ base: 1, lg: 3, xl: 2 }}>
@@ -75,7 +88,7 @@ export default function SectionRelevantKitchen() {
                         lineHeight={{ base: '20px', lg: '24px' }}
                         fontWeight='500'
                     >
-                        {category?.description}
+                        {randomCategory?.description}
                     </Text>
                 </GridItem>
             </SimpleGrid>
@@ -84,7 +97,7 @@ export default function SectionRelevantKitchen() {
                 columnGap={{ base: '12px', lg: '16px', xl: '24px' }}
                 rowGap={{ base: '12px', lg: '16px', xl: '24px' }}
             >
-                {recipes?.data?.slice(0, 2)?.map((recipe, i) => (
+                {recipesFromRandomCategory?.data?.slice(0, 2)?.map((recipe, i) => (
                     <GridItem key={i} colSpan={{ xl: 1 }}>
                         <VegeterianKitchenCard recipe={recipe} />
                     </GridItem>
@@ -92,7 +105,7 @@ export default function SectionRelevantKitchen() {
 
                 <GridItem colSpan={{ xl: 2 }} display='flex' flexDirection='column'>
                     <VStack spacing='12px' justify='space-between' align='stretch' flex={1}>
-                        {recipes?.data?.slice(2).map((recipe, i) => (
+                        {recipesFromRandomCategory?.data?.slice(2).map((recipe, i) => (
                             <Box key={i}>
                                 <VegeterianKitchenCompactCard recipe={recipe} />
                             </Box>

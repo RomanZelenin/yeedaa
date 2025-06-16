@@ -16,13 +16,13 @@ import {
     Tr,
     VStack,
 } from '@chakra-ui/react';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { FieldArrayWithId, FieldError, FieldErrors, UseFormRegister } from 'react-hook-form';
 
 import { BasketIcon } from '~/common/components/Icons/BasketIcon';
 import { CloseInCircleIcon } from '~/common/components/Icons/CloseInCircleIcon';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { useGetMeasureUnits } from '~/common/hooks/useGetMeasureUnits';
+import { useGetMeasureUnitsQuery } from '~/query/create-measureUnits-api';
 
 import { RecipieFormData } from './CreateRecipePage';
 
@@ -46,7 +46,14 @@ export const IngredientsEditor = ({
     onClickAddIngredient: () => void;
     onClickRemoveNthIngredient: (i: number) => void;
 }) => {
-    const { measureUnits } = useGetMeasureUnits();
+    const [measureUnits, setMeasureUnits] = useState<MeasureUnit[]>([]);
+    const { data, isLoading, isError, isSuccess } = useGetMeasureUnitsQuery();
+    useEffect(() => {
+        if (isSuccess) {
+            setMeasureUnits(data);
+        }
+    }, [isLoading, isError, isSuccess, data]);
+
     return (
         <>
             <Text textStyle='textMdLh6Semibold'>

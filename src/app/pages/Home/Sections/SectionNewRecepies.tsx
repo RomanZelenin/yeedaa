@@ -10,9 +10,8 @@ import leftArrowIcon from '~/assets/icons/left-arrow.svg';
 import rightArrowIcon from '~/assets/icons/right-arrow.svg';
 import { NewRecepieCard } from '~/common/components/Cards/NewRecepieCard';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
-import { useGetCategoriesQuery } from '~/query/create-category-api';
+import { useMapRecipesToCategoryPaths } from '~/common/hooks/useMapRecipesToCategoryPaths';
 import { useGetNewestRecipesQuery } from '~/query/create-recipe-api';
-import { Subcategory } from '~/query/types';
 import { setNewestRecipesLoader } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -24,36 +23,15 @@ export default function SectionNewRecipes() {
         isLoading: isLoadingGetNewestRecipesQuery,
         isError: isErrorGetNewestRecipesQuery,
     } = useGetNewestRecipesQuery({ limit: 10 });
-
-    const {
-        data: categories,
-        isLoading: isLoadingGetCategories,
-        isError: isErrorGetCategories,
-    } = useGetCategoriesQuery();
+    const recipesWithPath = useMapRecipesToCategoryPaths(recipes?.data ?? []);
 
     useEffect(() => {
-        const isLoading = isLoadingGetNewestRecipesQuery || isLoadingGetCategories;
-        dispatcher(setNewestRecipesLoader(isLoading));
-    }, [isLoadingGetNewestRecipesQuery, isLoadingGetCategories, dispatcher]);
+        dispatcher(setNewestRecipesLoader(isLoadingGetNewestRecipesQuery));
+    }, [isLoadingGetNewestRecipesQuery, dispatcher]);
 
-    if (
-        isLoadingGetNewestRecipesQuery ||
-        isLoadingGetCategories ||
-        isErrorGetNewestRecipesQuery ||
-        isErrorGetCategories
-    ) {
+    if (isLoadingGetNewestRecipesQuery || isErrorGetNewestRecipesQuery) {
         return null;
     }
-
-    const subcategories = recipes!.data.map(
-        (recipe) =>
-            categories!.find(
-                (category) => category._id === recipe.categoriesIds![0],
-            )! as unknown as Subcategory,
-    );
-    const rootCategories = subcategories.map((subcategory) =>
-        categories!.find((category) => category._id === subcategory?.rootCategoryId),
-    );
 
     return (
         <Box>
@@ -113,24 +91,19 @@ export default function SectionNewRecipes() {
                         },
                     }}
                 >
-                    {recipes!.data
-                        ?.map((recipe, i) => ({
-                            ...recipe,
-                            path: `/${rootCategories.at(i)?.category}/${subcategories.at(i)?.category}/${recipe._id}`,
-                        }))
-                        .map((recipe, i) => (
-                            <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
-                                <ChakraLink
-                                    as={Link}
-                                    to={recipe.path}
-                                    _hover={{
-                                        textDecoration: 'none',
-                                    }}
-                                >
-                                    <NewRecepieCard key={i} recipe={recipe} />
-                                </ChakraLink>
-                            </SwiperSlide>
-                        ))}
+                    {recipesWithPath.map((recipe, i) => (
+                        <SwiperSlide key={i} data-test-id={`carousel-card-${i}`}>
+                            <ChakraLink
+                                as={Link}
+                                to={recipe.path}
+                                _hover={{
+                                    textDecoration: 'none',
+                                }}
+                            >
+                                <NewRecepieCard key={i} recipe={recipe} />
+                            </ChakraLink>
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
                 <Center
                     visibility={{ base: 'hidden', lg: 'visible' }}

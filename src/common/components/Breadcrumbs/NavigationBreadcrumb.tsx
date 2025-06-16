@@ -2,7 +2,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Link as ReactRouterLink, useParams } from 'react-router';
 
-import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
+import { useGetCategoryAndSubcategoryByName } from '~/common/hooks/useGetCategoryAndSubcategoryByName';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
 import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
 import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
@@ -20,7 +20,10 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
     const { category: categoryName, subcategory: subcategoryName, id: recipeId } = useParams();
 
-    const { category, subcategory } = useCurrentCategory({ categoryName, subcategoryName });
+    const { category, subcategory } = useGetCategoryAndSubcategoryByName({
+        categoryName,
+        subcategoryName,
+    });
     const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
 
     const { userId } = useParams();
