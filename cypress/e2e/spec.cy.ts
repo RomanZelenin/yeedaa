@@ -208,6 +208,9 @@ export const API_ENDPOINTS = {
     GetBloggerById: '/recipe/user',
     GetBloggers: '/bloggers',
     ToggleSubscription: '/users/toggle-subscription',
+    GetMe: '/users/me',
+    GetAllUsers: '/users/all',
+    GetUserStatistic: '/statistic',
 } as const;
 
 export const TOAST_MESSAGE = {
@@ -652,6 +655,90 @@ const goToRestoreCredentialsForm = () => {
     wait();
 };
 
+const recommendationSubscribers = Array.from({ length: 101 }, (_, i) => {
+    const hex = (i + 1).toString(16).padStart(6, '0');
+    return `6830${hex}b7cf34db7212dabc`;
+});
+
+const CURRENT_USER = {
+    drafts: [],
+    email: 'Yulia.lobzha@gmail.com',
+    firstName: 'Юлия',
+    lastName: 'Лобжа',
+    login: 'LobzhaY',
+    notes: [],
+    photoLink: '',
+    recipesIds: ['684407981416acc9e1962617', '684c44b096ea8035a7cf5f62'],
+    subscribers: [
+        '6830299eb7cf34db7212df84',
+        '682b19d3b7cf34db7212d8a8',
+        '682eda47b7cf34db7212dcbf',
+    ],
+    subscriptions: ['67e41cd40f68c23754bc1e06', '67e422130f68c23754bc1e08'],
+    _id: '684400171416acc9e1962614',
+};
+
+const BASE_ALL_USERS = [
+    {
+        id: '6830299eb7cf34db7212df84',
+        firstName: 'Mr. Cashews',
+        lastName: '™',
+        login: 'MrCashews',
+        photo: '',
+    },
+    {
+        id: '682b19d3b7cf34db7212d8a8',
+        firstName: 'Пол',
+        lastName: 'Атрейдес',
+        login: 'PaulAtreides',
+        photo: '',
+    },
+    {
+        id: '682eda47b7cf34db7212dcbf',
+        firstName: 'Никита',
+        lastName: 'Кислы',
+        login: 'pa4ka1992',
+        photo: '',
+    },
+    ...recommendationSubscribers,
+];
+
+const BASE_USER_STATISTIC = {
+    likes: [],
+    bookmarks: [],
+    recommendationCount: 0,
+};
+
+const interceptCurrentUser = (body) =>
+    interceptApi(
+        { url: API_ENDPOINTS.GetMe, alias: 'getCurrentUser', method: 'GET' },
+        {
+            statusCode: 200,
+            body,
+            delay: DELAY.SM,
+        },
+    );
+
+const interceptAllUsers = (body) =>
+    interceptApi(
+        { url: API_ENDPOINTS.GetAllUsers, alias: 'getAllUsers', method: 'GET' },
+        {
+            statusCode: 200,
+            body,
+            delay: DELAY.SM,
+        },
+    );
+
+const interceptUserStatistic = (body) =>
+    interceptApi(
+        { url: API_ENDPOINTS.GetUserStatistic, alias: 'getUserStatistic', method: 'GET' },
+        {
+            statusCode: 200,
+            body,
+            delay: DELAY.SM,
+        },
+    );
+
 describe('authorization', () => {
     beforeEach(() => {
         cy.clearLocalStorage();
@@ -667,6 +754,10 @@ describe('authorization', () => {
             { url: API_ENDPOINTS.CheckAuth, alias: 'checkAuth403' },
             { statusCode: 403, delay: 0 },
         );
+
+        interceptCurrentUser(CURRENT_USER);
+        interceptAllUsers(BASE_ALL_USERS);
+        interceptUserStatistic(BASE_USER_STATISTIC);
 
         cy.visit('/');
     });
@@ -827,8 +918,8 @@ describe('authorization', () => {
                 cy.getByTestId(TEST_ID.Button.Repeat).click();
             });
             wait200();
-
             cy.wait('@uncaptured');
+
             cy.contains('Приятного аппетита!').should('be.visible');
         });
 
@@ -1227,7 +1318,6 @@ describe('authorization', () => {
             });
 
             wait403();
-            takeScreenshot('verification-code-modal', 'mobile');
 
             const wait500 = interceptApi(
                 {
@@ -1588,6 +1678,7 @@ const meatSnacks = [
     },
     {
         _id: '67d5a8bdc3df99732a05d330',
+        recommendedByUserId: [],
         createdAt: '2025-03-15T16:20:13.090Z',
         title: 'Куриные ножки в соево-медовом соусе',
         description: 'Курица получается очень вкусная даже без предварительного маринования.',
@@ -2966,6 +3057,10 @@ describe('application', () => {
         interceptNewestRecipes();
         interceptJuiciestRecipes();
         interceptRelevantRecipes();
+        interceptCurrentUser(CURRENT_USER);
+        interceptAllUsers(BASE_ALL_USERS);
+        interceptUserStatistic(BASE_USER_STATISTIC);
+
         signIn();
     });
 
@@ -3705,6 +3800,10 @@ describe('recipe management', () => {
             meta: metaData,
         });
 
+        interceptCurrentUser(CURRENT_USER);
+        interceptAllUsers(BASE_ALL_USERS);
+        interceptUserStatistic(BASE_USER_STATISTIC);
+
         signIn();
     });
 
@@ -3717,7 +3816,6 @@ describe('recipe management', () => {
         });
 
         it('should display recipe creation form with all required elements', () => {
-            takeAllScreenshots('new-recipe-page');
             cy.getByTestId(TEST_ID.Recipe.Form).should('exist');
             cy.getByTestId(TEST_ID.Recipe.Form).within(() => {
                 cy.getByTestId(TEST_ID.Recipe.ImageBlock).should('exist');
@@ -3788,7 +3886,6 @@ describe('recipe management', () => {
                 cy.contains('Овощные салаты').click({ force: true });
                 cy.contains('+1').should('exist');
             });
-            takeAllScreenshots('recipe-categories');
             cy.getByTestId(TEST_ID.Recipe.Categories).click();
         });
 
@@ -3838,7 +3935,6 @@ describe('recipe management', () => {
         it('should handle recipe image uploads', () => {
             cy.getByTestId(TEST_ID.Recipe.ImageBlock).click();
             cy.getByTestId(TEST_ID.Modal.RecipeImageModal).should('exist');
-            takeAllScreenshots('recipe-image-modal');
             cy.getByTestId(TEST_ID.Modal.RecipeImageModal).within(() => {
                 cy.contains('Удалить').should('not.exist');
                 cy.contains('Сохранить').should('not.exist');
@@ -3853,8 +3949,6 @@ describe('recipe management', () => {
             cy.getByTestId(TEST_ID.Modal.RecipeImageModalPreviewImage)
                 .should('exist')
                 .and('have.attr', 'src');
-
-            takeAllScreenshots('recipe-image-modal-with-image');
 
             cy.getByTestId(TEST_ID.Modal.RecipeImageModal).within(() => {
                 cy.contains('Удалить').should('exist');
@@ -3993,7 +4087,6 @@ describe('recipe management', () => {
             createRecipe();
 
             cy.contains('Рецепт успешно опубликован').should('be.visible');
-            takeAllScreenshots('create-recipe-200');
             cy.url().should('include', '/salads/meat-salads/681cbbd4b6c3c1bbdbf32bba');
         });
     });
@@ -4031,7 +4124,6 @@ describe('recipe management', () => {
         it('should show preventative modal when changing basic recipe information', () => {
             cy.getByTestId(TEST_ID.Recipe.Title).clear().type('Внесли изменения');
             cy.getByTestId(TEST_ID.HeaderLogo).click();
-            takeAllScreenshots('preventive-modal');
             checkPreventiveModal();
             closePreventiveModal();
             cy.getByTestId(TEST_ID.Recipe.Title).clear();
@@ -4135,7 +4227,6 @@ describe('recipe management', () => {
             cy.getByTestId(TEST_ID.Recipe.SaveDraftButton).click();
             cy.wait('@createDraftRecipe');
             cy.contains('Черновик успешно сохранен').should('exist');
-            takeAllScreenshots('create-draft-recipe');
         });
 
         it('should handle 409 error when creating draft', () => {
@@ -4152,7 +4243,6 @@ describe('recipe management', () => {
             cy.getByTestId(TEST_ID.Recipe.SaveDraftButton).click();
             cy.wait('@createDraftRecipe409');
 
-            takeAllScreenshots('create-draft-recipe-409');
             cy.contains('Ошибка').should('be.visible');
             cy.contains('Рецепт с таким названием уже существует').should('be.visible');
         });
@@ -4170,7 +4260,6 @@ describe('recipe management', () => {
 
             cy.getByTestId(TEST_ID.Recipe.SaveDraftButton).click();
             cy.wait('@createDraftRecipe500');
-            takeAllScreenshots('create-draft-recipe-500');
             cy.contains('Ошибка сервера').should('be.visible');
             cy.contains('Не удалось сохранить черновик рецепта').should('be.visible');
         });
@@ -4203,7 +4292,6 @@ describe('recipe management', () => {
 
             cy.url().should('include', 'edit-recipe/salads/meat-salads/681cbbd4b6c3c1bbdbf32bba');
 
-            takeAllScreenshots('edit-recipe-page');
             cy.getByTestId(TEST_ID.Recipe.Form).within(() => {
                 cy.getByTestId(TEST_ID.Recipe.Title)
                     .invoke('val')
@@ -4411,7 +4499,6 @@ describe('recipe management', () => {
 
             cy.getByTestId(TEST_ID.Recipe.PublishButton).click();
             cy.wait('@updateRecipe409');
-            takeAllScreenshots('edit-recipe-page-409');
 
             cy.contains('Ошибка').should('be.visible');
             cy.contains('Рецепт с таким названием уже существует').should('be.visible');
@@ -4435,7 +4522,6 @@ describe('recipe management', () => {
             );
             cy.getByTestId(TEST_ID.Recipe.PublishButton).click();
             cy.wait('@updateRecipe500');
-            takeAllScreenshots('edit-recipe-page-500');
 
             cy.contains('Ошибка сервера').should('be.visible');
             cy.contains('Попробуйте пока сохранить в черновик').should('be.visible');
@@ -5124,6 +5210,9 @@ describe('bloggers', () => {
             interceptNewestRecipes();
             interceptJuiciestRecipes();
             interceptRelevantRecipes();
+            interceptCurrentUser(CURRENT_USER);
+            interceptAllUsers(BASE_ALL_USERS);
+            interceptUserStatistic(BASE_USER_STATISTIC);
             signIn();
         });
 
@@ -5160,7 +5249,6 @@ describe('bloggers', () => {
                 });
 
             cy.wait(2000);
-            takeAllScreenshots('bloggers-box');
         });
 
         it('the bloggers box is not being filled on API error', () => {
@@ -5203,6 +5291,9 @@ describe('bloggers', () => {
             interceptNewestRecipes();
             interceptJuiciestRecipes();
             interceptRelevantRecipes();
+            interceptCurrentUser(CURRENT_USER);
+            interceptAllUsers(BASE_ALL_USERS);
+            interceptUserStatistic(BASE_USER_STATISTIC);
             signIn();
         });
 
@@ -5239,7 +5330,6 @@ describe('bloggers', () => {
 
             cy.get('html, body').invoke('attr', 'style', 'height: auto; scroll-behavior: auto;');
             cy.wait(2000);
-            takeAllScreenshots('blogs-page');
         });
 
         it('redirect to the main page on fetch error', () => {
@@ -5366,6 +5456,9 @@ describe('bloggers', () => {
             interceptNewestRecipes();
             interceptJuiciestRecipes();
             interceptRelevantRecipes();
+            interceptCurrentUser(CURRENT_USER);
+            interceptAllUsers(BASE_ALL_USERS);
+            interceptUserStatistic(BASE_USER_STATISTIC);
             signIn();
         });
 
@@ -5393,7 +5486,6 @@ describe('bloggers', () => {
 
             cy.get('html, body').invoke('attr', 'style', 'height: auto; scroll-behavior: auto;');
             cy.wait(2000);
-            takeAllScreenshots('blogger-profile');
         });
 
         it('should load the blogger profile on visit from the address bar', () => {
@@ -5490,7 +5582,6 @@ describe('bloggers', () => {
                 .should('contain.text', 'Нажмите, если хотите отписаться');
             cy.get('html, body').invoke('attr', 'style', 'height: auto; scroll-behavior: auto;');
             cy.wait(2000);
-            takeAllScreenshots('blogger-profile-with-tooltip');
         });
 
         it('should correctly expand recipes section', () => {
@@ -5601,5 +5692,687 @@ describe('bloggers', () => {
                 cy.getByTestId(TEST_ID.Bloggers.MobileLoader).should('not.exist');
             });
         });
+    });
+});
+
+const interceptRecipeByUserId = (body) => {
+    interceptApi(
+        {
+            url: `${API_ENDPOINTS.Recipe}/user/684400171416acc9e1962614`,
+            alias: 'getRecipeByUserId',
+            method: 'GET',
+        },
+        {
+            statusCode: 200,
+            body,
+            delay: DELAY.SM,
+        },
+    );
+};
+
+const CURRENT_USER_WITH_DATA = {
+    drafts: [
+        {
+            categoriesIds: [
+                '67c46eb2f51967aa8390beec',
+                '67c47208f51967aa8390bef9',
+                '67c47232f51967aa8390befc',
+            ],
+            description: null,
+            ingredients: [{ measureUnit: null, title: null }],
+            steps: [{ stepNumber: 1, description: null, image: null }],
+            title: 'Рубленые куриные котлеты',
+            _id: '6845bc661416acc9e1962a1e',
+        },
+    ],
+    email: 'PaulAtreides;@gmail.com',
+    firstName: 'Пол',
+    lastName: 'Атрейдес',
+    login: 'PaulAtreides;',
+    notes: [],
+    photoLink: '',
+    recipesIds: ['684407981416acc9e1962617', '684c44b096ea8035a7cf5f62'],
+    subscribers: [
+        '6830299eb7cf34db7212df84',
+        '682b19d3b7cf34db7212d8a8',
+        '682eda47b7cf34db7212dcbf',
+    ],
+    subscriptions: ['67e41cd40f68c23754bc1e06', '67e422130f68c23754bc1e08'],
+    _id: '684400171416acc9e1962614',
+};
+
+const BASE_USER_STATISTIC_WITH_DATA = {
+    likes: [
+        { date: '2025-06-14', count: 3 },
+        { date: '2025-06-13', count: 5 },
+        { date: '2025-06-12', count: 2 },
+        { date: '2025-06-11', count: 4 },
+    ],
+    bookmarks: [
+        { date: '2025-06-13', count: 1 },
+        { date: '2025-06-12', count: 2 },
+        { date: '2025-06-11', count: 1 },
+    ],
+    recommendationCount: 0,
+};
+
+const BASE_USER_RECIPE = {
+    myBookmarks: [],
+    notes: [],
+    recipes: [],
+    totalBookmarks: 1,
+    totalSubscribers: 4,
+    userId: '684400171416acc9e1962614',
+};
+
+const BASE_USER_RECIPE_WITH_DATA = {
+    myBookmarks: [
+        veganGarnish[0],
+        {
+            createdAt: '2025-05-20T19:40:39.842Z',
+            title: 'Песочное печенье',
+            description: 'Рассыпающееся песочное печенье с орехами',
+            time: 30,
+            image: '/media/images/350c1e84-45d2-452c-a592-3577d1ce1050.jpg',
+            views: 0,
+            portions: 4,
+            authorId: '681cf7e8b6c3c1bbdbf32bbf',
+            likes: 3,
+            bookmarks: 3,
+            _id: '682cdab7b7cf34db7212dbb8',
+        },
+        veganGarnish[1],
+        veganGarnish[2],
+    ],
+    notes: [
+        { id: '123456789', text: 'Человек сильнее любого нерва своего тела.', data: '2025-06-14' },
+    ],
+    recipes: [
+        veganSnacks[1],
+        veganSnacks[0],
+        meatSnacks[0],
+        meatSnacks[1],
+        fishSnacks[0],
+        fishSnacks[1],
+        vegetablesSnacks[0],
+        vegetablesSnacks[1],
+        vegetablesSnacks[2],
+    ],
+    totalBookmarks: 1,
+    totalSubscribers: 4,
+    userId: '684400171416acc9e1962614',
+};
+
+// PROFILE;
+describe('profile', () => {
+    beforeEach(() => {
+        cy.clearLocalStorage();
+        cy.clearAllSessionStorage();
+        interceptApi(
+            { url: '/**', alias: 'uncaptured' },
+            {
+                statusCode: 200,
+                delay: 0,
+            },
+        );
+
+        interceptBloggers('65a1bc23f8e7d901f4c3d2a1');
+
+        interceptCategories();
+        interceptNewestRecipes();
+        interceptJuiciestRecipes();
+        interceptRelevantRecipes();
+        interceptCurrentUser(CURRENT_USER);
+        interceptAllUsers(BASE_ALL_USERS);
+        interceptUserStatistic(BASE_USER_STATISTIC);
+
+        signIn();
+    });
+
+    describe('profile page should display correctly', () => {
+        it('should go to the profile page on desktop and tablet', () => {
+            cy.visit('/');
+            cy.viewport(1920, 750);
+            cy.get('[data-test-id="header-profile-button"]')
+                .within(() => {
+                    cy.contains('Юлия Лобжа').should('exist');
+
+                    cy.contains('@LobzhaY').should('exist');
+
+                    cy.get('[role="img"][aria-label="Юлия Лобжа"]')
+                        .should('have.text', 'ЮЛ')
+                        .and('be.visible');
+                })
+                .click();
+            cy.url().should('include', '/profile');
+
+            cy.visit('/');
+            cy.viewport(768, 1024);
+            cy.get('[data-test-id="footer-profile-button"]').click();
+            cy.url().should('include', '/profile');
+        });
+
+        it('breadcrumbs and statistics should be displayed', () => {
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE);
+            cy.viewport(1920, 750);
+            cy.getByTestId(TEST_ID.Breadcrumbs)
+                .should('contain', 'Главная')
+                .and('contain', 'Мой профиль');
+            cy.get('[data-test-id="user-stats-block"]')
+                .should('exist')
+                .and('be.visible')
+                .within(() => {
+                    cy.contains('0'); // bookmarks
+                    cy.contains('3'); // followers
+                    cy.contains('0'); // likes
+                });
+            takeAllScreenshots('profile-page');
+        });
+
+        it('Отображение аватара или инициалов пользователя', () => {
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE);
+            cy.get('[data-test-id="user-profile-box"]').within(() => {
+                cy.get('[data-test-id="user-profile-name"]').should(
+                    'contain',
+                    `${CURRENT_USER.firstName} ${CURRENT_USER.lastName}`,
+                );
+                cy.get('[data-test-id="user-profile-login"]').should(
+                    'contain',
+                    `@${CURRENT_USER.login}`,
+                );
+
+                cy.get(
+                    `[role="img"][aria-label="${CURRENT_USER.firstName} ${CURRENT_USER.lastName}"]`,
+                ).should('have.text', 'ЮЛ');
+
+                cy.get('[data-test-id="user-profile-stats-block"]')
+                    .should('exist')
+                    .and('be.visible')
+                    .within(() => {
+                        cy.contains('0'); // bookmarks
+                        cy.contains('3'); // followers
+                    });
+            });
+        });
+
+        it('should open the settings page when clicking on the icon', () => {
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE);
+            cy.viewport(1920, 750);
+            cy.get('[data-test-id="settings-button"]').click();
+            cy.url().should('include', '/settings');
+            cy.getByTestId(TEST_ID.Breadcrumbs)
+                .should('contain', 'Главная')
+                .and('contain', 'Мой профиль')
+                .and('contain', 'Настройки');
+        });
+    });
+
+    describe('should correctly display drafts and bookmarks blocks', () => {
+        it('should display recipe and bookmark titles', () => {
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE);
+            cy.viewport(1920, 750);
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .contains(/^Мои рецепты\s*\(0\)$/)
+                .should('be.visible');
+            cy.get('[data-test-id="user-profile-bookmarks"]')
+                .contains(/^Мои закладки\s*\(0\)$/)
+                .should('be.visible');
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .contains('Черновики')
+                .should('not.exist');
+        });
+
+        it('should display recipe and bookmark data correctly', () => {
+            interceptCurrentUser(CURRENT_USER_WITH_DATA);
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE_WITH_DATA);
+            cy.viewport(1920, 750);
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .contains(/загрузить ещё/i)
+                .should('exist')
+                .click();
+
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .find('[data-test-id^="food-card-"]')
+                .should('have.length.greaterThan', 8);
+
+            cy.get('[data-test-id="user-profile-bookmarks"]')
+                .contains(/загрузить ещё/i)
+                .should('not.exist');
+        });
+
+        it('should correctly remove the bookmark from the My Bookmarks block', () => {
+            interceptCurrentUser(CURRENT_USER_WITH_DATA);
+            interceptUserStatistic(BASE_USER_STATISTIC_WITH_DATA);
+
+            interceptRecipeByUserId(BASE_USER_RECIPE_WITH_DATA);
+
+            cy.visit('/profile');
+
+            cy.viewport(1920, 750);
+
+            cy.get('[data-test-id="user-stats-block"]')
+                .should('exist')
+                .and('be.visible')
+                .within(() => {
+                    cy.contains('4'); // bookmarks
+                    cy.contains('3'); // followers
+                    cy.contains('14'); // likes
+                });
+
+            cy.get('[data-test-id="user-profile-bookmarks"]')
+                .find('[data-test-id^="food-card-"]')
+                .should('have.length', 4);
+
+            interceptApi(
+                {
+                    url: `${API_ENDPOINTS.Recipe}/682cdab7b7cf34db7212dbb8/bookmark`,
+                    alias: 'removeBookmark',
+                    method: 'POST',
+                },
+                {
+                    statusCode: 200,
+                    body: { message: 'Recipe removed from bookmarks' },
+                    delay: DELAY.SM,
+                },
+            );
+
+            cy.get('[data-test-id="user-profile-bookmarks"]').within(() => {
+                cy.get('[data-test-id="food-card-1"]').contains('Убрать из сохранённых').click();
+            });
+            cy.wait('@removeBookmark');
+            cy.get('[data-test-id="user-profile-bookmarks"]')
+                .find('[data-test-id^="food-card-"]')
+                .should('have.length', 3);
+
+            cy.get('[data-test-id="user-stats-block"]')
+                .should('exist')
+                .and('be.visible')
+                .within(() => {
+                    cy.contains('3'); // bookmarks
+                    cy.contains('3'); // followers
+                    cy.contains('14'); // likes
+                });
+        });
+    });
+
+    describe('should correctly navigate to the draft and recipe pages', () => {
+        beforeEach(() => {
+            interceptCurrentUser(CURRENT_USER_WITH_DATA);
+            interceptUserStatistic(BASE_USER_STATISTIC_WITH_DATA);
+
+            cy.wait('@getCurrentUser');
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE_WITH_DATA);
+            cy.viewport(1920, 750);
+        });
+
+        it('goes to the draft editing page when clicking on the draft card', () => {
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .find('[data-test-id="food-card-0"]')
+                .contains('Черновик');
+
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .find('[data-test-id="food-card-0"]')
+                .find('[data-test-id="profile-edit-button"]')
+                .contains('Редактировать')
+                .should('be.visible')
+                .click();
+
+            cy.url().should('include', '/edit-draft/');
+
+            cy.getByTestId(TEST_ID.Breadcrumbs)
+                .should('contain', 'Главная')
+                .and('contain', 'Рубленые куриные котлеты');
+        });
+
+        it('goes to the recipe page when you click on the recipe card', () => {
+            cy.get('[data-test-id="user-profile-recipes"]')
+                .find('[data-test-id="food-card-1"]')
+                .within(() => {
+                    cy.get('[data-test-id="profile-edit-button"]')
+                        .contains('Редактировать')
+                        .click();
+                });
+
+            cy.url().should('include', '/edit-recipe/');
+
+            cy.getByTestId(TEST_ID.Breadcrumbs)
+                .should('contain', 'Главная')
+                .and('contain', 'Веганская кухня')
+                .and('contain', 'Закуски');
+        });
+    });
+
+    describe('should display user notes', () => {
+        const newNoteText = 'надежда искажает результаты наблюдения';
+        beforeEach(() => {
+            interceptCurrentUser(CURRENT_USER_WITH_DATA);
+            interceptUserStatistic(BASE_USER_STATISTIC_WITH_DATA);
+
+            cy.wait('@getCurrentUser');
+            cy.visit('/profile');
+            interceptRecipeByUserId(BASE_USER_RECIPE_WITH_DATA);
+            cy.viewport(1920, 750);
+        });
+
+        it('opens the drawer when clicking "Новая заметка"', () => {
+            cy.getByTestId(TEST_ID.Drawer.Filter).should('not.exist');
+            cy.get('[data-test-id="blog-notes-box"]').within(() => {
+                cy.contains('Новая заметка').click();
+            });
+            cy.getByTestId(TEST_ID.Drawer.Filter).should('exist').contains('Новая заметка');
+        });
+
+        it('shows note validation error', () => {
+            cy.get('[data-test-id="blog-notes-box"]').within(() => {
+                cy.contains('Новая заметка').click();
+            });
+            cy.getByTestId(TEST_ID.Drawer.Filter).within(() => {
+                cy.contains('Новая заметка').click();
+                cy.get('textarea[placeholder="Максимально 160 символов"]').type('коротко');
+
+                cy.contains('Опубликовать').click();
+
+                cy.get('textarea[placeholder="Максимально 160 символов"]')
+                    .blur()
+                    .should('have.css', 'border-color')
+                    .and('match', /red|rgb\(229, 62, 62\)/);
+
+                const moreText = ' ещё немного текста для валидации и проверки лимита.'.repeat(5);
+                cy.get('textarea[placeholder="Максимально 160 символов"]').focus().type(moreText);
+
+                cy.contains('Опубликовать').click();
+
+                cy.get('textarea[placeholder="Максимально 160 символов"]')
+                    .blur()
+                    .should('have.css', 'border-color')
+                    .and('match', /red|rgb\(229, 62, 62\)/);
+            });
+        });
+
+        it('successfully creates a note and shows alert', () => {
+            cy.intercept('POST', '/users/me/note', {
+                statusCode: 201,
+                body: { id: 'note123', text: newNoteText, createdAt: Date.now() },
+            }).as('postNote');
+
+            cy.get('[data-test-id="blog-notes-box"]').within(() => {
+                cy.contains('Новая заметка').click();
+            });
+            cy.getByTestId(TEST_ID.Drawer.Filter).within(() => {
+                cy.get('textarea[placeholder="Максимально 160 символов"]')
+                    .clear()
+                    .type(newNoteText);
+                cy.contains('Опубликовать').click();
+            });
+
+            cy.wait('@postNote');
+            cy.get('[role="alert"]').should('contain', 'Заметка опубликована');
+            cy.getByTestId(TEST_ID.Drawer.Filter).should('not.exist');
+            cy.get('[data-test-id="blog-notes-box"]').should('contain', newNoteText);
+        });
+
+        it('shows error alert if creating note fails', () => {
+            cy.intercept('POST', '/users/me/note', {
+                statusCode: 500,
+                body: { message: 'Ошибка сервера' },
+            }).as('postNoteFail');
+
+            cy.get('[data-test-id="blog-notes-box"]').within(() => {
+                cy.contains('Новая заметка').click();
+            });
+            cy.getByTestId(TEST_ID.Drawer.Filter).within(() => {
+                cy.get('textarea[placeholder="Максимально 160 символов"]')
+                    .clear()
+                    .type(newNoteText);
+                cy.contains('Опубликовать').click();
+            });
+
+            cy.wait('@postNoteFail');
+            cy.get('[role="alert"]')
+                .should('contain', 'Ошибка сервера')
+                .and('contain', 'Попробуйте позже.');
+            cy.getByTestId(TEST_ID.Drawer.Filter).should('be.not.exist');
+        });
+
+        it('successfully deletes a note and shows alert', () => {
+            cy.intercept('POST', '/users/me/note', {
+                statusCode: 201,
+                body: { _id: '987654321', text: newNoteText, date: '15.06.2025' },
+            }).as('postNote');
+
+            cy.get('[data-test-id="blog-notes-box"]').within(() => {
+                cy.contains('Новая заметка').click();
+            });
+            cy.getByTestId(TEST_ID.Drawer.Filter).within(() => {
+                cy.get('textarea[placeholder="Максимально 160 символов"]')
+                    .clear()
+                    .type(newNoteText);
+                cy.contains('Опубликовать').click();
+            });
+
+            cy.wait('@postNote');
+
+            cy.get('[data-test-id="blogger-user-notes-grid"]').children().should('have.length', 2);
+
+            cy.intercept('DELETE', `/users/me/note/987654321`, {
+                statusCode: 200,
+                body: { id: '987654321' },
+            }).as('deleteNote');
+
+            cy.get(`[data-test-id="blogger-user-notes-grid"]`)
+                .children()
+                .eq(1)
+                .within(() => {
+                    cy.get('[data-test-id="note-delete-button"]').click();
+                });
+
+            cy.wait('@deleteNote');
+            cy.get('[data-test-id="blogger-user-notes-grid"]').children().should('have.length', 1);
+            cy.get('[role="alert"]').should('contain', 'Заметка удалена');
+        });
+    });
+});
+
+const RECOMMENDED_USER_WITH_DATA = {
+    drafts: [
+        {
+            categoriesIds: [
+                '67c46eb2f51967aa8390beec',
+                '67c47208f51967aa8390bef9',
+                '67c47232f51967aa8390befc',
+            ],
+            description: null,
+            ingredients: [{ measureUnit: null, title: null }],
+            steps: [{ stepNumber: 1, description: null, image: null }],
+            title: 'Рубленые куриные котлеты',
+            _id: '6845bc661416acc9e1962a1e',
+        },
+    ],
+    email: 'PaulAtreides;@gmail.com',
+    firstName: 'Пол',
+    lastName: 'Атрейдес',
+    login: 'PaulAtreides;',
+    notes: [],
+    photoLink: '',
+    recipesIds: ['684407981416acc9e1962617', '684c44b096ea8035a7cf5f62'],
+    subscribers: recommendationSubscribers,
+    subscriptions: ['67e41cd40f68c23754bc1e06', '67e422130f68c23754bc1e08'],
+    _id: '682b19d3b7cf34db7212d8a8',
+};
+
+const RECOMMENDED_USER_STATISTIC_WITH_DATA = {
+    likes: [
+        { date: '2025-06-14', count: 3 },
+        { date: '2025-06-13', count: 5 },
+        { date: '2025-06-12', count: 2 },
+        { date: '2025-06-11', count: 4 },
+        { date: '2025-06-05', count: 8 },
+        { date: '2025-05-28', count: 13 },
+        { date: '2025-05-26', count: 2 },
+        { date: '2025-05-25', count: 14 },
+        { date: '2025-05-21', count: 2 },
+        { date: '2025-05-20', count: 3 },
+        { date: '2025-05-19', count: 6 },
+    ],
+    bookmarks: [
+        { date: '2025-06-13', count: 1 },
+        { date: '2025-06-12', count: 14 },
+        { date: '2025-06-11', count: 4 },
+        { date: '2025-06-10', count: 13 },
+        { date: '2025-06-09', count: 10 },
+        { date: '2025-06-08', count: 14 },
+        { date: '2025-06-07', count: 13 },
+        { date: '2025-06-06', count: 1 },
+        { date: '2025-06-05', count: 8 },
+        { date: '2025-06-04', count: 4 },
+        { date: '2025-06-03', count: 13 },
+        { date: '2025-06-02', count: 9 },
+        { date: '2025-06-01', count: 3 },
+        { date: '2025-05-31', count: 8 },
+        { date: '2025-05-30', count: 13 },
+        { date: '2025-05-29', count: 13 },
+        { date: '2025-05-28', count: 13 },
+        { date: '2025-05-27', count: 2 },
+        { date: '2025-05-26', count: 2 },
+        { date: '2025-05-25', count: 14 },
+        { date: '2025-05-24', count: 10 },
+        { date: '2025-05-23', count: 7 },
+        { date: '2025-05-22', count: 1 },
+        { date: '2025-05-21', count: 2 },
+        { date: '2025-05-20', count: 3 },
+        { date: '2025-05-19', count: 6 },
+    ],
+    recommendationCount: 0,
+};
+
+// RECOMMENDED PROFILE
+describe('profile', () => {
+    beforeEach(() => {
+        cy.clearLocalStorage();
+        cy.clearAllSessionStorage();
+        interceptApi(
+            { url: '/**', alias: 'uncaptured' },
+            {
+                statusCode: 200,
+                delay: 0,
+            },
+        );
+
+        interceptBloggers('65a1bc23f8e7d901f4c3d2a1');
+
+        interceptCategories();
+        interceptNewestRecipes();
+        interceptJuiciestRecipes();
+        interceptRelevantRecipes();
+        interceptCurrentUser(RECOMMENDED_USER_WITH_DATA);
+        interceptAllUsers(BASE_ALL_USERS);
+        interceptUserStatistic(RECOMMENDED_USER_STATISTIC_WITH_DATA);
+
+        signIn();
+    });
+
+    it('blocks with information on recommendations should be displayed', () => {
+        cy.visit('/profile/settings');
+        cy.viewport(1920, 750);
+        takeAllScreenshots('profile-page-settings');
+        cy.get('[data-test-id="user-stats-block"]')
+            .should('exist')
+            .and('be.visible')
+            .within(() => {
+                cy.contains('0'); // recommendation
+                cy.contains('201'); // bookmarks
+                cy.contains('101'); // followers
+                cy.contains('62'); // likes
+            });
+        cy.scrollTo('bottom');
+        cy.get('[data-test-id="settings-recommendation-info-block"]', { timeout: 10000 })
+            .should('exist')
+            .and('contain.text', 'Теперь вы можете рекомендовать рецепты других авторов');
+
+        cy.get('[data-test-id="settings-recommendation-info-block"]')
+            .contains('рекомендованных рецептов')
+            .parent()
+            .within(() => {
+                cy.get('p').first().should('contain.text', '0');
+            });
+    });
+
+    it('must successfully recommend the recipe', () => {
+        cy.viewport(1920, 750);
+        cy.visit('/');
+
+        interceptApi(
+            {
+                url: `${API_ENDPOINTS.Recipe}/${meatSnacks[1]._id}`,
+                alias: 'getRecipe',
+                method: 'GET',
+            },
+            {
+                statusCode: 200,
+                body: meatSnacks[1],
+                delay: DELAY.SM,
+            },
+        );
+
+        interceptBloggerById(meatSnacks[1].authorId, '65a1bc23f8e7d901f4c3d2a1');
+
+        cy.getByTestId(`${TEST_ID.Card.Carousel}-3`).click();
+        cy.url().should('include', `snacks/meat-snacks/${meatSnacks[1]._id}`);
+
+        cy.contains('Рекомендовать рецепт');
+
+        cy.scrollTo('bottom');
+
+        interceptApi(
+            {
+                url: `${API_ENDPOINTS.Recipe}/recommend/${meatSnacks[1]._id}`,
+                alias: 'recommendedRecipe',
+                method: 'POST',
+            },
+            {
+                statusCode: 200,
+                body: {
+                    id: meatSnacks[1]._id,
+                },
+                delay: DELAY.SM,
+            },
+        );
+
+        cy.contains('Рекомендовать рецепт').should('be.visible').click();
+
+        cy.contains('Вы порекомендовали').should('be.visible');
+
+        interceptApi(
+            {
+                url: `${API_ENDPOINTS.Recipe}*`,
+                query: {
+                    [SEARCH_PARAMS.SORT_QUERY]: SEARCH_PARAMS.LIKES_SORT,
+                },
+                alias: 'getJuiciestRecipes',
+            },
+            {
+                statusCode: 200,
+                body: {
+                    data: [
+                        ...allRecipes.slice(0, Number(JUICIEST_LIMIT)),
+                        { ...meatSnacks[1], recommendedByUserId: ['682b19d3b7cf34db7212d8a8'] },
+                    ],
+                    meta: { ...metaData, limit: Number(JUICIEST_LIMIT) },
+                },
+            },
+        );
+
+        cy.visit('/');
+        cy.wait('@getJuiciestRecipes');
+        cy.scrollTo('bottom');
+        cy.getByTestId(`${TEST_ID.Card.Food}-4`)
+            .should('exist')
+            .should('contain.text', 'Пол Атрейдес рекомендует');
     });
 });
