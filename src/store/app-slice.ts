@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import blogs from '~/app/mocks/blogs.json';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { Profile } from '~/common/components/Header/ProfileInfo';
 
@@ -41,7 +40,7 @@ const initialState = {
     error: NONE_ERROR_RESPONSE,
     query: '' as string,
     recipes: [] as Recipe[],
-    blogs: blogs as { person: Profile; comment: string }[],
+    blogs: [] as { person: Profile; comment: string }[],
     breadcrumb: [] as { title: string; path: string }[],
     isSearch: false,
     notification: null as Notification | null,

@@ -1,6 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 
-import icons from '~/locales/common/icons.json';
 import ruStrings from '~/locales/ru/strings.json';
 
 type Locale = 'en' | 'ru';
@@ -10,7 +9,6 @@ type ResourceContextType = {
     locale: Locale;
     setLocale: (locale: Locale) => void;
     getString: (key: string) => string;
-    getPicture: (key: string) => string;
 };
 
 const translations: LocaleDictionary = {
@@ -27,10 +25,8 @@ export const ResourceProvider = ({ children }: { children: ReactNode }) => {
 
     const getString = (key: string): string => translations[locale][key] || key;
 
-    const getPicture = (key: string): string => (icons as Record<string, string>)[key];
-
     return (
-        <ResourceContext.Provider value={{ locale, setLocale, getString, getPicture }}>
+        <ResourceContext.Provider value={{ locale, setLocale, getString }}>
             {children}
         </ResourceContext.Provider>
     );
