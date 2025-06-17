@@ -280,10 +280,22 @@ const theme = extendTheme({
             fontSize: '14px',
             lineHeight: '20px',
         },
+        textLgLh7Normal: {
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '18px',
+            lineHeight: '28px',
+        },
         textLgLh7Semibold: {
             fontStyle: 'normal',
             fontWeight: 600,
             fontSize: '15px',
+            lineHeight: '28px',
+        },
+        textLgLh7Bold: {
+            fontStyle: 'normal',
+            fontWeight: 700,
+            fontSize: '18px',
             lineHeight: '28px',
         },
         textLgLh7Medium: {
@@ -355,6 +367,12 @@ const theme = extendTheme({
         textXlLh7Medium: {
             fontStyle: 'normal',
             fontWeight: 500,
+            fontSize: '20px',
+            lineHeight: '28px',
+        },
+        textXlLh7Bold: {
+            fontStyle: 'normal',
+            fontWeight: 700,
             fontSize: '20px',
             lineHeight: '28px',
         },

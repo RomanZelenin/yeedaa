@@ -36,7 +36,6 @@ import { Fallback } from '../Fallback/Fallback';
 import { BasketIcon } from '../Icons/BasketIcon';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
-import { PersonsIcon } from '../Icons/PersonsIcon';
 import { WriteLineIcon } from '../Icons/WriteLineIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { IconWithCounter } from './IconWithCounter';
@@ -192,10 +191,6 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                             <IconWithCounter
                                 icon={<LikeIcon boxSize='12px' />}
                                 count={recipe.likes}
-                            />
-                            <IconWithCounter
-                                icon={<PersonsIcon fill='black' boxSize='12px' />}
-                                count={recipe.views}
                             />
                         </HStack>
                     </HStack>

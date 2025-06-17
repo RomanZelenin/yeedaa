@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import { Profile } from '~/common/components/Header/ProfileInfo';
+import { ActivityStats, UserProfile } from '~/query/types';
 
 import { ApplicationState } from './configure-store';
 
@@ -31,12 +32,18 @@ export type Notification = {
     message?: string;
 };
 
+export type MyProfile = {
+    profileInfo?: UserProfile;
+    statistic?: ActivityStats;
+};
+
 const initialState = {
     isLoading: false,
     isNewestRecipesLoading: false,
     isJuiciestRecipesLoading: false,
     isRelevantLoading: false,
     isBloggersLoading: false,
+    isMyProfileLoading: false,
     error: NONE_ERROR_RESPONSE,
     query: '' as string,
     recipes: [] as Recipe[],
@@ -44,6 +51,7 @@ const initialState = {
     breadcrumb: [] as { title: string; path: string }[],
     isSearch: false,
     notification: null as Notification | null,
+    myProfile: {} as MyProfile,
 };
 
 export const appSlice = createSlice({
@@ -65,6 +73,9 @@ export const appSlice = createSlice({
         setBloggersLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
             state.isBloggersLoading = isLoading;
         },
+        setMyProfileLoader(state, { payload: isLoading }: PayloadAction<boolean>) {
+            state.isMyProfileLoading = isLoading;
+        },
         setAppQuery(state, { payload: query }: PayloadAction<string>) {
             state.query = query;
         },
@@ -80,6 +91,10 @@ export const appSlice = createSlice({
         removeNotification(state) {
             state.notification = null;
         },
+
+        setMyProfile(state, { payload: myProfile }: PayloadAction<MyProfile>) {
+            state.myProfile = myProfile;
+        },
     },
 });
 
@@ -94,8 +109,11 @@ export const newestRecipesLoading = (state: ApplicationState) => state.app.isNew
 export const juiciestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
 export const relevantLoading = (state: ApplicationState) => state.app.isRelevantLoading;
 export const bloggersLoading = (state: ApplicationState) => state.app.isBloggersLoading;
+export const myProfileLoading = (state: ApplicationState) => state.app.isMyProfileLoading;
 
 export const notificationSelector = (state: ApplicationState) => state.app.notification;
+
+export const myProfile = (state: ApplicationState) => state.app.myProfile;
 
 export const {
     setAppLoader,
@@ -108,5 +126,7 @@ export const {
     setIsSearch,
     setNotification,
     removeNotification,
+    setMyProfile,
+    setMyProfileLoader,
 } = appSlice.actions;
 export default appSlice.reducer;

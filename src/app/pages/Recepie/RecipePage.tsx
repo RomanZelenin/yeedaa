@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router';
 
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
 import { RecipeCard } from '~/common/components/Cards/RecipeCard';
-import { Profile } from '~/common/components/Header/ProfileInfo';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
 import { useGetBloggerQuery, useGetRecipeByIdQuery } from '~/query/create-recipe-api';
 import { BloggerInfoResponse } from '~/query/types';
@@ -31,7 +30,7 @@ export const RecipePage = () => {
     } = useGetRecipeByIdQuery(id!, { skip: !id });
 
     const {
-        data: bloggerInfo,
+        data: dataBlogger,
         isError: isErrorBloggerInfo,
         isLoading: isLoadingBloggerInfo,
         isSuccess: isSuccessBloggerInfo,
@@ -69,19 +68,7 @@ export const RecipePage = () => {
     }
 
     if (isSuccessGetRecipe && isSuccessBloggerInfo) {
-        const response = bloggerInfo as BloggerInfoResponse;
-        const profile: Profile = {
-            _id: recipe.authorId,
-            isFavorite: response.isFavorite,
-            firstName: response?.bloggerInfo?.firstName ?? 'Вася', //Для прохождения теста
-            lastName: response?.bloggerInfo?.lastName ?? 'Пупкин', //Для прохождения теста
-            nickname: response?.bloggerInfo?.login ?? 'vasya_pupkin', //Для прохождения теста
-            activity: {
-                bookmarks: 1,
-                persons: response.totalSubscribers ?? 1,
-                likes: 1,
-            },
-        };
+        const response = dataBlogger as BloggerInfoResponse;
         return (
             <EmptyConatainer>
                 <>
@@ -102,10 +89,13 @@ export const RecipePage = () => {
                             <NutritionFacts nutrition={recipe.nutritionValue} />
                             <IngredientsList
                                 ingredients={recipe.ingredients}
-                                portions={recipe.portions}
+                                portions={recipe.portions ?? 0}
                             />
                             <CookingSteps steps={recipe.steps} />
-                            <AuthorRecipeCard person={profile} />
+                            <AuthorRecipeCard
+                                profile={response.bloggerInfo}
+                                isSubscribe={response.isFavorite}
+                            />
                         </Flex>
                     </Flex>
                     <Box mt='24px'>

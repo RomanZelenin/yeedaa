@@ -4,6 +4,7 @@ import { Recipe } from '~/app/mocks/types/type_defenitions';
 
 import { API_BASE_URL, ApiEndpoints, IMAGE_BASE_URL } from './constants';
 import {
+    ActivityStats,
     BloggerInfoQuery,
     BloggerInfoResponse,
     BloggerRecipesResponse,
@@ -15,6 +16,7 @@ import {
     RecipesResponse,
     StatusResponse,
     ToggleSubscriptionQuery,
+    UserProfile,
 } from './types';
 
 export const recipeApi = createApi({
@@ -243,6 +245,20 @@ export const recipeApi = createApi({
             }),
             invalidatesTags: ['Bloggers', 'Recipe'],
         }),
+
+        getMyProfile: build.query<StatusResponse | UserProfile, void>({
+            query: () => ({
+                url: ApiEndpoints.MY_PROFILE,
+                method: 'GET',
+            }),
+        }),
+
+        getMyStatistic: build.query<StatusResponse | ActivityStats, void>({
+            query: () => ({
+                url: ApiEndpoints.MY_STATISTIC,
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
@@ -263,4 +279,6 @@ export const {
     useToggleSubscriptionMutation,
     useGetBloggerQuery,
     useGetBloggerRecipesQuery,
+    useGetMyProfileQuery,
+    useGetMyStatisticQuery,
 } = recipeApi;

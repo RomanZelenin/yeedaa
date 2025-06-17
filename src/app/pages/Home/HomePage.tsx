@@ -4,6 +4,7 @@ import { useResource } from '~/common/components/ResourceContext/ResourceContext
 import {
     bloggersLoading,
     juiciestRecipesLoading,
+    myProfileLoading,
     newestRecipesLoading,
     relevantLoading,
     setAppLoader,
@@ -22,6 +23,7 @@ export default function HomePage() {
     const isJuiciestRecipesLoading = useAppSelector(juiciestRecipesLoading);
     const isRelevantLoading = useAppSelector(relevantLoading);
     const isBloggersLoading = useAppSelector(bloggersLoading);
+    const isMyProfileLoading = useAppSelector(myProfileLoading);
 
     useEffect(() => {
         dispatch(
@@ -29,10 +31,17 @@ export default function HomePage() {
                 isNewestRecipesLoading ||
                     isJuiciestRecipesLoading ||
                     isRelevantLoading ||
-                    isBloggersLoading,
+                    isBloggersLoading ||
+                    isMyProfileLoading,
             ),
         );
-    }, [isNewestRecipesLoading, isJuiciestRecipesLoading, isRelevantLoading, isBloggersLoading]);
+    }, [
+        isNewestRecipesLoading,
+        isJuiciestRecipesLoading,
+        isRelevantLoading,
+        isBloggersLoading,
+        isMyProfileLoading,
+    ]);
 
     return (
         <ContentContainer title={getString('bon-appetit')}>

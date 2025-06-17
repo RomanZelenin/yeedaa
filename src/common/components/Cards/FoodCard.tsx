@@ -31,7 +31,6 @@ import { useAppDispatch, useAppSelector } from '~/store/hooks';
 import { Fallback } from '../Fallback/Fallback';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
-import { PersonsIcon } from '../Icons/PersonsIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { IconWithCounter } from './IconWithCounter';
 
@@ -132,10 +131,6 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                             <IconWithCounter
                                 icon={<LikeIcon boxSize='12px' />}
                                 count={recipe.likes}
-                            />
-                            <IconWithCounter
-                                icon={<PersonsIcon fill='black' boxSize='12px' />}
-                                count={recipe.views}
                             />
                         </HStack>
                     </HStack>
@@ -261,10 +256,6 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                             count={recipe.bookmarks}
                         />
                         <IconWithCounter icon={<LikeIcon boxSize='12px' />} count={recipe.likes} />
-                        <IconWithCounter
-                            icon={<PersonsIcon fill='black' boxSize='12px' />}
-                            count={recipe.views}
-                        />
                     </HStack>
                 </CardHeader>
                 <CardBody p={0}>

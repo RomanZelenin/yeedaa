@@ -93,16 +93,7 @@ export type BloggerRecipesResponse = {
 };
 
 export type BloggerInfoResponse = {
-    bloggerInfo: {
-        _id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        login: string;
-    };
-    recipesIds: string[];
-    subscribers: string[];
-    subscriptions: string[];
+    bloggerInfo: UserProfile;
     isFavorite: boolean;
     totalBookmarks: number;
     totalSubscribers: number;
@@ -111,4 +102,33 @@ export type BloggerInfoResponse = {
 export type BookmarkResponse = {
     message: string;
     count: number;
+};
+
+export type Draft = {
+    _id: string;
+    title: string;
+    time: number;
+};
+
+export type UserProfile = {
+    _id: string;
+    email: string;
+    login: string;
+    firstName: string;
+    lastName: string;
+    recipesIds: string[];
+    drafts: Draft[];
+    subscriptions: string[];
+    subscribers: string[];
+};
+
+export type StatsItem = {
+    date: string;
+    count: number;
+};
+
+export type ActivityStats = {
+    likes: StatsItem[];
+    bookmarks: StatsItem[];
+    recommendationsCount: number;
 };

@@ -1,6 +1,10 @@
 import { Box, LinkBox, LinkOverlay, Text, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
+import { useGetProfileActivity } from '~/common/hooks/useGetProfileActivity';
+import { myProfile } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
+
 import { IconWithCounter } from '../Cards/IconWithCounter';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
@@ -8,26 +12,23 @@ import { PersonsIcon } from '../Icons/PersonsIcon';
 import { WriteIcon } from '../Icons/WriteIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 
-export const AsidePanel = ({
-    bookmarks,
-    persons,
-    likes,
-}: {
-    bookmarks: number;
-    persons: number;
-    likes: number;
-}) => {
+export const AsidePanel = () => {
     const { getString } = useResource();
+    const profile = useAppSelector(myProfile);
+    const { bookmarks, likes, subscribers } = useGetProfileActivity(profile);
+
     return (
         <VStack pos='fixed' bottom={0} top='80px' justify='space-between'>
-            <VStack spacing='32px' px='8px' pt='16px'>
-                <IconWithCounter icon={<BookmarkIcon boxSize='16px' />} count={bookmarks} />
-                <IconWithCounter
-                    icon={<PersonsIcon boxSize='16px' fill='black' />}
-                    count={persons}
-                />
-                <IconWithCounter icon={<LikeIcon boxSize='16px' />} count={likes} />
-            </VStack>
+            {profile.statistic && (
+                <VStack spacing='32px' px='8px' pt='16px'>
+                    <IconWithCounter icon={<BookmarkIcon boxSize='16px' />} count={bookmarks} />
+                    <IconWithCounter
+                        icon={<PersonsIcon boxSize='16px' fill='black' />}
+                        count={subscribers}
+                    />
+                    <IconWithCounter icon={<LikeIcon boxSize='16px' />} count={likes} />
+                </VStack>
+            )}
 
             <LinkBox data-test-id='add-recipe-button'>
                 <LinkOverlay as={Link} to='/new-recipe'>

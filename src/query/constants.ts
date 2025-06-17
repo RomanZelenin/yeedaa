@@ -13,6 +13,8 @@ export enum ApiEndpoints {
     RECIPE_DRAFT = '/recipe/draft',
     BLOGGERS = '/bloggers',
     TOGGLE_SUBSCRIPTION = '/users/toggle-subscription',
+    MY_PROFILE = '/users/me',
+    MY_STATISTIC = '/statistic',
 }
 
 export enum StatusCode {

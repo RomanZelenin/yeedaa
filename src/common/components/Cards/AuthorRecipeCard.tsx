@@ -18,14 +18,20 @@ import personCheckIcon from '~/assets/icons/person-check.svg';
 import subscribeIcon from '~/assets/icons/subscribe.svg';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
 import { useToggleSubscriptionMutation } from '~/query/create-recipe-api';
+import { UserProfile } from '~/query/types';
 import { Error, setNotification } from '~/store/app-slice';
 
-import { Profile } from '../Header/ProfileInfo';
 import { PersonsIcon } from '../Icons/PersonsIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { IconWithCounter } from './IconWithCounter';
 
-export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
+export const AuthorRecipeCard = ({
+    profile,
+    isSubscribe,
+}: {
+    profile: UserProfile;
+    isSubscribe: boolean;
+}) => {
     const { getString } = useResource();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +48,7 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
     const handleOnToggleSubscriprion = () => {
         toggleSubscription({
             fromUserId: getJWTPayload().userId,
-            toUserId: person._id!,
+            toUserId: profile._id!,
         });
     };
 
@@ -77,8 +83,8 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                 <CardBody p={{ base: '8px', md: '24px' }}>
                     <Flex columnGap={{ base: '8px', md: '16px' }} align='center'>
                         <Avatar
-                            src={person.avatar}
-                            name={`${person.firstName} ${person.lastName}`}
+                            src='#'
+                            name={`${profile?.firstName} ${profile?.lastName}`}
                             boxSize='96px'
                         />
                         <VStack spacing={0} align='start' flex={1}>
@@ -86,10 +92,10 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                                 {getString('author-of-recipe')}
                             </Text>
                             <Text textStyle={{ base: 'textLgLh7Semibold', md: 'text2xlLh8Bold' }}>
-                                {person.firstName} {person.lastName}
+                                {profile?.firstName} {profile?.lastName}
                             </Text>
                             <Text textStyle='textSmLh5' color='blackAlpha.700'>
-                                @{person.nickname}
+                                @{profile?.login}
                             </Text>
                             <HStack
                                 flex={1}
@@ -97,7 +103,7 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
                                 justify='space-between'
                                 mt={{ base: '16px' }}
                             >
-                                {!person.isFavorite ? (
+                                {!isSubscribe ? (
                                     <Button
                                         onClick={handleOnToggleSubscriprion}
                                         borderRadius='6px'
@@ -146,7 +152,7 @@ export const AuthorRecipeCard = ({ person }: { person: Profile }) => {
 
                                 <IconWithCounter
                                     icon={<PersonsIcon fill='black' boxSize='12px' />}
-                                    count={person.activity.persons}
+                                    count={profile?.subscribers.length ?? 0}
                                 />
                             </HStack>
                         </VStack>
