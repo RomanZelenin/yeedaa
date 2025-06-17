@@ -29,7 +29,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { filterSelector, SelectItem, setFilter } from '~/app/features/filters/filtersSlice';
 import { useGetCategories } from '~/common/hooks/useGetCategories';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useGetBloggersQuery } from '~/query/create-bloggers-api';
+import { useGetBloggersQuery } from '~/query/create-recipe-api';
 import { BloggersResponse } from '~/query/types';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
 

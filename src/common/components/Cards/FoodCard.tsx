@@ -16,7 +16,7 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
@@ -38,12 +38,18 @@ import { IconWithCounter } from './IconWithCounter';
 export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-    const [bookmarkRecipe, { isError, error }] = useBookmarkRecipeMutation();
+    const [bookmarkRecipe] = useBookmarkRecipeMutation();
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     const dispatch = useAppDispatch();
+    const [countBookmarks, setCountBookmarks] = useState(recipe.bookmarks);
 
     const handleOnBookmarkRecipe = async () => {
-        bookmarkRecipe(recipe._id);
+        try {
+            const result = await bookmarkRecipe(recipe._id).unwrap();
+            setCountBookmarks(result.count);
+        } catch (e) {
+            handleOnActionRecipeError(e as StatusResponse);
+        }
     };
 
     const handleOnActionRecipeError = (response?: StatusResponse) => {
@@ -69,12 +75,6 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                 );
         }
     };
-
-    useEffect(() => {
-        if (isError) {
-            handleOnActionRecipeError(error as StatusResponse);
-        }
-    }, [isError, error]);
 
     return (
         <Card
@@ -127,7 +127,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         <HStack spacing='0px'>
                             <IconWithCounter
                                 icon={<BookmarkIcon boxSize='12px' />}
-                                count={recipe.bookmarks}
+                                count={countBookmarks}
                             />
                             <IconWithCounter
                                 icon={<LikeIcon boxSize='12px' />}

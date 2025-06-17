@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Blogger } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 import personCheckIcon from '~/assets/icons/person-check.svg';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useToggleSubscriptionMutation } from '~/query/create-bloggers-api';
+import { useToggleSubscriptionMutation } from '~/query/create-recipe-api';
 import { Error, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
@@ -16,7 +16,6 @@ import { IconWithCounter } from './IconWithCounter';
 export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
-    const [isFavorite, setIsFavorite] = useState(blogger.isFavorite);
     const [
         toggleSubscription,
         {
@@ -40,7 +39,6 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
         }
         if (isSuccessToggleSubscription) {
             setIsLoading(false);
-            setIsFavorite(!isFavorite);
         }
         if (isErrorToggleSubscription) {
             setIsLoading(false);
@@ -92,7 +90,7 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
                         @{blogger?.login}
                     </Text>
                     <Stack direction='row' alignSelf='stretch' justify='space-between'>
-                        {!isFavorite ? (
+                        {!blogger.isFavorite ? (
                             <Tooltip
                                 data-test-id='blog-tooltip'
                                 hasArrow

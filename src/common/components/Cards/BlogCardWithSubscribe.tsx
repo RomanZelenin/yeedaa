@@ -19,7 +19,7 @@ import { Link, useNavigate } from 'react-router';
 import { Blogger } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 import personCheckIcon from '~/assets/icons/person-check.svg';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useToggleSubscriptionMutation } from '~/query/create-bloggers-api';
+import { useToggleSubscriptionMutation } from '~/query/create-recipe-api';
 import { ApplicationRoute } from '~/router';
 import { Error, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';

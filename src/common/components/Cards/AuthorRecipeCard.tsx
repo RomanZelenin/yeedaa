@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 import personCheckIcon from '~/assets/icons/person-check.svg';
 import subscribeIcon from '~/assets/icons/subscribe.svg';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useToggleSubscriptionMutation } from '~/query/create-bloggers-api';
+import { useToggleSubscriptionMutation } from '~/query/create-recipe-api';
 import { Error, setNotification } from '~/store/app-slice';
 
 import { Profile } from '../Header/ProfileInfo';

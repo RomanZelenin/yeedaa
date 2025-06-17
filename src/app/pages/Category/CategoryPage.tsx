@@ -98,8 +98,8 @@ function CategoryTabPanel({
     };
     const { data, isLoading, isError, isSuccess } = useGetRecipeByCategoryQuery(
         {
-            page: 1,
-            limit: 8 * page,
+            page: page,
+            limit: 8,
             id: subcategoryId,
         },
         { skip: !isActive },
@@ -108,12 +108,13 @@ function CategoryTabPanel({
     useEffect(() => {
         if (isSuccess) {
             dispatch(setAppLoader(false));
-            setRecipes(
-                data.data.map((recipe) => ({
+            setRecipes([
+                ...recipes,
+                ...data.data.map((recipe) => ({
                     ...recipe,
                     path: `/${category}/${subcategory}/${recipe._id}`,
                 })),
-            );
+            ]);
             setNextLoading(false);
         }
         if (isLoading) {
@@ -130,7 +131,7 @@ function CategoryTabPanel({
                 <Box px='0px' textAlign='start'>
                     <RecipeCollection recipes={recipes} />
                 </Box>
-                {1 < data!.meta.totalPages && (
+                {page < data!.meta.totalPages && (
                     <Button
                         data-test-id='load-more-button'
                         textAlign='center'

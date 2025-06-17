@@ -4,11 +4,17 @@ import { Recipe } from '~/app/mocks/types/type_defenitions';
 
 import { API_BASE_URL, ApiEndpoints, IMAGE_BASE_URL } from './constants';
 import {
+    BloggerInfoQuery,
+    BloggerInfoResponse,
     BloggerRecipesResponse,
+    BloggersQuery,
+    BloggersResponse,
+    BookmarkResponse,
     PartialRecipeQuery,
     RecipeDraft,
     RecipesResponse,
     StatusResponse,
+    ToggleSubscriptionQuery,
 } from './types';
 
 export const recipeApi = createApi({
@@ -19,7 +25,7 @@ export const recipeApi = createApi({
             headers.set('Authorization', `Bearer ${sessionStorage.getItem('access_token')}`);
         },
     }),
-    tagTypes: ['Recipe'],
+    tagTypes: ['Bloggers', 'Recipe'],
     endpoints: (build) => ({
         getRecipeByCategory: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -39,7 +45,9 @@ export const recipeApi = createApi({
                 }));
                 return { ...(response as RecipesResponse), data: data };
             },
-            providesTags: ['Recipe'],
+            /* providesTags: (result, _error, _arg) => {
+                return result ? result.data.map(it => ({ type: 'Recipe', id: it._id })) : []
+            }, */
         }),
         getNewestRecipes: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -62,7 +70,8 @@ export const recipeApi = createApi({
                     return { data: [response] }; //Для тестирования отдельный случай
                 }
             },
-            providesTags: ['Recipe'],
+            providesTags: (result, _error, _arg) =>
+                result ? result.data.map((it) => ({ type: 'Recipe', id: it._id })) : [],
         }),
         getJuiciestRecipes: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -82,7 +91,6 @@ export const recipeApi = createApi({
                 }));
                 return { ...(response as RecipesResponse), data: data };
             },
-            providesTags: ['Recipe'],
         }),
         getRecipe: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -118,22 +126,8 @@ export const recipeApi = createApi({
                 });
                 return { ...data, steps: steps, image: IMAGE_BASE_URL + data.image };
             },
-            providesTags: ['Recipe'],
-        }),
-        getBloggerRecipes: build.query<BloggerRecipesResponse, string>({
-            query: (id) => ({
-                url: `${ApiEndpoints.BLOGGER_RECIPES}/${id}`,
-                method: 'GET',
-            }),
-            transformResponse: (response) => {
-                const data = response as BloggerRecipesResponse;
-                const recipes = data.recipes.map((recipe) => ({
-                    ...recipe,
-                    image: IMAGE_BASE_URL + recipe.image,
-                }));
-                return { ...data, recipes: recipes };
-            },
-            providesTags: ['Recipe'],
+            providesTags: (result, _error, _arg) =>
+                result ? [{ type: 'Recipe', id: result._id }] : [],
         }),
         createRecipeDraft: build.mutation<StatusResponse, RecipeDraft>({
             query: (body) => ({
@@ -179,7 +173,8 @@ export const recipeApi = createApi({
                 console.log(response);
                 return response;
             },
-            invalidatesTags: ['Recipe'],
+            invalidatesTags: (result, _error, data) =>
+                result ? [{ type: 'Recipe', id: data.id }] : [],
         }),
         likeRecipe: build.mutation<StatusResponse, string>({
             query: (id) => ({
@@ -190,9 +185,10 @@ export const recipeApi = createApi({
                 console.log(response);
                 return response;
             },
-            invalidatesTags: ['Recipe'],
+            invalidatesTags: (result, _error, id) =>
+                result ? [{ type: 'Recipe', id: id }, { type: 'Bloggers' }] : [],
         }),
-        bookmarkRecipe: build.mutation<StatusResponse, string>({
+        bookmarkRecipe: build.mutation<BookmarkResponse, string>({
             query: (id) => ({
                 url: `${ApiEndpoints.RECIPE}/${id}/bookmark`,
                 method: 'post',
@@ -201,7 +197,51 @@ export const recipeApi = createApi({
                 console.log(response);
                 return response;
             },
-            invalidatesTags: ['Recipe'],
+            invalidatesTags: (result, _error, id, _meta) =>
+                result ? [{ type: 'Recipe', id: id }, { type: 'Bloggers' }] : [],
+        }),
+
+        getBloggers: build.query<StatusResponse | BloggersResponse, BloggersQuery>({
+            query: (params) => ({
+                url: `${ApiEndpoints.BLOGGERS}`,
+                method: 'GET',
+                params: params,
+            }),
+            providesTags: ['Bloggers'],
+        }),
+        getBlogger: build.query<StatusResponse | BloggerInfoResponse, BloggerInfoQuery>({
+            query: (params) => ({
+                url: `${ApiEndpoints.BLOGGERS}/${params.bloggerId}`,
+                method: 'GET',
+                params: {
+                    currentUserId: params.currentUserId,
+                },
+            }),
+            providesTags: ['Bloggers'],
+        }),
+        getBloggerRecipes: build.query<BloggerRecipesResponse, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.BLOGGER_RECIPES}/${id}`,
+                method: 'GET',
+            }),
+            transformResponse: (response) => {
+                const data = response as BloggerRecipesResponse;
+                const recipes = data.recipes.map((recipe) => ({
+                    ...recipe,
+                    image: IMAGE_BASE_URL + recipe.image,
+                }));
+                return { ...data, recipes: recipes };
+            },
+            providesTags: (result, _error, _arg) =>
+                result ? result.recipes.map((it) => ({ type: 'Recipe', id: it._id })) : [],
+        }),
+        toggleSubscription: build.mutation<StatusResponse, ToggleSubscriptionQuery>({
+            query: (body) => ({
+                url: `${ApiEndpoints.TOGGLE_SUBSCRIPTION}`,
+                method: 'PATCH',
+                body: body,
+            }),
+            invalidatesTags: ['Bloggers', 'Recipe'],
         }),
     }),
 });
@@ -219,5 +259,8 @@ export const {
     useGetJuiciestRecipesQuery,
     useGetNewestRecipesQuery,
     useGetRecipeByCategoryQuery,
+    useGetBloggersQuery,
+    useToggleSubscriptionMutation,
+    useGetBloggerQuery,
     useGetBloggerRecipesQuery,
 } = recipeApi;

@@ -7,12 +7,11 @@ import { BloggerProfileCard } from '~/common/components/Cards/BloggerProfileCard
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
 import { StatusCode } from '~/query/constants';
 import {
-    BloggerInfoResponse,
     useGetBloggerQuery,
+    useGetBloggerRecipesQuery,
     useGetBloggersQuery,
-} from '~/query/create-bloggers-api';
-import { useGetBloggerRecipesQuery } from '~/query/create-recipe-api';
-import { BloggersResponse } from '~/query/types';
+} from '~/query/create-recipe-api';
+import { BloggerInfoResponse, BloggersResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
 import { Error, setAppLoader, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';

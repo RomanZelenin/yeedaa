@@ -26,22 +26,24 @@ export default function JuiciestPage() {
     };
 
     useEffect(() => {
-        if (data?.data) {
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
             setRecipes([...recipes, ...data.data]);
             setNextLoading(false);
         }
-    }, [data]);
+        if (isLoading) {
+            dispatch(setAppLoader(true));
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+        }
+    }, [data, isSuccess, isLoading, isError]);
 
-    if (isLoading) {
-        dispatch(setAppLoader(true));
-    }
     if (isError) {
-        dispatch(setAppLoader(false));
         return null;
     }
 
     if (isSuccess) {
-        dispatch(setAppLoader(false));
         return (
             <ContentContainer title={getString('juiciest')}>
                 <VStack spacing='32px'>

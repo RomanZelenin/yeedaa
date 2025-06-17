@@ -4,8 +4,8 @@ import { Link as ReactRouterLink, useParams } from 'react-router';
 
 import { useGetCategoryAndSubcategoryByName } from '~/common/hooks/useGetCategoryAndSubcategoryByName';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
-import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import { useGetBloggerQuery, useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import { BloggerInfoResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
 
 import { useResource } from '../ResourceContext/ResourceContext';

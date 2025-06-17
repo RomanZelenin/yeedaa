@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useGetBloggersQuery } from '~/query/create-bloggers-api';
+import { useGetBloggersQuery } from '~/query/create-recipe-api';
 import { BloggersResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
 import { Error, setAppLoader, setNotification } from '~/store/app-slice';
@@ -49,9 +49,9 @@ export const BlogsPage = () => {
         }
     }, [isLoading, isError, isSuccess]);
 
-    if (isLoading) {
+    /* if (isLoading) {
         return null;
-    }
+    } */
 
     if (isError) {
         return null;
