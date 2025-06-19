@@ -22,6 +22,7 @@ import { Link } from 'react-router';
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
+import { useGetRecommendingUser } from '~/common/hooks/useGetRecommendingUser';
 import { StatusCode } from '~/query/constants';
 import { useBookmarkRecipeMutation } from '~/query/create-recipe-api';
 import { StatusResponse } from '~/query/types';
@@ -41,6 +42,7 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     const dispatch = useAppDispatch();
     const [countBookmarks, setCountBookmarks] = useState(recipe.bookmarks);
+    const recommendingUser = useGetRecommendingUser(recipe);
 
     const handleOnBookmarkRecipe = async () => {
         try {
@@ -89,10 +91,9 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                 w='346px'
                 fallback={<Fallback width='346px' height='100%' />}
             />
-            {recipe.recommendation?.slice(0, 1).map((profile, i) => (
+            {recommendingUser && (
                 <>
                     <Tag
-                        key={i}
                         py='4px'
                         px='8px'
                         pos='absolute'
@@ -101,14 +102,17 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         bottom='20px'
                         left='24px'
                     >
-                        <Avatar src={profile.avatar} boxSize='16px' />
+                        <Avatar
+                            src=''
+                            /* size={'sd'} name={`${recommendingUser.firstName} ${recommendingUser.lastName}`} */ boxSize='16px'
+                        />
                         <TagLabel textStyle='textSmLh5'>
-                            {profile.firstName} {profile.lastName}{' '}
+                            {recommendingUser.firstName} {recommendingUser.lastName}{' '}
                             {getString('recommends').toLocaleLowerCase()}
                         </TagLabel>
                     </Tag>
                 </>
-            ))}
+            )}
 
             <Stack spacing='4px' px='4px' flex={1}>
                 <CardHeader>

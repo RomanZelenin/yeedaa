@@ -2,6 +2,7 @@ export enum ApiEndpoints {
     CATEGORY = '/category',
     RECIPE_BY_CATEGORY = '/recipe/category',
     RECIPE = '/recipe',
+    RECOMMEND = '/recipe/recommend',
     BLOGGER_RECIPES = '/recipe/user',
     LOGIN = '/auth/login',
     SIGNUP = '/auth/signup',

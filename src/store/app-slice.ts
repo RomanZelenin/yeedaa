@@ -52,6 +52,7 @@ const initialState = {
     isSearch: false,
     notification: null as Notification | null,
     myProfile: {} as MyProfile,
+    isShowRecommend: false,
 };
 
 export const appSlice = createSlice({
@@ -114,6 +115,11 @@ export const myProfileLoading = (state: ApplicationState) => state.app.isMyProfi
 export const notificationSelector = (state: ApplicationState) => state.app.notification;
 
 export const myProfile = (state: ApplicationState) => state.app.myProfile;
+export const isShowRecommendSelector = (state: ApplicationState) =>
+    (state.app.myProfile.profileInfo?.subscribers.length ?? 0) > 100 &&
+    (state.app.myProfile.statistic?.bookmarks
+        .map((it) => it.count)
+        .reduce((prev, curr) => curr + prev, 0) ?? 0) > 200;
 
 export const {
     setAppLoader,

@@ -90,5 +90,7 @@
     "brief-description-recipe": "Краткое описание рецепта",
     "measure-unit": "Единица измерения",
     "amount": "Количество",
-    "my-profile": "Мой профиль"
+    "my-profile": "Мой профиль",
+    "you-recommended": "Вы порекомендовали",
+    "recommend-recipe": "Рекомендовать рецепт"
 }

@@ -1,4 +1,4 @@
-import { Stack, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -23,7 +23,7 @@ export const BlogsPage = () => {
     const [limit, setLimit] = useState(maxLimit);
     useEffect(() => setLimit(maxLimit), [maxLimit]);
 
-    const { isSuccess, isLoading, isError, data } = useGetBloggersQuery({
+    const { isSuccess, isLoading, isError, data, isFetching } = useGetBloggersQuery({
         currentUserId: getJWTPayload().userId,
         limit: limit,
     });
@@ -72,11 +72,13 @@ export const BlogsPage = () => {
                     </Text>
                     <Stack gap={{ base: '32px', lg: '40px' }}>
                         {isShowFavoritesBlogs && <FavoritesBlogs bloggers={bloggers.favorites} />}
-                        <OtherBlogs
-                            limit={limit}
-                            bloggers={bloggers.others}
-                            onClick={() => setLimit(limit === 'all' ? maxLimit : 'all')}
-                        />
+                        <Box filter={isFetching ? 'blur(2px)' : 'none'}>
+                            <OtherBlogs
+                                limit={limit}
+                                bloggers={bloggers.others}
+                                onClick={() => setLimit(limit === 'all' ? maxLimit : 'all')}
+                            />
+                        </Box>
                         <SectionNewRecipes />
                     </Stack>
                 </>

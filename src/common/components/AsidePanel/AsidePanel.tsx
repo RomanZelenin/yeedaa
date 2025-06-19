@@ -2,25 +2,33 @@ import { Box, LinkBox, LinkOverlay, Text, VStack } from '@chakra-ui/react';
 import { Link } from 'react-router';
 
 import { useGetProfileActivity } from '~/common/hooks/useGetProfileActivity';
-import { myProfile } from '~/store/app-slice';
+import { isShowRecommendSelector, myProfile } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import { IconWithCounter } from '../Cards/IconWithCounter';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
 import { PersonsIcon } from '../Icons/PersonsIcon';
+import { RecommendIcon } from '../Icons/RecommendIcon';
 import { WriteIcon } from '../Icons/WriteIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 
 export const AsidePanel = () => {
     const { getString } = useResource();
     const profile = useAppSelector(myProfile);
-    const { bookmarks, likes, subscribers } = useGetProfileActivity(profile);
+    const { bookmarks, likes, subscribers, recommendations } = useGetProfileActivity(profile);
+    const isShowRecommendations = useAppSelector(isShowRecommendSelector);
 
     return (
         <VStack pos='fixed' bottom={0} top='80px' justify='space-between'>
             {profile.statistic && (
                 <VStack spacing='32px' px='8px' pt='16px'>
+                    {isShowRecommendations && (
+                        <IconWithCounter
+                            icon={<RecommendIcon boxSize='16px' />}
+                            count={recommendations}
+                        />
+                    )}
                     <IconWithCounter icon={<BookmarkIcon boxSize='16px' />} count={bookmarks} />
                     <IconWithCounter
                         icon={<PersonsIcon boxSize='16px' fill='black' />}

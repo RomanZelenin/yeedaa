@@ -93,6 +93,8 @@ export const recipeApi = createApi({
                 }));
                 return { ...(response as RecipesResponse), data: data };
             },
+            providesTags: (result, _error, _arg) =>
+                result ? result.data.map((it) => ({ type: 'Recipe', id: it._id })) : [],
         }),
         getRecipe: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -202,6 +204,18 @@ export const recipeApi = createApi({
             invalidatesTags: (result, _error, id, _meta) =>
                 result ? [{ type: 'Recipe', id: id }, { type: 'Bloggers' }] : [],
         }),
+        recommendRecipe: build.mutation<BookmarkResponse | undefined, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.RECOMMEND}/${id}`,
+                method: 'post',
+            }),
+            transformErrorResponse: (response) => {
+                console.log(response);
+                return response;
+            },
+            invalidatesTags: (_result, error, id, _meta) =>
+                !error ? [{ type: 'Recipe', id: id }, { type: 'Bloggers' }] : [],
+        }),
 
         getBloggers: build.query<StatusResponse | BloggersResponse, BloggersQuery>({
             query: (params) => ({
@@ -251,6 +265,7 @@ export const recipeApi = createApi({
                 url: ApiEndpoints.MY_PROFILE,
                 method: 'GET',
             }),
+            providesTags: ['Bloggers'],
         }),
 
         getMyStatistic: build.query<StatusResponse | ActivityStats, void>({
@@ -258,6 +273,7 @@ export const recipeApi = createApi({
                 url: ApiEndpoints.MY_STATISTIC,
                 method: 'GET',
             }),
+            providesTags: ['Bloggers'],
         }),
     }),
 });
@@ -281,4 +297,5 @@ export const {
     useGetBloggerRecipesQuery,
     useGetMyProfileQuery,
     useGetMyStatisticQuery,
+    useRecommendRecipeMutation,
 } = recipeApi;

@@ -2,7 +2,7 @@ import { CloseIcon } from '@chakra-ui/icons';
 import { Box, Flex, Hide, HStack, IconButton, Show, Spacer, useDisclosure } from '@chakra-ui/react';
 
 import { useGetProfileActivity } from '~/common/hooks/useGetProfileActivity';
-import { myProfile } from '~/store/app-slice';
+import { isShowRecommendSelector, myProfile } from '~/store/app-slice';
 import { useAppSelector } from '~/store/hooks';
 
 import { NavigationBreadcrumb } from '../Breadcrumbs/NavigationBreadcrumb';
@@ -11,6 +11,7 @@ import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { BurgerIcon } from '../Icons/BurgerIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
 import { PersonsIcon } from '../Icons/PersonsIcon';
+import { RecommendIcon } from '../Icons/RecommendIcon';
 import { HamburgerMenu } from '../Menu/HamburgerMenu';
 import { Logo } from './Logo';
 import { ProfileInfo } from './ProfileInfo';
@@ -18,7 +19,8 @@ import { ProfileInfo } from './ProfileInfo';
 export const Header = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const profile = useAppSelector(myProfile);
-    const { bookmarks, likes, subscribers } = useGetProfileActivity(profile);
+    const { bookmarks, likes, subscribers, recommendations } = useGetProfileActivity(profile);
+    const isShowRecommendations = useAppSelector(isShowRecommendSelector);
 
     return (
         <>
@@ -42,6 +44,12 @@ export const Header = () => {
                         {profile.statistic && (
                             <Box display={!isOpen ? 'block' : 'none'}>
                                 <HStack spacing='0' px={{ base: '8px', md: '16px' }}>
+                                    {isShowRecommendations && (
+                                        <IconWithCounter
+                                            icon={<RecommendIcon boxSize='16px' />}
+                                            count={recommendations}
+                                        />
+                                    )}
                                     <IconWithCounter
                                         icon={<BookmarkIcon boxSize='16px' />}
                                         count={bookmarks}

@@ -56,7 +56,7 @@ export const ListBloggerNotes = ({ notes }: { notes: Note[] }) => {
                 >
                     {listDisplayedNotes}
                 </SimpleGrid>
-                {notes.length >= 3 && (
+                {notes.length > 3 && (
                     <Button
                         data-test-id='blogger-user-notes-button'
                         alignSelf='center'
