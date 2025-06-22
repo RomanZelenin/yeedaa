@@ -21,4 +21,4 @@ export const measureUnitsApi = createApi({
     }),
 });
 
-export const { useGetMeasureUnitsQuery } = measureUnitsApi;
+export const { useGetMeasureUnitsQuery, useLazyGetMeasureUnitsQuery } = measureUnitsApi;

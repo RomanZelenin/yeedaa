@@ -22,7 +22,7 @@ export const AsidePanel = () => {
     return (
         <VStack pos='fixed' bottom={0} top='80px' justify='space-between'>
             {profile.statistic && (
-                <VStack spacing='32px' px='8px' pt='16px'>
+                <VStack spacing='32px' px='8px' pt='16px' data-test-id='user-stats-block'>
                     {isShowRecommendations && (
                         <IconWithCounter
                             icon={<RecommendIcon boxSize='16px' />}

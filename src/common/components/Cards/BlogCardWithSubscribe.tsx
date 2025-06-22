@@ -5,11 +5,9 @@ import {
     Card,
     CardBody,
     CardHeader,
-    Center,
     Flex,
     HStack,
     Image,
-    Spinner,
     Stack,
     Text,
 } from '@chakra-ui/react';
@@ -27,6 +25,7 @@ import { useAppDispatch } from '~/store/hooks';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { PersonsIcon } from '../Icons/PersonsIcon';
 import { SubscribeIcon } from '../Icons/SubscribeIcon';
+import { CenteredLoader } from '../Loader/CenteredLoader';
 import { IconWithCounter } from './IconWithCounter';
 
 export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
@@ -88,7 +87,7 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
                     <Avatar
                         size={{ base: 'base', md: 'md' }}
                         name={`${blogger?.firstName} ${blogger?.lastName}`}
-                        src=''
+                        src={blogger.photoLink}
                         boxSize={{ base: '32px', lg: '48px' }}
                     />
                     <Box minW={0}>
@@ -169,20 +168,7 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
                     </HStack>
                 </Stack>
             </CardBody>
-            {isLoading && (
-                <Center
-                    data-test-id='mobile-loader'
-                    position='absolute'
-                    width='206px'
-                    top='50%'
-                    left='50%'
-                    transform='translate(-50%, -50%)'
-                    boxSize='150px'
-                    bgGradient='radial(30% 30% at 50% 50%, rgba(196, 255, 97, 0.7) 0%, rgba(255, 255, 255, 0) 100%) lime.50'
-                >
-                    <Spinner size='lg' boxSize='28px' minW={0} />
-                </Center>
-            )}
+            {isLoading && <CenteredLoader />}
         </Card>
     );
 };

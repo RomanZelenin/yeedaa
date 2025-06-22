@@ -15,7 +15,13 @@ export enum ApiEndpoints {
     BLOGGERS = '/bloggers',
     TOGGLE_SUBSCRIPTION = '/users/toggle-subscription',
     MY_PROFILE = '/users/me',
+    ALL_USERS = '/users/all',
+    UPDATE_PROFILE_NAME = '/users/me/update-info',
+    UPDATE_PROFILE_PASSWORD = '/users/me/update-password',
     MY_STATISTIC = '/statistic',
+    UPLOAD_PHOTO = '/users/me/photo',
+    PROFILE = '/profile',
+    NOTE = '/users/me/note',
 }
 
 export enum StatusCode {

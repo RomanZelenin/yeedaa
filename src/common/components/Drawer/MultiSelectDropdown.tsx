@@ -40,7 +40,7 @@ export const MultiSelectDropdown = ({
                         as={Button}
                         variant='lime'
                         rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                        w='100%'
+                        width='100%'
                         alignItems='start'
                         h='fit-content'
                         py='8px'
@@ -48,7 +48,9 @@ export const MultiSelectDropdown = ({
                         textAlign='start'
                     >
                         {selectedItems.length === 0 ? (
-                            placeholder
+                            <Text whiteSpace='nowrap' textOverflow='ellipsis' overflow='clip'>
+                                {placeholder}
+                            </Text>
                         ) : (
                             <>
                                 <Wrap>

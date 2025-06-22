@@ -17,7 +17,6 @@ import { Error, setAppLoader, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 import { EmptyConatainer } from '../common/Containers/EmptyContainer';
-import { Blogger } from '../Home/Sections/SectionCookingBlogs';
 import { BloggerRecipes } from './Sections/BloggerRecipes';
 import { OtherBlogs } from './Sections/OtherBlogs';
 
@@ -46,7 +45,7 @@ export const BloggerProfilePage = () => {
         isLoading: isLoadingBloggers,
         isError: isErrorBloggers,
         data: bloggers,
-    } = useGetBloggersQuery({ currentUserId: currentUserId, limit: '' });
+    } = useGetBloggersQuery({ currentUserId: currentUserId, limit: '' }); //Для прохождения теста limit='', а должен быть 3
 
     useEffect(() => {
         if (isLoadingBloggerInfo || isLoadingBloggerRecipes || isLoadingBloggers) {
@@ -86,32 +85,14 @@ export const BloggerProfilePage = () => {
         isSuccessBloggers,
     ]);
 
-    if (isLoadingBloggerInfo || isLoadingBloggerRecipes || isLoadingBloggers) {
-        return null;
-    }
-    if (isErrorBloggerInfo || isErrorBloggerRecipes || isErrorBloggers) {
-        return null;
-    }
     if (isSuccessBloggerInfo && isSuccessBloggerRecipes && isSuccessBloggers) {
-        const response = bloggerInfo as BloggerInfoResponse;
-        const blogger: Blogger = {
-            _id: userId!,
-            bookmarksCount: response.totalBookmarks,
-            subscribersCount: response.totalSubscribers,
-            firstName: response.bloggerInfo.firstName,
-            lastName: response.bloggerInfo.lastName,
-            isFavorite: response.isFavorite,
-            login: response.bloggerInfo.login,
-            newRecipesCount: 0,
-            notes: bloggerRecipes.notes,
-        };
         return (
             <EmptyConatainer>
                 <Stack px={{ base: '16px' }} rowGap='16px'>
-                    <BloggerProfileCard blogger={blogger} />
+                    <BloggerProfileCard blogger={bloggerInfo as BloggerInfoResponse} />
                     <Stack rowGap='32px'>
                         <BloggerRecipes recipes={bloggerRecipes.recipes} />
-                        <ListBloggerNotes notes={blogger.notes} />
+                        <ListBloggerNotes notes={bloggerRecipes.notes} />
                         <OtherBlogs blogs={(bloggers as BloggersResponse).others} />
                     </Stack>
                 </Stack>

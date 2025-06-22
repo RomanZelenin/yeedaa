@@ -36,4 +36,5 @@ export const categoryApi = createApi({
     }),
 });
 
-export const { useGetCategoriesQuery, useGetCategoriyByIdQuery } = categoryApi;
+export const { useGetCategoriesQuery, useLazyGetCategoriesQuery, useGetCategoriyByIdQuery } =
+    categoryApi;

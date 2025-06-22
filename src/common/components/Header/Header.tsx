@@ -42,7 +42,10 @@ export const Header = () => {
                     <Hide above='lg'>
                         <Spacer alignSelf='center' />
                         {profile.statistic && (
-                            <Box display={!isOpen ? 'block' : 'none'}>
+                            <Box
+                                display={!isOpen ? 'block' : 'none'}
+                                data-test-id='user-stats-block'
+                            >
                                 <HStack spacing='0' px={{ base: '8px', md: '16px' }}>
                                     {isShowRecommendations && (
                                         <IconWithCounter
@@ -66,7 +69,12 @@ export const Header = () => {
                             </Box>
                         )}
 
-                        <HamburgerMenu isOpen={isOpen} onClose={onClose} />
+                        <HamburgerMenu
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            onClickClearFilter={() => {}}
+                            onClickFindRecipe={() => {}}
+                        />
                     </Hide>
                     <IconButton
                         visibility={{ lg: 'hidden' }}

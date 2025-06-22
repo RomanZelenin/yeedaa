@@ -21,6 +21,7 @@ export type Blogger = {
     isFavorite: boolean;
     notes: Note[];
     newRecipesCount: number;
+    photoLink: string;
 };
 
 export type Note = {

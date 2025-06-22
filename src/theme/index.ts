@@ -346,6 +346,12 @@ const theme = extendTheme({
             fontSize: '36px',
             lineHeight: '40px',
         },
+        text4xlLh10Semibold: {
+            fontStyle: 'normal',
+            fontWeight: 600,
+            fontSize: '36px',
+            lineHeight: '40px',
+        },
         textMdLh6Normal: {
             fontStyle: 'normal',
             fontWeight: 400,
@@ -354,7 +360,7 @@ const theme = extendTheme({
         },
         textMdLh6Medium: {
             fontStyle: 'normal',
-            fontWeight: 400,
+            fontWeight: 500,
             fontSize: '16px',
             lineHeight: '24px',
         },
@@ -367,6 +373,12 @@ const theme = extendTheme({
         textXlLh7Medium: {
             fontStyle: 'normal',
             fontWeight: 500,
+            fontSize: '20px',
+            lineHeight: '28px',
+        },
+        textXlLh7Semibold: {
+            fontStyle: 'normal',
+            fontWeight: 600,
             fontSize: '20px',
             lineHeight: '28px',
         },

@@ -1,5 +1,5 @@
 import { CookingStep, Ingredient, Recipe } from '~/app/mocks/types/type_defenitions';
-import { MeasureUnit } from '~/app/pages/CreateRecipe/IngredientsEditor';
+import { MeasureUnit } from '~/app/pages/CreateRecipe/Sections/IngredientsEditor';
 import { Blogger, Note } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 
 export type StatusResponse = {
@@ -90,6 +90,7 @@ export type BloggerRecipesResponse = {
     totalBookmarks: number;
     totalSubscribers: number;
     userId: string;
+    myBookmarks: Recipe[];
 };
 
 export type BloggerInfoResponse = {
@@ -104,12 +105,6 @@ export type BookmarkResponse = {
     count: number;
 };
 
-export type Draft = {
-    _id: string;
-    title: string;
-    time: number;
-};
-
 export type UserProfile = {
     _id: string;
     email: string;
@@ -117,9 +112,10 @@ export type UserProfile = {
     firstName: string;
     lastName: string;
     recipesIds: string[];
-    drafts: Draft[];
+    drafts: Recipe[];
     subscriptions: string[];
     subscribers: string[];
+    photoLink: string;
 };
 
 export type StatsItem = {
@@ -131,4 +127,16 @@ export type ActivityStats = {
     likes: StatsItem[];
     bookmarks: StatsItem[];
     recommendationsCount: number;
+    recipesWithRecommendations: Recipe[];
 };
+
+export type UsersResponse = User[];
+export type User = {
+    firstName: string;
+    lastName: string;
+    id: string;
+    photo: string;
+    login: string;
+};
+
+export type LoadPhotoResponse = { photoLink: string };

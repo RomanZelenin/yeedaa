@@ -9,7 +9,7 @@ export const BlogCard = ({ blogger }: { blogger: Blogger }) => (
                 <Avatar
                     size={{ base: 'base', md: 'md' }}
                     name={`${blogger?.firstName} ${blogger?.lastName}`}
-                    src=''
+                    src={blogger.photoLink}
                     boxSize={{ base: '32px', lg: '48px' }}
                 />
                 <Box minW={0}>

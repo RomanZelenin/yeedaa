@@ -1,18 +1,15 @@
 import { Grid, GridItem, Show } from '@chakra-ui/react';
-import { skipToken } from '@reduxjs/toolkit/query';
 import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 
-import profile from '~/app/mocks/profile.json';
 import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { AsidePanel } from '~/common/components/AsidePanel/AsidePanel';
 import { Header } from '~/common/components/Header/Header';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
 import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
+import { useGetMyProfileData } from '~/common/hooks/useGetMyProfileData';
 import { useScrollToAnchor } from '~/common/hooks/useScrollToAnchor';
-import { useGetMyProfileQuery, useGetMyStatisticQuery } from '~/query/create-recipe-api';
-import { ActivityStats, UserProfile } from '~/query/types';
 import { ApplicationRoute } from '~/router';
 import {
     Error,
@@ -35,42 +32,20 @@ export default function App() {
         isError: isErrorGetMyProfile,
         isLoading: isLoadingGetMyProfile,
         isSuccess: isSuccessGetMyProfile,
+        isFetching,
         data: dataMyProfile,
-    } = useGetMyProfileQuery(accessToken ? undefined : skipToken);
-
-    const {
-        isError: isErrorGetMyStatistic,
-        isLoading: isLoadingGetMyStatistic,
-        isSuccess: isSuccessGetMyStatistic,
-        data: statistic,
-    } = useGetMyStatisticQuery(accessToken ? undefined : skipToken);
+    } = useGetMyProfileData(accessToken);
 
     useEffect(() => {
-        if (isLoadingGetMyProfile || isLoadingGetMyStatistic) {
+        if (isLoadingGetMyProfile) {
             dispatch(setMyProfileLoader(true));
-        }
-        if (isErrorGetMyProfile || isErrorGetMyStatistic) {
+        } else if (isErrorGetMyProfile) {
             dispatch(setMyProfileLoader(false));
-        }
-        if (isSuccessGetMyProfile && isSuccessGetMyStatistic) {
+        } else if (isSuccessGetMyProfile) {
             dispatch(setMyProfileLoader(false));
-            dispatch(
-                setMyProfile({
-                    profileInfo: dataMyProfile as UserProfile,
-                    statistic: statistic as ActivityStats,
-                }),
-            );
+            dispatch(setMyProfile(dataMyProfile!));
         }
-    }, [
-        isSuccessGetMyProfile,
-        isSuccessGetMyStatistic,
-        isLoadingGetMyProfile,
-        isLoadingGetMyStatistic,
-        isErrorGetMyProfile,
-        isErrorGetMyStatistic,
-        dataMyProfile,
-        statistic,
-    ]);
+    }, [isSuccessGetMyProfile, isLoadingGetMyProfile, isErrorGetMyProfile, isFetching]);
 
     if (accessToken === null) return <Navigate to='/login' replace />;
 
@@ -122,7 +97,7 @@ export default function App() {
                         {isShowAsidePanel && <AsidePanel />}
                     </GridItem>
                     <GridItem area='footer' hideFrom='lg'>
-                        <BottomMenu avatar={profile.avatar} />
+                        <BottomMenu />
                     </GridItem>
                     {isShowNotification && (
                         <CustomAlert

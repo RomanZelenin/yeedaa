@@ -83,7 +83,7 @@ export const AuthorRecipeCard = ({
                 <CardBody p={{ base: '8px', md: '24px' }}>
                     <Flex columnGap={{ base: '8px', md: '16px' }} align='center'>
                         <Avatar
-                            src='#'
+                            src={profile?.photoLink}
                             name={`${profile?.firstName} ${profile?.lastName}`}
                             boxSize='96px'
                         />

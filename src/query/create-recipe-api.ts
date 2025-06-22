@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
+import { Note } from '~/app/pages/Home/Sections/SectionCookingBlogs';
+import { ChangeProfilePasswordFormData } from '~/app/pages/ProfileSettings/Modal/ChangeProfilePasswordModal';
+import { ProfileNameFormData } from '~/app/pages/ProfileSettings/Sections/HeaderProfileSettings';
 
 import { API_BASE_URL, ApiEndpoints, IMAGE_BASE_URL } from './constants';
 import {
@@ -11,12 +14,14 @@ import {
     BloggersQuery,
     BloggersResponse,
     BookmarkResponse,
+    LoadPhotoResponse,
     PartialRecipeQuery,
     RecipeDraft,
     RecipesResponse,
     StatusResponse,
     ToggleSubscriptionQuery,
     UserProfile,
+    UsersResponse,
 } from './types';
 
 export const recipeApi = createApi({
@@ -27,7 +32,7 @@ export const recipeApi = createApi({
             headers.set('Authorization', `Bearer ${sessionStorage.getItem('access_token')}`);
         },
     }),
-    tagTypes: ['Bloggers', 'Recipe'],
+    tagTypes: ['Bloggers', 'Recipe', 'Note'],
     endpoints: (build) => ({
         getRecipeByCategory: build.query<RecipesResponse, PartialRecipeQuery>({
             query: (q) => ({
@@ -143,6 +148,7 @@ export const recipeApi = createApi({
                 console.log(response);
                 return response;
             },
+            invalidatesTags: ['Bloggers'],
         }),
         createRecipe: build.mutation<RecipeDraft, RecipeDraft>({
             query: (body) => ({
@@ -154,7 +160,7 @@ export const recipeApi = createApi({
                 console.log(response);
                 return response;
             },
-            invalidatesTags: ['Recipe'],
+            invalidatesTags: ['Recipe', 'Bloggers'],
         }),
         deleteRecipe: build.mutation<StatusResponse, string>({
             query: (id) => ({
@@ -223,6 +229,19 @@ export const recipeApi = createApi({
                 method: 'GET',
                 params: params,
             }),
+            transformResponse: (response) => {
+                const bloggers = response as BloggersResponse;
+                return {
+                    favorites: bloggers.favorites?.map((it) => ({
+                        ...it,
+                        photoLink: IMAGE_BASE_URL + it.photoLink,
+                    })),
+                    others: bloggers.others?.map((it) => ({
+                        ...it,
+                        photoLink: IMAGE_BASE_URL + it.photoLink,
+                    })),
+                };
+            },
             providesTags: ['Bloggers'],
         }),
         getBlogger: build.query<StatusResponse | BloggerInfoResponse, BloggerInfoQuery>({
@@ -233,6 +252,19 @@ export const recipeApi = createApi({
                     currentUserId: params.currentUserId,
                 },
             }),
+            transformResponse: (response) => {
+                const blogger = response as BloggerInfoResponse;
+                if (blogger.bloggerInfo?.photoLink) {
+                    return {
+                        ...blogger,
+                        bloggerInfo: {
+                            ...blogger.bloggerInfo,
+                            photoLink: IMAGE_BASE_URL + blogger.bloggerInfo.photoLink,
+                        },
+                    };
+                }
+                return blogger;
+            },
             providesTags: ['Bloggers'],
         }),
         getBloggerRecipes: build.query<BloggerRecipesResponse, string>({
@@ -242,14 +274,24 @@ export const recipeApi = createApi({
             }),
             transformResponse: (response) => {
                 const data = response as BloggerRecipesResponse;
-                const recipes = data.recipes.map((recipe) => ({
-                    ...recipe,
-                    image: IMAGE_BASE_URL + recipe.image,
-                }));
-                return { ...data, recipes: recipes };
+                const recipes =
+                    data.recipes?.map((recipe) => ({
+                        ...recipe,
+                        image: IMAGE_BASE_URL + recipe.image,
+                    })) ?? [];
+
+                const myBookmarks =
+                    data.myBookmarks?.map((recipe) => {
+                        const image = URL.parse(recipe.image)?.pathname;
+                        return {
+                            ...recipe,
+                            image:
+                                image === undefined ? IMAGE_BASE_URL + recipe.image : recipe.image, //Дополнительная проверка т.к иногда приходит полный путь вместе с host
+                        };
+                    }) ?? [];
+                return { ...data, recipes: recipes, myBookmarks: myBookmarks };
             },
-            providesTags: (result, _error, _arg) =>
-                result ? result.recipes.map((it) => ({ type: 'Recipe', id: it._id })) : [],
+            providesTags: ['Bloggers', 'Note'],
         }),
         toggleSubscription: build.mutation<StatusResponse, ToggleSubscriptionQuery>({
             query: (body) => ({
@@ -265,7 +307,33 @@ export const recipeApi = createApi({
                 url: ApiEndpoints.MY_PROFILE,
                 method: 'GET',
             }),
+            transformResponse: (response) => {
+                const profile = response as UserProfile;
+                return {
+                    ...profile,
+                    photoLink: IMAGE_BASE_URL + profile.photoLink,
+                    drafts: profile.drafts.map((it) => ({ ...it, path: `/edit-draft/${it._id}` })),
+                };
+            },
             providesTags: ['Bloggers'],
+        }),
+
+        updateProfileName: build.mutation<StatusResponse, ProfileNameFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.UPDATE_PROFILE_NAME}`,
+                method: 'PATCH',
+                body: body,
+            }),
+            invalidatesTags: ['Bloggers', 'Recipe'],
+        }),
+
+        updateProfilePassword: build.mutation<StatusResponse, ChangeProfilePasswordFormData>({
+            query: (body) => ({
+                url: `${ApiEndpoints.UPDATE_PROFILE_PASSWORD}`,
+                method: 'PATCH',
+                body: { password: body.password, newPassword: body.newPassword },
+            }),
+            invalidatesTags: ['Bloggers', 'Recipe'],
         }),
 
         getMyStatistic: build.query<StatusResponse | ActivityStats, void>({
@@ -273,7 +341,73 @@ export const recipeApi = createApi({
                 url: ApiEndpoints.MY_STATISTIC,
                 method: 'GET',
             }),
+            transformResponse: (response) => {
+                const stats = response as ActivityStats;
+                return {
+                    ...stats,
+                    recipesWithRecommendations:
+                        stats.recipesWithRecommendations?.map((it) => ({
+                            ...it,
+                            image: IMAGE_BASE_URL + it.image,
+                        })) ?? [],
+                };
+            },
             providesTags: ['Bloggers'],
+        }),
+
+        createNote: build.mutation<StatusResponse | Note, string>({
+            query: (text) => ({
+                url: `${ApiEndpoints.NOTE}`,
+                method: 'POST',
+                body: { text },
+            }),
+            transformResponse: (response) => {
+                const note = response as Note;
+                new Date(note.date);
+                return { ...note, date: new Date().toUTCString() };
+            },
+            invalidatesTags: ['Note'],
+        }),
+
+        deleteNote: build.mutation<StatusResponse | Note, string>({
+            query: (id) => ({
+                url: `${ApiEndpoints.NOTE}/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Note'],
+        }),
+
+        getAllUsers: build.query<StatusResponse | UsersResponse, void>({
+            query: () => ({
+                url: ApiEndpoints.ALL_USERS,
+                method: 'GET',
+            }),
+            transformResponse: (response) => {
+                const profiles = response as UsersResponse;
+                return profiles.map((it) => ({
+                    ...it,
+                    photo: IMAGE_BASE_URL + it.photo,
+                })) as UsersResponse;
+            },
+            /*  providesTags: ['Bloggers'], */
+        }),
+
+        loadPhoto: build.mutation<StatusResponse | LoadPhotoResponse, FormData>({
+            query: (data) => ({
+                url: `${ApiEndpoints.UPLOAD_PHOTO}`,
+                method: 'post',
+                body: data,
+            }),
+
+            invalidatesTags: ['Bloggers'],
+        }),
+
+        deleteProfile: build.mutation<StatusResponse | LoadPhotoResponse, void>({
+            query: () => ({
+                url: `${ApiEndpoints.PROFILE}`,
+                method: 'delete',
+            }),
+            invalidatesTags: ['Bloggers', 'Note', 'Recipe'],
         }),
     }),
 });
@@ -286,6 +420,7 @@ export const {
     useLikeRecipeMutation,
     useBookmarkRecipeMutation,
     useGetRecipeByIdQuery,
+    useLazyGetRecipeByIdQuery,
     useGetRecipeQuery,
     useLazyGetRecipeQuery,
     useGetJuiciestRecipesQuery,
@@ -298,4 +433,11 @@ export const {
     useGetMyProfileQuery,
     useGetMyStatisticQuery,
     useRecommendRecipeMutation,
+    useCreateNoteMutation,
+    useDeleteNoteMutation,
+    useUpdateProfileNameMutation,
+    useUpdateProfilePasswordMutation,
+    useGetAllUsersQuery,
+    useLoadPhotoMutation,
+    useDeleteProfileMutation,
 } = recipeApi;

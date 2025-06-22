@@ -1,24 +1,26 @@
 import { useEffect, useState } from 'react';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { useGetBloggerQuery } from '~/query/create-recipe-api';
-import { BloggerInfoResponse, UserProfile } from '~/query/types';
-
-import { getJWTPayload } from '../utils/getJWTPayload';
+import { useGetAllUsersQuery, User, UsersResponse } from '~/query/create-recipe-api';
 
 export const useGetRecommendingUser = (recipe: Recipe) => {
-    const [recommendingUser, setRecommendingUser] = useState<UserProfile>();
-    const recommendByUserId = recipe.recommendedByUserId?.at(0);
-    const { data, isLoading, isSuccess, isError } = useGetBloggerQuery(
-        { bloggerId: recommendByUserId ?? '', currentUserId: getJWTPayload().userId },
-        { skip: !recommendByUserId },
-    );
+    const [recommendingUser, setRecommendingUser] = useState<User>();
+    const [idx, setIdx] = useState(0);
+    const recommendByUserId = recipe.recommendedByUserId?.at(idx);
+
+    const { data, isSuccess, isLoading } = useGetAllUsersQuery();
+
     useEffect(() => {
-        if (isSuccess) {
-            const response = data as BloggerInfoResponse;
-            setRecommendingUser(response.bloggerInfo);
+        if (isSuccess && recommendByUserId) {
+            const response = data as UsersResponse;
+            const user = response.find((it) => it.id === recommendByUserId);
+            if (user) {
+                setRecommendingUser(user);
+            } else if (idx + 1 < (recipe.recommendedByUserId?.length ?? 0)) {
+                setIdx(idx + 1);
+            }
         }
-    }, [data, isLoading, isSuccess, isError]);
+    }, [data, isLoading, isSuccess, idx]);
 
     return recommendingUser;
 };

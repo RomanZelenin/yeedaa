@@ -3,12 +3,12 @@ import { IconButton, Input, InputGroup, InputProps, InputRightElement } from '@c
 import { useState } from 'react';
 
 export const PasswordInput = (props: InputProps) => {
-    const [show, setShow] = useState(false);
+    const [show, setShow] = useState(true);
     const handleClick = () => setShow(!show);
 
     return (
         <InputGroup>
-            <Input {...props} borderWidth='2px' type={show ? 'text' : 'password'} />
+            <Input {...props} borderWidth='2px' type={show ? 'password' : 'text'} />
             <InputRightElement>
                 <IconButton
                     data-test-id='password-visibility-button'

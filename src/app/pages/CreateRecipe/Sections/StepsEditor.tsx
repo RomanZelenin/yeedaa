@@ -1,4 +1,4 @@
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, Image, Text } from '@chakra-ui/icons';
 import {
     Button,
     Card,
@@ -7,73 +7,81 @@ import {
     Center,
     HStack,
     IconButton,
-    Image,
     Stack,
     Tag,
     TagLabel,
-    Text,
     Textarea,
     VStack,
 } from '@chakra-ui/react';
 import { Fragment } from 'react/jsx-runtime';
-import { FieldArrayWithId, FieldError, FieldErrors, UseFormRegister } from 'react-hook-form';
+import {
+    FieldArrayWithId,
+    FieldError,
+    FieldErrors,
+    UseFieldArrayReturn,
+    UseFormRegister,
+} from 'react-hook-form';
 
 import { Fallback } from '~/common/components/Fallback/Fallback';
 import { BasketIcon } from '~/common/components/Icons/BasketIcon';
 import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 
-import { RecipieFormData } from './CreateRecipePage';
+import { RecipieFormData } from '../CreateRecipePage';
 
 export const StepsEditor = ({
-    images,
+    formErrors,
     steps,
     register,
-    formErrors,
-    onClickAddStep,
-    onRemoveNthStep,
-    onClickNthImage,
+    onClickImage,
 }: {
-    images: string[];
-    steps: FieldArrayWithId<RecipieFormData, 'steps', 'id'>[];
-    register: UseFormRegister<RecipieFormData>;
     formErrors: FieldErrors<RecipieFormData>;
-    onClickAddStep: () => void;
-    onRemoveNthStep: (i: number) => void;
-    onClickNthImage: (i: number) => void;
+    steps: UseFieldArrayReturn<RecipieFormData, 'steps', 'id'>;
+    register: UseFormRegister<RecipieFormData>;
+    onClickImage: (step: FieldArrayWithId<RecipieFormData, 'steps', 'id'>, i: number) => void;
 }) => {
     const { getString } = useResource();
     return (
-        <VStack spacing={{ base: '20px' }} align='stretch'>
-            <Text textStyle='textMdLh6Semibold'>{getString('add-cooking-steps')}</Text>
-            {steps?.map((step, i) => (
-                <Fragment key={step.id}>
-                    <StepCard
-                        index={i}
-                        image={images[i]}
-                        formErrors={formErrors}
-                        onClickImage={onClickNthImage}
-                        onClickRemoveStep={onRemoveNthStep}
-                        register={register}
-                        totalSteps={steps.length}
-                    />
-                    {i == steps.length - 1 && (
-                        <Button
-                            onClick={() => onClickAddStep()}
-                            alignSelf='end'
-                            variant='outline'
-                            borderColor='blackAlpha.600'
-                            rightIcon={
-                                <Center borderRadius='100%' boxSize='14px' bgColor='black'>
-                                    <AddIcon boxSize='9px' color='white' />
-                                </Center>
-                            }
-                        >
-                            {getString('new-step')}
-                        </Button>
-                    )}
-                </Fragment>
-            ))}
-        </VStack>
+        <>
+            <VStack spacing={{ base: '20px' }} align='stretch' maxW='768px' alignSelf='center'>
+                <Text textStyle='textMdLh6Semibold'>{getString('add-cooking-steps')}</Text>
+                {steps.fields.map((step, i) => (
+                    <Fragment key={step.id}>
+                        <StepCard
+                            index={i}
+                            image={step.image}
+                            formErrors={formErrors}
+                            onClickImage={() => {
+                                onClickImage(step, i);
+                            }}
+                            onClickRemoveStep={() => steps.remove(i)}
+                            register={register}
+                            totalSteps={steps.fields.length}
+                        />
+                        {i == steps.fields.length - 1 && (
+                            <Button
+                                onClick={() =>
+                                    steps.append({
+                                        image: null,
+                                        stepNumber: steps.fields.length,
+                                        description: '',
+                                    })
+                                }
+                                alignSelf='end'
+                                variant='outline'
+                                borderColor='blackAlpha.600'
+                                rightIcon={
+                                    <Center borderRadius='100%' boxSize='14px' bgColor='black'>
+                                        <AddIcon boxSize='9px' color='white' />
+                                    </Center>
+                                }
+                            >
+                                {getString('new-step')}
+                            </Button>
+                        )}
+                    </Fragment>
+                ))}
+            </VStack>
+        </>
     );
 };
 
@@ -88,7 +96,7 @@ const StepCard = ({
 }: {
     register: UseFormRegister<RecipieFormData>;
     index: number;
-    onClickImage: (i: number) => void;
+    onClickImage: (element: HTMLImageElement) => void;
     totalSteps: number;
     onClickRemoveStep: (i: number) => void;
     formErrors: FieldErrors<RecipieFormData>;
@@ -97,42 +105,27 @@ const StepCard = ({
     const { getString } = useResource();
     const getBorderColor = (field?: FieldError) =>
         field !== undefined ? { borderColor: 'rgb(229,62,62)' } : { borderColor: 'blackAlpha.200' };
-
     return (
         <Card direction='row' overflow='clip' flex={1}>
             {image ? (
                 <Image
                     {...register(`steps.${index}.image`)}
                     data-test-id={`recipe-steps-image-block-${index}-preview-image`}
-                    onClick={() => onClickImage(index)}
+                    onClick={(e) => onClickImage(e.target as HTMLImageElement)}
                     objectFit='cover'
                     src={image}
-                    w={{ base: '158px', lg: '346px' }}
+                    width={{ base: '158px', lg: '346px' }}
                 />
             ) : (
                 <Fallback
                     data-test-id={`recipe-steps-image-block-${index}`}
-                    onClick={() => onClickImage(index)}
+                    onClick={(e) =>
+                        onClickImage((e.target as HTMLDivElement).firstChild as HTMLImageElement)
+                    }
                     width={{ base: '158px', lg: '346px' }}
                     height='inherit'
                 />
             )}
-            {/*  <Image
-                {...register(`steps.${index}.image`)}
-                data-test-id={`recipe-steps-image-block-${index}-preview-image`}
-                onClick={() => onClickImage(index)}
-                objectFit='cover'
-                src={image}
-                w={{ base: '158px', lg: '346px' }}
-                fallback={
-                    <Fallback
-                        data-test-id={`recipe-steps-image-block-${index}`}
-                        onClick={() => onClickImage(index)}
-                        width={{ base: '158px', lg: '346px' }}
-                        height='inherit'
-                    />
-                }
-            /> */}
             <Stack spacing={{ base: '12px', lg: '16px' }} flex={1} p={{ base: '8px', lg: '24px' }}>
                 <CardHeader p='0px'>
                     <HStack justify='space-between'>

@@ -7,6 +7,8 @@ import { getJWTPayload } from '~/common/utils/getJWTPayload';
 import { useGetBloggerQuery, useGetRecipeByIdQuery } from '~/query/create-recipe-api';
 import { BloggerInfoResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
+import { myProfile } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 
@@ -25,8 +27,8 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
         subcategoryName,
     });
     const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
-
-    const { userId } = useParams();
+    const profile = useAppSelector(myProfile);
+    const { userId, id } = useParams();
     const currentUserId = getJWTPayload().userId;
     const { data: blogger, isSuccess: isSuccessBloggerInfo } = useGetBloggerQuery(
         { bloggerId: userId!, currentUserId: currentUserId },
@@ -81,6 +83,17 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                 breadcrumbs.push({
                     title: getString('my-profile'),
                     path: ApplicationRoute.PROFILE,
+                });
+                if (location.pathname.includes(ApplicationRoute.PROFILE_SETTINGS)) {
+                    breadcrumbs.push({
+                        title: 'Настройки',
+                        path: ApplicationRoute.PROFILE_SETTINGS,
+                    });
+                }
+            } else if (location.pathname.startsWith('/edit-draft')) {
+                breadcrumbs.push({
+                    title: profile.profileInfo?.drafts.find((it) => it._id === id!)?.title ?? '',
+                    path: ApplicationRoute.PROFILE_SETTINGS,
                 });
             }
         }

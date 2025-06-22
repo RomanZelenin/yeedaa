@@ -1,5 +1,5 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
@@ -46,7 +46,11 @@ export const RecipePage = () => {
         { bloggerId: recipe?.authorId ?? '', currentUserId: getJWTPayload().userId },
         { skip: !recipe?.authorId },
     );
-    const [recommendRecipe, { isLoading }] = useRecommendRecipeMutation();
+    const [
+        recommendRecipe,
+        { isLoading: isLoadingRecommendRecipe, isSuccess: isSuccessRecommendRecipe },
+    ] = useRecommendRecipeMutation();
+    const [isRecommendedByMe, setIsRecommendedByMe] = useState(false);
 
     useEffect(() => {
         if (isLoadingRecipe || isLoadingBloggerInfo) {
@@ -57,6 +61,12 @@ export const RecipePage = () => {
         }
         if (isSuccessGetRecipe && isSuccessBloggerInfo) {
             dispatch(setAppLoader(false));
+            setIsRecommendedByMe(
+                recipe.recommendedByUserId?.includes(getJWTPayload().userId) ?? false,
+            );
+        }
+        if (isSuccessRecommendRecipe) {
+            setIsRecommendedByMe(!isRecommendedByMe);
         }
     }, [
         isLoadingRecipe,
@@ -65,6 +75,7 @@ export const RecipePage = () => {
         isErrorBloggerInfo,
         isSuccessGetRecipe,
         isSuccessBloggerInfo,
+        isSuccessRecommendRecipe,
     ]);
 
     if (isLoadingRecipe || isLoadingBloggerInfo) {
@@ -78,9 +89,6 @@ export const RecipePage = () => {
 
     if (isSuccessGetRecipe && isSuccessBloggerInfo) {
         const response = dataBlogger as BloggerInfoResponse;
-        const isRecommendedByMe =
-            recipe.recommendedByUserId?.includes(getJWTPayload().userId) ?? false;
-
         return (
             <EmptyConatainer>
                 <>
@@ -111,7 +119,7 @@ export const RecipePage = () => {
                             {isShowRecommendations && (
                                 <>
                                     <Button
-                                        isLoading={isLoading}
+                                        isLoading={isLoadingRecommendRecipe}
                                         loadingText={
                                             isRecommendedByMe
                                                 ? getString('you-recommended')

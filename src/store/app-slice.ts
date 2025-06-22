@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
-import { Profile } from '~/common/components/Header/ProfileInfo';
 import { ActivityStats, UserProfile } from '~/query/types';
 
 import { ApplicationState } from './configure-store';
@@ -47,7 +46,6 @@ const initialState = {
     error: NONE_ERROR_RESPONSE,
     query: '' as string,
     recipes: [] as Recipe[],
-    blogs: [] as { person: Profile; comment: string }[],
     breadcrumb: [] as { title: string; path: string }[],
     isSearch: false,
     notification: null as Notification | null,
@@ -103,7 +101,6 @@ export const loadingSelector = (state: ApplicationState) => state.app.isLoading;
 
 export const querySelector = (state: ApplicationState) => state.app.query;
 export const recipesSelector = (state: ApplicationState) => state.app.recipes;
-export const blogsSelector = (state: ApplicationState) => state.app.blogs;
 export const isSearchSelector = (state: ApplicationState) => state.app.isSearch;
 
 export const newestRecipesLoading = (state: ApplicationState) => state.app.isNewestRecipesLoading;
