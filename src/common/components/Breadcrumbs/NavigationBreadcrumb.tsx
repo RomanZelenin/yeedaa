@@ -57,7 +57,7 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                 }
             }
         } else {
-            if (location.pathname.startsWith(ApplicationRoute.JUICIEST)) {
+            if (location.pathname.includes(ApplicationRoute.JUICIEST)) {
                 breadcrumbs.push({ title: getString('juiciest'), path: ApplicationRoute.JUICIEST });
                 if (recipeId && recipe) {
                     breadcrumbs.push({
@@ -65,12 +65,12 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: `/the-juiciest/${recipeId}#`,
                     });
                 }
-            } else if (location.pathname.startsWith(ApplicationRoute.NEW_RECIPE)) {
+            } else if (location.pathname.includes(ApplicationRoute.NEW_RECIPE)) {
                 breadcrumbs.push({
                     title: getString('new-recipe'),
                     path: ApplicationRoute.NEW_RECIPE,
                 });
-            } else if (location.pathname.startsWith(ApplicationRoute.BLOGS)) {
+            } else if (location.pathname.includes(ApplicationRoute.BLOGS)) {
                 breadcrumbs.push({ title: getString('blogs'), path: ApplicationRoute.BLOGS });
                 if (userId && isSuccessBloggerInfo) {
                     const bloggerInfo = (blogger as BloggerInfoResponse).bloggerInfo;
@@ -79,7 +79,7 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: '#',
                     });
                 }
-            } else if (location.pathname.startsWith(ApplicationRoute.PROFILE)) {
+            } else if (location.pathname.includes(ApplicationRoute.PROFILE)) {
                 breadcrumbs.push({
                     title: getString('my-profile'),
                     path: ApplicationRoute.PROFILE,
@@ -90,7 +90,7 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: ApplicationRoute.PROFILE_SETTINGS,
                     });
                 }
-            } else if (location.pathname.startsWith('/edit-draft') && id) {
+            } else if (location.pathname.includes('/edit-draft') && id) {
                 breadcrumbs.push({
                     title: profile.profileInfo?.drafts.find((it) => it._id === id!)?.title ?? '',
                     path: ApplicationRoute.PROFILE_SETTINGS,
