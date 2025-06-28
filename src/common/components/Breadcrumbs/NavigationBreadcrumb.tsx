@@ -90,7 +90,7 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: ApplicationRoute.PROFILE_SETTINGS,
                     });
                 }
-            } else if (location.pathname.startsWith('/edit-draft')) {
+            } else if (location.pathname.startsWith('/edit-draft') && id) {
                 breadcrumbs.push({
                     title: profile.profileInfo?.drafts.find((it) => it._id === id!)?.title ?? '',
                     path: ApplicationRoute.PROFILE_SETTINGS,
@@ -98,7 +98,16 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
             }
         }
         setBreadcrumbs(breadcrumbs);
-    }, [category, subcategory, recipe, recipeId, userId, blogger, location.pathname]);
+    }, [
+        category,
+        subcategory,
+        recipe,
+        recipeId,
+        userId,
+        blogger,
+        location.pathname,
+        profile.profileInfo,
+    ]);
 
     return (
         <Breadcrumb

@@ -267,6 +267,20 @@ export const CreateRecipePage = () => {
                     (category) => category.subCategories ?? [],
                 );
                 if (location.pathname.startsWith('/new-recipe')) {
+                    reset({
+                        image: '',
+                        title: '',
+                        description: '',
+                        categoriesIds: subCategories.map((it) => ({
+                            _id: it._id,
+                            title: it.title,
+                            selected: false,
+                        })) as SelectItem[],
+                        time: undefined,
+                        portions: undefined,
+                        steps: [{ stepNumber: 1, description: '', image: null }],
+                        ingredients: [{ title: '', count: null, measureUnit: '' }],
+                    });
                     setValue(
                         'categoriesIds',
                         subCategories.map((it) => ({
@@ -294,7 +308,7 @@ export const CreateRecipePage = () => {
                             ingredients: recipe.ingredients,
                         });
                     }
-                } else if (location.pathname.startsWith('/edit-draft')) {
+                } else if (location.pathname.startsWith('/edit-draft') && recipeId) {
                     const draft = profile.profileInfo?.drafts.find((it) => it._id === recipeId!);
                     if (draft) {
                         reset({

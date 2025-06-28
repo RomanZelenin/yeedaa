@@ -51,7 +51,8 @@ export default function App() {
 
     const isShowAsidePanel =
         location.pathname !== ApplicationRoute.NEW_RECIPE &&
-        location.pathname.split('/')[1] !== ApplicationRoute.EDIT_RECIPE.split('/')[1];
+        location.pathname.split('/')[1] !== ApplicationRoute.EDIT_RECIPE.split('/')[1] &&
+        location.pathname.split('/')[1] !== ApplicationRoute.EDIT_DRAFT.split('/')[1];
 
     const isShowNotification = notification && notification.title !== Error.RECEPIES_NOT_FOUND;
 
