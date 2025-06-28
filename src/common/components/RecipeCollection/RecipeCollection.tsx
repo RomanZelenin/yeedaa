@@ -22,7 +22,7 @@ export function RecipeCollection({
                         rowGap={{ lg: '16px', xl: '24px' }}
                     >
                         {recipes?.map((recipe, i) => (
-                            <FoodCard key={recipe._id} id={`${i}`} recipe={recipe} />
+                            <FoodCard key={recipe._id + i} id={`${i}`} recipe={recipe} />
                         ))}
                     </SimpleGrid>
                 </VStack>
