@@ -10,11 +10,7 @@ import { useAppDispatch } from '~/store/hooks';
 
 export default function SectionJuiciest() {
     const dispatch = useAppDispatch();
-    const {
-        data: recipes,
-        isLoading,
-        isError,
-    } = useGetJuiciestRecipesQuery({ limit: 4, sortBy: 'likes', sortOrder: 'desc' });
+    const { data: recipes, isLoading, isError } = useGetJuiciestRecipesQuery({ limit: 4 });
 
     useEffect(() => {
         dispatch(setJuiciestRecipesLoader(isLoading));

@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import arrowRightIcon from '~/assets/icons/BsArrowRight.svg';
 import { BlogCard } from '~/common/components/Cards/BlogCard';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useGetBloggersQuery } from '~/query/create-bloggers-api';
+import { useGetBloggersQuery } from '~/query/create-recipe-api';
 import { BloggersResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
 import { Error, setBloggersLoader, setNotification } from '~/store/app-slice';
@@ -21,6 +21,7 @@ export type Blogger = {
     isFavorite: boolean;
     notes: Note[];
     newRecipesCount: number;
+    photoLink: string;
 };
 
 export type Note = {

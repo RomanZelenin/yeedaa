@@ -12,6 +12,7 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
@@ -35,7 +36,6 @@ import { Fallback } from '../Fallback/Fallback';
 import { BasketIcon } from '../Icons/BasketIcon';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
-import { PersonsIcon } from '../Icons/PersonsIcon';
 import { WriteLineIcon } from '../Icons/WriteLineIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { IconWithCounter } from './IconWithCounter';
@@ -47,9 +47,19 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
     const dispatch = useAppDispatch();
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     const isRecipeOwner = getJWTPayload().userId === recipe.authorId;
-    const [deleteRecipe] = useDeleteRecipeMutation();
-    const [likeRecipe] = useLikeRecipeMutation();
-    const [bookmarkRecipe] = useBookmarkRecipeMutation();
+    const [
+        deleteRecipe,
+        {
+            error: errorDeleteRecipe,
+            isError: isErrorDeleteRecipe,
+            isLoading: isLoadingDeleteRecipe,
+            isSuccess: isSuccessDeleteRecipe,
+        },
+    ] = useDeleteRecipeMutation();
+    const [likeRecipe, { isError: isErrorLikeRecipe, error: errorLikeRecipe }] =
+        useLikeRecipeMutation();
+    const [bookmarkRecipe, { isError: isErrorBookmarkRecipe, error: errorBookmarkRecipe }] =
+        useBookmarkRecipeMutation();
 
     const handleOnDeleteRecipeError = (response?: StatusResponse) => {
         switch (response?.status) {
@@ -72,24 +82,6 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                         type: 'error',
                     }),
                 );
-        }
-    };
-    const handleOnDeleteRecipe = async () => {
-        try {
-            dispatch(setAppLoader(true));
-            await deleteRecipe(recipe._id).unwrap();
-            dispatch(
-                setNotification({
-                    _id: crypto.randomUUID(),
-                    title: 'Рецепт успешно удален',
-                    type: 'success',
-                }),
-            );
-            navigate(ApplicationRoute.INDEX, { replace: true });
-        } catch (e) {
-            handleOnDeleteRecipeError(e as StatusResponse);
-        } finally {
-            dispatch(setAppLoader(false));
         }
     };
 
@@ -117,21 +109,41 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
         }
     };
 
-    const handleOnLikeRecipe = async () => {
-        try {
-            await likeRecipe(recipe._id).unwrap();
-        } catch (e) {
-            handleOnActionRecipeError(e as StatusResponse);
+    useEffect(() => {
+        if (isLoadingDeleteRecipe) {
+            dispatch(setAppLoader(true));
         }
-    };
-
-    const handleOnBookmarkRecipe = async () => {
-        try {
-            await bookmarkRecipe(recipe._id).unwrap();
-        } catch (e) {
-            handleOnActionRecipeError(e as StatusResponse);
+        if (isSuccessDeleteRecipe) {
+            dispatch(setAppLoader(false));
+            dispatch(
+                setNotification({
+                    _id: crypto.randomUUID(),
+                    title: 'Рецепт успешно удален',
+                    type: 'success',
+                }),
+            );
+            navigate(ApplicationRoute.INDEX, { replace: true });
         }
-    };
+        if (isErrorDeleteRecipe) {
+            dispatch(setAppLoader(false));
+            handleOnDeleteRecipeError(errorDeleteRecipe as StatusResponse);
+        }
+        if (isErrorLikeRecipe) {
+            handleOnActionRecipeError(errorLikeRecipe as StatusResponse);
+        }
+        if (isErrorBookmarkRecipe) {
+            handleOnActionRecipeError(errorBookmarkRecipe as StatusResponse);
+        }
+    }, [
+        isErrorLikeRecipe,
+        errorLikeRecipe,
+        isErrorBookmarkRecipe,
+        errorBookmarkRecipe,
+        isLoadingDeleteRecipe,
+        isSuccessDeleteRecipe,
+        isErrorDeleteRecipe,
+        errorDeleteRecipe,
+    ]);
 
     return (
         <>
@@ -180,10 +192,6 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                 icon={<LikeIcon boxSize='12px' />}
                                 count={recipe.likes}
                             />
-                            <IconWithCounter
-                                icon={<PersonsIcon fill='black' boxSize='12px' />}
-                                count={recipe.views}
-                            />
                         </HStack>
                     </HStack>
                     <Stack alignSelf='start' width='100%'>
@@ -219,7 +227,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                     <>
                                         <IconButton
                                             data-test-id='recipe-delete-button'
-                                            onClick={handleOnDeleteRecipe}
+                                            onClick={() => deleteRecipe(recipe._id)}
                                             minW={0}
                                             boxSize='32px'
                                             borderRadius='100%'
@@ -251,7 +259,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                 ) : (
                                     <>
                                         <Button
-                                            onClick={handleOnLikeRecipe}
+                                            onClick={() => likeRecipe(recipe._id)}
                                             borderRadius='6px'
                                             variant='outline'
                                             px='12px'
@@ -276,7 +284,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
                                             </Text>
                                         </Button>
                                         <Button
-                                            onClick={handleOnBookmarkRecipe}
+                                            onClick={() => bookmarkRecipe(recipe._id)}
                                             borderRadius='6px'
                                             bgColor='lime.400'
                                             variant='outline'

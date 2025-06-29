@@ -9,6 +9,8 @@ import { ErrorPage } from '~/app/pages/Error/ErrorPage';
 import HomePage from '~/app/pages/Home/HomePage';
 import JuiciestPage from '~/app/pages/Juiciest/JuiciestPage';
 import { LoginPage } from '~/app/pages/Login/LoginPage';
+import { ProfilePage } from '~/app/pages/Profile/ProfilePage';
+import { ProfileSettingsPage } from '~/app/pages/ProfileSettings/ProfileSettingsPage';
 import { RecipePage } from '~/app/pages/Recepie/RecipePage';
 import { VerificationPage } from '~/app/pages/Verification/VerificationPage';
 
@@ -26,6 +28,9 @@ export enum ApplicationRoute {
     EDIT_RECIPE = '/edit-recipe/:category/:subcategory/:id',
     BLOGS = '/blogs',
     BLOGGER_PROFILE = '/blogs/:userId',
+    PROFILE = '/profile',
+    PROFILE_SETTINGS = '/profile/settings',
+    EDIT_DRAFT = '/edit-draft/:id',
     ANY = '/*',
 }
 
@@ -76,12 +81,24 @@ export const router = createBrowserRouter(
                     element: <CreateRecipePage />,
                 },
                 {
+                    path: ApplicationRoute.EDIT_DRAFT,
+                    element: <CreateRecipePage />,
+                },
+                {
                     path: ApplicationRoute.BLOGS,
                     element: <BlogsPage />,
                 },
                 {
                     path: ApplicationRoute.BLOGGER_PROFILE,
                     element: <BloggerProfilePage />,
+                },
+                {
+                    path: ApplicationRoute.PROFILE,
+                    element: <ProfilePage />,
+                },
+                {
+                    path: ApplicationRoute.PROFILE_SETTINGS,
+                    element: <ProfileSettingsPage />,
                 },
                 {
                     path: ApplicationRoute.NOT_FOUND,

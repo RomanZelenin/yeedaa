@@ -89,5 +89,13 @@
     "recipe-name": "Название рецепта",
     "brief-description-recipe": "Краткое описание рецепта",
     "measure-unit": "Единица измерения",
-    "amount": "Количество"
+    "amount": "Количество",
+    "my-profile": "Мой профиль",
+    "you-recommended": "Вы порекомендовали",
+    "recommend-recipe": "Рекомендовать рецепт",
+    "edit": "Редактировать",
+    "draft": "Черновик",
+    "new-note": "Новая заметка",
+    "publish": "Опубликовать",
+    "remove-from-saved": "Убрать из сохранённых"
 }

@@ -5,21 +5,19 @@ import {
     Card,
     CardBody,
     CardHeader,
-    Center,
     Flex,
     HStack,
     Image,
-    Spinner,
     Stack,
     Text,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { Blogger } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 import personCheckIcon from '~/assets/icons/person-check.svg';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useToggleSubscriptionMutation } from '~/query/create-bloggers-api';
+import { useToggleSubscriptionMutation } from '~/query/create-recipe-api';
 import { ApplicationRoute } from '~/router';
 import { Error, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
@@ -27,22 +25,39 @@ import { useAppDispatch } from '~/store/hooks';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { PersonsIcon } from '../Icons/PersonsIcon';
 import { SubscribeIcon } from '../Icons/SubscribeIcon';
+import { CenteredLoader } from '../Loader/CenteredLoader';
 import { IconWithCounter } from './IconWithCounter';
 
 export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [toggleSubscription] = useToggleSubscriptionMutation();
+    const [
+        toggleSubscription,
+        {
+            isError: isErrorToggleSubscription,
+            isLoading: isLoadingToggleSubscription,
+            isSuccess: isSuccessToggleSubscription,
+            error: errorToggleSubscription,
+        },
+    ] = useToggleSubscriptionMutation();
 
-    const handleOnToggleSubscriprion = async () => {
-        try {
+    const handleOnToggleSubscriprion = () => {
+        toggleSubscription({
+            fromUserId: getJWTPayload().userId,
+            toUserId: blogger._id,
+        });
+    };
+
+    useEffect(() => {
+        if (isLoadingToggleSubscription) {
             setIsLoading(true);
-            await toggleSubscription({
-                fromUserId: getJWTPayload().userId,
-                toUserId: blogger._id,
-            }).unwrap();
-        } catch (_e) {
+        }
+        if (isSuccessToggleSubscription) {
+            setIsLoading(false);
+        }
+        if (isErrorToggleSubscription) {
+            setIsLoading(false);
             dispatch(
                 setNotification({
                     _id: crypto.randomUUID(),
@@ -51,10 +66,13 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
                     type: 'error',
                 }),
             );
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [
+        isErrorToggleSubscription,
+        isLoadingToggleSubscription,
+        isSuccessToggleSubscription,
+        errorToggleSubscription,
+    ]);
 
     return (
         <Card
@@ -69,7 +87,7 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
                     <Avatar
                         size={{ base: 'base', md: 'md' }}
                         name={`${blogger?.firstName} ${blogger?.lastName}`}
-                        src=''
+                        src={blogger.photoLink}
                         boxSize={{ base: '32px', lg: '48px' }}
                     />
                     <Box minW={0}>
@@ -150,20 +168,7 @@ export const BlogCardWithSubscribe = ({ blogger }: { blogger: Blogger }) => {
                     </HStack>
                 </Stack>
             </CardBody>
-            {isLoading && (
-                <Center
-                    data-test-id='mobile-loader'
-                    position='absolute'
-                    width='206px'
-                    top='50%'
-                    left='50%'
-                    transform='translate(-50%, -50%)'
-                    boxSize='150px'
-                    bgGradient='radial(30% 30% at 50% 50%, rgba(196, 255, 97, 0.7) 0%, rgba(255, 255, 255, 0) 100%) lime.50'
-                >
-                    <Spinner size='lg' boxSize='28px' minW={0} />
-                </Center>
-            )}
+            {isLoading && <CenteredLoader />}
         </Card>
     );
 };

@@ -1,6 +1,6 @@
 import { Button, Image, Input, Stack, Text, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 
 import loginFailedImg from '~/assets/images/login-failed.svg';
@@ -25,6 +25,7 @@ export const EmailRecoveryForm = ({
     const [notification, setNotification] = useState<Notification | null>(null);
     const dispatch = useAppDispatch();
     const {
+        getValues,
         control,
         register,
         setValue,
@@ -34,7 +35,7 @@ export const EmailRecoveryForm = ({
         mode: 'onChange',
     });
 
-    const [forgotPassword] = useForgotPasswordMutation();
+    const [forgotPassword, { isError, isLoading, isSuccess, error }] = useForgotPasswordMutation();
     const handleOnError = useCallback((response?: StatusResponse) => {
         switch (response?.status) {
             case StatusCode.BadRequest:
@@ -72,31 +73,23 @@ export const EmailRecoveryForm = ({
         }
     }, []);
 
-    const onSubmit = useCallback(
-        async ({
-            data,
-        }: {
-            formData?: FormData;
-            data: EmailRecoveryFormData;
-            formDataJson?: string;
-            event?: React.BaseSyntheticEvent;
-        }) => {
-            try {
-                dispatch(setAppLoader(true));
-                await forgotPassword(data).unwrap();
-                onSuccess(data);
-            } catch (e) {
-                handleOnError(e as StatusResponse);
-            } finally {
-                dispatch(setAppLoader(false));
-            }
-        },
-        [dispatch, forgotPassword],
-    );
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(setAppLoader(true));
+        }
+        if (isSuccess) {
+            dispatch(setAppLoader(false));
+            onSuccess(getValues());
+        }
+        if (isError) {
+            dispatch(setAppLoader(false));
+            handleOnError(error as StatusResponse);
+        }
+    }, [isLoading, isError, isSuccess, error]);
 
     return (
         <>
-            <Form onSubmit={onSubmit} control={control}>
+            <Form onSubmit={({ data }) => forgotPassword(data)} control={control}>
                 <VStack spacing='32px' p='32px'>
                     <Image boxSize={{ base: '108px', lg: '206px' }} src={loginFailedImg} />
                     <Stack spacing={0} textAlign='center'>

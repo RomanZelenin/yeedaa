@@ -1,9 +1,13 @@
 import * as yup from 'yup';
 
+import { SelectItem } from '~/app/features/filters/filtersSlice';
 import { CookingStep } from '~/app/mocks/types/type_defenitions';
+import { NoteFormData } from '~/common/components/Drawer/AddNoteDrawer';
 
 import { RecipieFormData } from '../../CreateRecipe/CreateRecipePage';
-import { IngredientFormData } from '../../CreateRecipe/IngredientsEditor';
+import { IngredientFormData } from '../../CreateRecipe/Sections/IngredientsEditor';
+import { ChangeProfilePasswordFormData } from '../../ProfileSettings/Modal/ChangeProfilePasswordModal';
+import { ProfileNameFormData } from '../../ProfileSettings/Sections/HeaderProfileSettings';
 import { LoginFormData } from '../LoginForm/LoginForm';
 import { AccountFormData } from '../Modal/Recovery/AccountRecoveryForm';
 import { EmailRecoveryFormData } from '../Modal/Recovery/EmailRecoveryForm';
@@ -206,6 +210,14 @@ export const cookingStepSchema: yup.ObjectSchema<CookingStep> = yup
     })
     .required();
 
+export const categoriesIdsStepSchema: yup.ObjectSchema<SelectItem> = yup
+    .object({
+        _id: yup.string().required(),
+        title: yup.string().required(),
+        selected: yup.bool().required(),
+    })
+    .required();
+
 export const recipieSchema: yup.ObjectSchema<RecipieFormData> = yup
     .object({
         title: yup.string().trim().required().max(50),
@@ -225,7 +237,21 @@ export const recipieSchema: yup.ObjectSchema<RecipieFormData> = yup
                 },
             })
             .required(),
-        categoriesIds: yup.array<string[]>().min(3).required(),
+        categoriesIds: yup
+            .array()
+            .of(categoriesIdsStepSchema)
+            .test({
+                name: 'valid-count',
+                test(value) {
+                    if ((value?.filter((it) => it.selected).length ?? 0) >= 3) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+            })
+            .min(3)
+            .required(),
         portions: yup
             .string()
             .trim()
@@ -244,5 +270,100 @@ export const recipieSchema: yup.ObjectSchema<RecipieFormData> = yup
         image: yup.string().required(),
         steps: yup.array().of(cookingStepSchema).min(1).required(),
         ingredients: yup.array().of(ingredientSchema).min(1).required(),
+    })
+    .required();
+
+export const noteSchema: yup.ObjectSchema<NoteFormData> = yup
+    .object({
+        text: yup
+            .string()
+            .trim()
+            .min(10, 'Минимальная длина 10 символов')
+            .max(160, 'Максимальная длина 160 символов')
+            .required('Введите текст заметки'),
+    })
+    .required();
+
+export const profileSchema: yup.ObjectSchema<ProfileNameFormData> = yup
+    .object({
+        firstName: yup
+            .string()
+            .trim()
+            .required(INPUT_FIRST_NAME)
+            .max(50, MAX_LENGTH)
+            .test({
+                name: 'start-first-name',
+                test(value, ctx) {
+                    if (!startFirstOrLastNameTemplate.test(value)) {
+                        return ctx.createError({
+                            message: START_WITH_CYRILLIC,
+                        });
+                    }
+                    if (!firstOrLastName.test(value)) {
+                        return ctx.createError({ message: ONLY_CYRILLIC });
+                    }
+                    return true;
+                },
+            }),
+        lastName: yup
+            .string()
+            .trim()
+            .required(INPUT_LAST_NAME)
+            .max(50, MAX_LENGTH)
+            .test({
+                name: 'start-last-name',
+                test(value, ctx) {
+                    if (!startFirstOrLastNameTemplate.test(value)) {
+                        return ctx.createError({
+                            message: START_WITH_CYRILLIC,
+                        });
+                    }
+                    if (!firstOrLastName.test(value)) {
+                        return ctx.createError({ message: ONLY_CYRILLIC });
+                    }
+                    return true;
+                },
+            }),
+    })
+    .required();
+
+export const changeProfilePasswordSchema: yup.ObjectSchema<ChangeProfilePasswordFormData> = yup
+    .object({
+        password: yup
+            .string()
+            .required(INPUT_PASSWORD)
+            .max(50, MAX_LENGTH)
+            .min(8, DOSNT_MATCH_FORMAT)
+            .test({
+                name: 'valid-symbols',
+                test(value, ctx) {
+                    if (!passwordTemplate.test(value)) {
+                        return ctx.createError({ message: DOSNT_MATCH_FORMAT });
+                    }
+                    return true;
+                },
+            }),
+        newPassword: yup
+            .string()
+            .required(INPUT_PASSWORD)
+            .max(50, MAX_LENGTH)
+            .min(8, DOSNT_MATCH_FORMAT)
+            .test({
+                name: 'valid-symbols',
+                test(value, ctx) {
+                    if (!passwordTemplate.test(value)) {
+                        return ctx.createError({ message: DOSNT_MATCH_FORMAT });
+                    }
+                    return true;
+                },
+            }),
+        repeatedPassword: yup
+            .string()
+            .required(REPEAT_PASSWORD)
+            .when('newPassword', (newPassword, schema) =>
+                newPassword && newPassword.length > 0
+                    ? schema.oneOf(newPassword, PASSWORDS_MUST_MATCH)
+                    : schema,
+            ),
     })
     .required();

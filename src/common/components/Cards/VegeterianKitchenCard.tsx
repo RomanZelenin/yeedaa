@@ -16,12 +16,14 @@ import {
     WrapItem,
 } from '@chakra-ui/react';
 import { useMemo } from 'react';
+import { Link } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import likeIcon from '~/assets/icons/like.svg';
 import personsIcon from '~/assets/icons/persons.svg';
 import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
+import { useMapRecipesToCategoryPaths } from '~/common/hooks/useMapRecipesToCategoryPaths';
 import { useGetCategoriesQuery } from '~/query/create-category-api';
 
 import { useResource } from '../ResourceContext/ResourceContext';
@@ -41,9 +43,17 @@ export const VegeterianKitchenCard = ({ recipe }: { recipe: Recipe }) => {
         [recipe],
     );
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
+    const recipeWithPath = useMapRecipesToCategoryPaths([recipe])[0];
 
     return (
-        <Card p='12px' borderRadius='8px' border='1px solid rgba(0, 0, 0, 0.08)' h='100%'>
+        <Card
+            as={Link}
+            to={recipeWithPath.path}
+            p='12px'
+            borderRadius='8px'
+            border='1px solid rgba(0, 0, 0, 0.08)'
+            h='100%'
+        >
             <CardHeader p={0} mb='8px'>
                 <Text isTruncated textOverflow='ellipsis' fontSize='16px' fontWeight={500}>
                     {recipe.title}
@@ -82,15 +92,16 @@ export const VegeterianKitchenCompactCard = ({ recipe }: { recipe: Recipe }) => 
     const { getString } = useResource();
 
     const subcategoriesIds = recipe.categoriesIds?.map((id) => id);
-    const categories = useGetCategoriesQuery().data?.filter((it) =>
+    const icon = useGetCategoriesQuery().data?.filter((it) =>
         it.subCategories?.some((it) => subcategoriesIds?.includes(it._id)),
-    );
+    )[0].icon;
+    const recipeWithPath = useMapRecipesToCategoryPaths([recipe])[0];
 
     return (
         <Card>
             <CardBody px='12px' py='10px'>
                 <HStack justify='space-between' alignItems='center'>
-                    <Image src={categories![0].icon} boxSize='24px' alt='#' />
+                    <Image src={icon} boxSize='24px' alt='#' />
                     <Text
                         fontSize={{ base: '16px', xl: '20px' }}
                         fontWeight={500}
@@ -98,9 +109,11 @@ export const VegeterianKitchenCompactCard = ({ recipe }: { recipe: Recipe }) => 
                         textOverflow='ellipsis'
                         flex={1}
                     >
-                        {recipe.title}
+                        {recipeWithPath.title}
                     </Text>
                     <Button
+                        as={Link}
+                        to={`${recipeWithPath.path}`}
                         minWidth='60px'
                         variant='outline'
                         color='lime.600'

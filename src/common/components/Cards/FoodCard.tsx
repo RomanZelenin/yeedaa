@@ -16,11 +16,13 @@ import {
     Wrap,
     WrapItem,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
 import { Recipe } from '~/app/mocks/types/type_defenitions';
 import bookmarkIcon from '~/assets/icons/bookmark.svg';
 import { useGetFilteredCategoriesBySubcatigoriesId } from '~/common/hooks/useGetFilteredCategoriesBySubcatigoriesId';
+import { useGetRecommendingUser } from '~/common/hooks/useGetRecommendingUser';
 import { StatusCode } from '~/query/constants';
 import { useBookmarkRecipeMutation } from '~/query/create-recipe-api';
 import { StatusResponse } from '~/query/types';
@@ -30,7 +32,6 @@ import { useAppDispatch, useAppSelector } from '~/store/hooks';
 import { Fallback } from '../Fallback/Fallback';
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { LikeIcon } from '../Icons/LikeIcon';
-import { PersonsIcon } from '../Icons/PersonsIcon';
 import { useResource } from '../ResourceContext/ResourceContext';
 import { IconWithCounter } from './IconWithCounter';
 
@@ -40,10 +41,13 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const [bookmarkRecipe] = useBookmarkRecipeMutation();
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
     const dispatch = useAppDispatch();
+    const [countBookmarks, setCountBookmarks] = useState(recipe.bookmarks);
+    const recommendingUser = useGetRecommendingUser(recipe);
 
     const handleOnBookmarkRecipe = async () => {
         try {
-            await bookmarkRecipe(recipe._id).unwrap();
+            const result = await bookmarkRecipe(recipe._id).unwrap();
+            setCountBookmarks(result.count);
         } catch (e) {
             handleOnActionRecipeError(e as StatusResponse);
         }
@@ -87,10 +91,9 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                 w='346px'
                 fallback={<Fallback width='346px' height='100%' />}
             />
-            {recipe.recommendation?.slice(0, 1).map((profile, i) => (
+            {recommendingUser && (
                 <>
                     <Tag
-                        key={i}
                         py='4px'
                         px='8px'
                         pos='absolute'
@@ -99,14 +102,14 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         bottom='20px'
                         left='24px'
                     >
-                        <Avatar src={profile.avatar} boxSize='16px' />
+                        <Avatar src={recommendingUser.photo} boxSize='16px' />
                         <TagLabel textStyle='textSmLh5'>
-                            {profile.firstName} {profile.lastName}{' '}
+                            {recommendingUser.firstName} {recommendingUser.lastName}{' '}
                             {getString('recommends').toLocaleLowerCase()}
                         </TagLabel>
                     </Tag>
                 </>
-            ))}
+            )}
 
             <Stack spacing='4px' px='4px' flex={1}>
                 <CardHeader>
@@ -124,15 +127,11 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
                         <HStack spacing='0px'>
                             <IconWithCounter
                                 icon={<BookmarkIcon boxSize='12px' />}
-                                count={recipe.bookmarks}
+                                count={countBookmarks}
                             />
                             <IconWithCounter
                                 icon={<LikeIcon boxSize='12px' />}
                                 count={recipe.likes}
-                            />
-                            <IconWithCounter
-                                icon={<PersonsIcon fill='black' boxSize='12px' />}
-                                count={recipe.views}
                             />
                         </HStack>
                     </HStack>
@@ -188,17 +187,12 @@ export const FoodCard = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
 export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe }) => {
     const { getString } = useResource();
     const query = useAppSelector(querySelector);
-    const [bookmarkRecipe] = useBookmarkRecipeMutation();
+    const [bookmarkRecipe, { isError, error }] = useBookmarkRecipeMutation();
     const { categories } = useGetFilteredCategoriesBySubcatigoriesId(recipe.categoriesIds);
-
     const dispatch = useAppDispatch();
 
-    const handleOnBookmarkRecipe = async () => {
-        try {
-            await bookmarkRecipe(recipe._id).unwrap();
-        } catch (e) {
-            handleOnActionRecipeError(e as StatusResponse);
-        }
+    const handleOnBookmarkRecipe = () => {
+        bookmarkRecipe(recipe._id);
     };
 
     const handleOnActionRecipeError = (response?: StatusResponse) => {
@@ -224,6 +218,12 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                 );
         }
     };
+
+    useEffect(() => {
+        if (isError) {
+            handleOnActionRecipeError(error as StatusResponse);
+        }
+    }, [isError, error]);
 
     return (
         <Card
@@ -257,10 +257,6 @@ export const FoodCardCompact = ({ id, recipe }: { id?: string; recipe: Recipe })
                             count={recipe.bookmarks}
                         />
                         <IconWithCounter icon={<LikeIcon boxSize='12px' />} count={recipe.likes} />
-                        <IconWithCounter
-                            icon={<PersonsIcon fill='black' boxSize='12px' />}
-                            count={recipe.views}
-                        />
                     </HStack>
                 </CardHeader>
                 <CardBody p={0}>

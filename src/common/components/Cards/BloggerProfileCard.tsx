@@ -1,33 +1,50 @@
-import { Avatar, Button, Center, Image, Spinner, Stack, Text, Tooltip } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Avatar, Button, Image, Stack, Text, Tooltip } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
-import { Blogger } from '~/app/pages/Home/Sections/SectionCookingBlogs';
 import personCheckIcon from '~/assets/icons/person-check.svg';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { useToggleSubscriptionMutation } from '~/query/create-bloggers-api';
+import { useToggleSubscriptionMutation } from '~/query/create-recipe-api';
+import { BloggerInfoResponse } from '~/query/types';
 import { Error, setNotification } from '~/store/app-slice';
 import { useAppDispatch } from '~/store/hooks';
 
 import { BookmarkIcon } from '../Icons/BookmarkIcon';
 import { PersonsIcon } from '../Icons/PersonsIcon';
 import { SubscribeIcon } from '../Icons/SubscribeIcon';
+import { CenteredLoader } from '../Loader/CenteredLoader';
 import { IconWithCounter } from './IconWithCounter';
 
-export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
+export const BloggerProfileCard = ({ blogger }: { blogger: BloggerInfoResponse }) => {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [isFavorite, setIsFavorite] = useState(blogger.isFavorite);
-    const [toggleSubscription] = useToggleSubscriptionMutation();
+    const [
+        toggleSubscription,
+        {
+            isError: isErrorToggleSubscription,
+            isLoading: isLoadingToggleSubscription,
+            isSuccess: isSuccessToggleSubscription,
+            error: errorToggleSubscription,
+        },
+    ] = useToggleSubscriptionMutation();
 
-    const handleOnToggleSubscriprion = async () => {
-        try {
+    const handleOnToggleSubscriprion = () => {
+        toggleSubscription({
+            fromUserId: getJWTPayload().userId,
+            toUserId: blogger.bloggerInfo._id,
+        });
+    };
+
+    useEffect(() => {
+        if (isLoadingToggleSubscription) {
             setIsLoading(true);
-            await toggleSubscription({
-                fromUserId: getJWTPayload().userId,
-                toUserId: blogger._id,
-            }).unwrap();
+        }
+        if (isSuccessToggleSubscription) {
+            setIsLoading(false);
             setIsFavorite(!isFavorite);
-        } catch (_e) {
+        }
+        if (isErrorToggleSubscription) {
+            setIsLoading(false);
             dispatch(
                 setNotification({
                     _id: crypto.randomUUID(),
@@ -36,10 +53,13 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
                     type: 'error',
                 }),
             );
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [
+        isErrorToggleSubscription,
+        isLoadingToggleSubscription,
+        isSuccessToggleSubscription,
+        errorToggleSubscription,
+    ]);
 
     return (
         <>
@@ -54,8 +74,8 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
                 <Avatar
                     alignSelf='center'
                     size={{ base: 'base', md: 'lg', xl: 'xl' }}
-                    name={`${blogger?.firstName} ${blogger?.lastName}`}
-                    src=''
+                    name={`${blogger?.bloggerInfo.firstName} ${blogger?.bloggerInfo.lastName}`}
+                    src={blogger.bloggerInfo.photoLink}
                     boxSize={{ base: '96px', lg: '128px' }}
                 />
                 <Stack justify='center' spacing='12px'>
@@ -63,88 +83,67 @@ export const BloggerProfileCard = ({ blogger }: { blogger: Blogger }) => {
                         data-test-id='blogger-user-info-name'
                         alignSelf={{ base: 'center', md: 'start' }}
                         textStyle={{ base: 'text2xlLh8Bold', lg: 'text5xlLhNoneBold' }}
-                    >{`${blogger?.firstName} ${blogger?.lastName}`}</Text>
+                    >{`${blogger?.bloggerInfo.firstName} ${blogger?.bloggerInfo.lastName}`}</Text>
                     <Text
                         data-test-id='blogger-user-info-login'
                         alignSelf={{ base: 'center', md: 'start' }}
                         textStyle='profileNicknameBlogCard'
                         noOfLines={1}
                     >
-                        @{blogger?.login}
+                        @{blogger?.bloggerInfo.login}
                     </Text>
                     <Stack direction='row' alignSelf='stretch' justify='space-between'>
-                        {!isFavorite ? (
-                            <Tooltip
-                                data-test-id='blog-tooltip'
-                                hasArrow
-                                label='Нажмите, если хотите подписаться'
-                                bgColor='black'
-                                borderRadius='6px'
-                            >
-                                <Button
-                                    data-test-id='blog-toggle-subscribe'
-                                    onClick={handleOnToggleSubscriprion}
-                                    h='24px'
-                                    leftIcon={<SubscribeIcon boxSize='12px' />}
-                                    variant='solid'
-                                    bgColor='black'
-                                    color='white'
-                                >
-                                    <Text textStyle='textXsLh4Semibold'>Подписаться</Text>
-                                </Button>
-                            </Tooltip>
-                        ) : (
-                            <Tooltip
-                                data-test-id='blog-tooltip'
-                                hasArrow
-                                label='Нажмите, если хотите отписаться'
-                                bgColor='black'
-                                borderRadius='6px'
-                            >
-                                <Button
-                                    data-test-id='blog-toggle-unsubscribe'
-                                    onClick={handleOnToggleSubscriprion}
-                                    h='24px'
-                                    borderColor='blackAlpha.600'
-                                    leftIcon={
+                        <Tooltip
+                            data-test-id='blog-tooltip'
+                            hasArrow
+                            label={
+                                !isFavorite
+                                    ? 'Нажмите, если хотите подписаться'
+                                    : 'Нажмите, если хотите отписаться'
+                            }
+                            bgColor='black'
+                            borderRadius='6px'
+                        >
+                            <Button
+                                data-test-id={
+                                    !isFavorite
+                                        ? 'blog-toggle-subscribe'
+                                        : 'blog-toggle-unsubscribe'
+                                }
+                                onClick={handleOnToggleSubscriprion}
+                                h='24px'
+                                leftIcon={
+                                    !isFavorite ? (
+                                        <SubscribeIcon boxSize='12px' />
+                                    ) : (
                                         <Image src={personCheckIcon} boxSize={{ xl: '12px' }} />
-                                    }
-                                    variant='outline'
-                                    color='black'
-                                >
-                                    <Text textStyle='textXsLh4Semibold'>Вы подписаны</Text>
-                                </Button>
-                            </Tooltip>
-                        )}
-
+                                    )
+                                }
+                                variant={!isFavorite ? 'solid' : 'outline'}
+                                bgColor={!isFavorite ? 'black' : 'white'}
+                                color={!isFavorite ? 'white' : 'black'}
+                                borderColor='blackAlpha.600'
+                            >
+                                <Text textStyle='textXsLh4Semibold'>
+                                    {!isFavorite ? 'Подписаться' : 'Вы подписаны'}
+                                </Text>
+                            </Button>
+                        </Tooltip>
                         <Stack direction='row' marginLeft='50px'>
                             <IconWithCounter
                                 dataTestId='blogger-followers-bookmarks'
                                 icon={<BookmarkIcon boxSize='12px' />}
-                                count={blogger.bookmarksCount}
+                                count={blogger.totalBookmarks}
                             />
                             <IconWithCounter
                                 dataTestId='blogger-followers-count'
                                 icon={<PersonsIcon fill='black' boxSize='12px' />}
-                                count={blogger.subscribersCount}
+                                count={blogger.totalSubscribers}
                             />
                         </Stack>
                     </Stack>
                 </Stack>
-                {isLoading && (
-                    <Center
-                        data-test-id='mobile-loader'
-                        position='absolute'
-                        width='206px'
-                        top='50%'
-                        left='50%'
-                        transform='translate(-50%, -50%)'
-                        boxSize='100px'
-                        bgGradient='radial(30% 30% at 50% 50%, rgba(196, 255, 97, 0.7) 0%, rgba(255, 255, 255, 0) 100%) lime.50'
-                    >
-                        <Spinner size='lg' boxSize='28px' minW={0} />
-                    </Center>
-                )}
+                {isLoading && <CenteredLoader />}
             </Stack>
         </>
     );

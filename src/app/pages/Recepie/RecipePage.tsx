@@ -1,16 +1,21 @@
-import { Box, Flex } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { Box, Button, Flex } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import { AuthorRecipeCard } from '~/common/components/Cards/AuthorRecipeCard';
 import { RecipeCard } from '~/common/components/Cards/RecipeCard';
-import { Profile } from '~/common/components/Header/ProfileInfo';
+import { RecommendIcon } from '~/common/components/Icons/RecommendIcon';
+import { useResource } from '~/common/components/ResourceContext/ResourceContext';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
-import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import {
+    useGetBloggerQuery,
+    useGetRecipeByIdQuery,
+    useRecommendRecipeMutation,
+} from '~/query/create-recipe-api';
+import { BloggerInfoResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
-import { setAppLoader } from '~/store/app-slice';
-import { useAppDispatch } from '~/store/hooks';
+import { isShowRecommendSelector, setAppLoader } from '~/store/app-slice';
+import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 import { EmptyConatainer } from '../common/Containers/EmptyContainer';
 import SectionNewRecipes from '../Home/Sections/SectionNewRecepies';
@@ -22,6 +27,8 @@ export const RecipePage = () => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const isShowRecommendations = useAppSelector(isShowRecommendSelector);
+    const { getString } = useResource();
 
     const {
         data: recipe,
@@ -31,7 +38,7 @@ export const RecipePage = () => {
     } = useGetRecipeByIdQuery(id!, { skip: !id });
 
     const {
-        data: bloggerInfo,
+        data: dataBlogger,
         isError: isErrorBloggerInfo,
         isLoading: isLoadingBloggerInfo,
         isSuccess: isSuccessBloggerInfo,
@@ -39,6 +46,11 @@ export const RecipePage = () => {
         { bloggerId: recipe?.authorId ?? '', currentUserId: getJWTPayload().userId },
         { skip: !recipe?.authorId },
     );
+    const [
+        recommendRecipe,
+        { isLoading: isLoadingRecommendRecipe, isSuccess: isSuccessRecommendRecipe },
+    ] = useRecommendRecipeMutation();
+    const [isRecommendedByMe, setIsRecommendedByMe] = useState(false);
 
     useEffect(() => {
         if (isLoadingRecipe || isLoadingBloggerInfo) {
@@ -49,6 +61,12 @@ export const RecipePage = () => {
         }
         if (isSuccessGetRecipe && isSuccessBloggerInfo) {
             dispatch(setAppLoader(false));
+            setIsRecommendedByMe(
+                recipe.recommendedByUserId?.includes(getJWTPayload().userId) ?? false,
+            );
+        }
+        if (isSuccessRecommendRecipe) {
+            setIsRecommendedByMe(!isRecommendedByMe);
         }
     }, [
         isLoadingRecipe,
@@ -57,6 +75,7 @@ export const RecipePage = () => {
         isErrorBloggerInfo,
         isSuccessGetRecipe,
         isSuccessBloggerInfo,
+        isSuccessRecommendRecipe,
     ]);
 
     if (isLoadingRecipe || isLoadingBloggerInfo) {
@@ -69,19 +88,7 @@ export const RecipePage = () => {
     }
 
     if (isSuccessGetRecipe && isSuccessBloggerInfo) {
-        const response = bloggerInfo as BloggerInfoResponse;
-        const profile: Profile = {
-            _id: recipe.authorId,
-            isFavorite: response.isFavorite,
-            firstName: response?.bloggerInfo?.firstName ?? 'Вася', //Для прохождения теста
-            lastName: response?.bloggerInfo?.lastName ?? 'Пупкин', //Для прохождения теста
-            nickname: response?.bloggerInfo?.login ?? 'vasya_pupkin', //Для прохождения теста
-            activity: {
-                bookmarks: 1,
-                persons: response.totalSubscribers ?? 1,
-                likes: 1,
-            },
-        };
+        const response = dataBlogger as BloggerInfoResponse;
         return (
             <EmptyConatainer>
                 <>
@@ -102,10 +109,40 @@ export const RecipePage = () => {
                             <NutritionFacts nutrition={recipe.nutritionValue} />
                             <IngredientsList
                                 ingredients={recipe.ingredients}
-                                portions={recipe.portions}
+                                portions={recipe.portions ?? 0}
                             />
                             <CookingSteps steps={recipe.steps} />
-                            <AuthorRecipeCard person={profile} />
+                            <AuthorRecipeCard
+                                profile={response.bloggerInfo}
+                                isSubscribe={response.isFavorite}
+                            />
+                            {isShowRecommendations && (
+                                <>
+                                    <Button
+                                        isLoading={isLoadingRecommendRecipe}
+                                        loadingText={
+                                            isRecommendedByMe
+                                                ? getString('you-recommended')
+                                                : getString('recommend-recipe')
+                                        }
+                                        variant={isRecommendedByMe ? 'outline' : 'solid'}
+                                        onClick={() => recommendRecipe(recipe._id)}
+                                        borderColor='blackAlpha.600'
+                                        borderRadius='6px'
+                                        bgColor={isRecommendedByMe ? 'white' : 'blackAlpha.900'}
+                                        color={isRecommendedByMe ? 'black' : 'white'}
+                                        leftIcon={
+                                            <RecommendIcon
+                                                fill={isRecommendedByMe ? 'black' : 'white'}
+                                            />
+                                        }
+                                    >
+                                        {isRecommendedByMe
+                                            ? getString('you-recommended')
+                                            : getString('recommend-recipe')}
+                                    </Button>
+                                </>
+                            )}
                         </Flex>
                     </Flex>
                     <Box mt='24px'>

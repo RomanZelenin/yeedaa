@@ -1,31 +1,65 @@
 import { Grid, GridItem, Show } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 
-import profile from '~/app/mocks/profile.json';
 import { CustomAlert } from '~/common/components/Alert/CustomAlert';
 import { AsidePanel } from '~/common/components/AsidePanel/AsidePanel';
 import { Header } from '~/common/components/Header/Header';
 import { AppLoader } from '~/common/components/Loader/AppLoader';
 import { BottomMenu } from '~/common/components/Menu/BottomMenu';
 import { SideMenu } from '~/common/components/Menu/SideMenu';
+import { useGetMyProfileData } from '~/common/hooks/useGetMyProfileData';
 import { useScrollToAnchor } from '~/common/hooks/useScrollToAnchor';
 import { ApplicationRoute } from '~/router';
-import { Error, loadingSelector, notificationSelector } from '~/store/app-slice';
-import { useAppSelector } from '~/store/hooks';
+import {
+    Error,
+    loadingSelector,
+    notificationSelector,
+    setMyProfile,
+    setMyProfileLoader,
+} from '~/store/app-slice';
+import { useAppDispatch, useAppSelector } from '~/store/hooks';
 
 export default function App() {
     const location = useLocation();
+    const dispatch = useAppDispatch();
     const isLoading = useAppSelector(loadingSelector);
     const notification = useAppSelector(notificationSelector);
     const accessToken = sessionStorage.getItem('access_token');
     useScrollToAnchor();
 
+    const {
+        isError: isErrorGetMyProfile,
+        isLoading: isLoadingGetMyProfile,
+        isSuccess: isSuccessGetMyProfile,
+        isFetching,
+        data: dataMyProfile,
+    } = useGetMyProfileData(accessToken);
+
+    useEffect(() => {
+        if (isLoadingGetMyProfile) {
+            dispatch(setMyProfileLoader(true));
+        } else if (isErrorGetMyProfile) {
+            dispatch(setMyProfileLoader(false));
+        } else if (isSuccessGetMyProfile) {
+            dispatch(setMyProfileLoader(false));
+            dispatch(setMyProfile(dataMyProfile!));
+        }
+    }, [isSuccessGetMyProfile, isLoadingGetMyProfile, isErrorGetMyProfile, isFetching]);
+
     if (accessToken === null) return <Navigate to='/login' replace />;
+
+    const isShowAsidePanel =
+        location.pathname !== ApplicationRoute.NEW_RECIPE &&
+        location.pathname.split('/')[1] !== ApplicationRoute.EDIT_RECIPE.split('/')[1] &&
+        location.pathname.split('/')[1] !== ApplicationRoute.EDIT_DRAFT.split('/')[1];
+
+    const isShowNotification = notification && notification.title !== Error.RECEPIES_NOT_FOUND;
 
     return (
         <>
             <AppLoader isLoading={isLoading}>
-                <Header profile={profile} />
+                <Header />
                 <Grid
                     maxW='1920px'
                     margin='auto'
@@ -61,20 +95,12 @@ export default function App() {
                         </Grid>
                     </GridItem>
                     <GridItem area='aside' hideBelow='lg'>
-                        {location.pathname !== ApplicationRoute.NEW_RECIPE &&
-                            location.pathname.split('/')[1] !==
-                                ApplicationRoute.EDIT_RECIPE.split('/')[1] && (
-                                <AsidePanel
-                                    bookmarks={profile.activity.bookmarks}
-                                    persons={profile.activity.persons}
-                                    likes={profile.activity.likes}
-                                />
-                            )}
+                        {isShowAsidePanel && <AsidePanel />}
                     </GridItem>
                     <GridItem area='footer' hideFrom='lg'>
-                        <BottomMenu avatar={profile.avatar} />
+                        <BottomMenu />
                     </GridItem>
-                    {notification && notification.title !== Error.RECEPIES_NOT_FOUND && (
+                    {isShowNotification && (
                         <CustomAlert
                             position='fixed'
                             key={notification._id}

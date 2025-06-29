@@ -3,14 +3,17 @@ import { useMemo, useState } from 'react';
 import { Link as ReactRouterLink } from 'react-router';
 
 import { ApplicationRoute } from '~/router';
+import { myProfile } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 import { HomeIcon } from '../Icons/HomeIcon';
 import { SearchIcon } from '../Icons/SearchIcon';
 import { WriteIcon } from '../Icons/WriteIcon';
 
-export const BottomMenu = ({ avatar }: { avatar: string }) => {
+export const BottomMenu = () => {
     const DEFAULT_SELECTED_MENU_ITEM = 0;
     const [selectedMenuIdx, setSelectedMenuIdx] = useState(DEFAULT_SELECTED_MENU_ITEM);
+    const profile = useAppSelector(myProfile);
 
     const items = useMemo(() => {
         const menuItems = [
@@ -47,17 +50,17 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
             {
                 icon: (
                     <Avatar
-                        src={avatar}
+                        src={profile.profileInfo?.photoLink}
+                        name={`${profile?.profileInfo?.firstName} ${profile?.profileInfo?.lastName}`}
                         boxSize='40px'
-                        filter={selectedMenuIdx === 3 ? 'invert(100%)' : 'none'}
                     />
                 ),
                 title: 'Мой профиль',
-                path: '#',
+                path: ApplicationRoute.PROFILE,
             },
         ];
         return menuItems;
-    }, [avatar, selectedMenuIdx]);
+    }, [profile, selectedMenuIdx]);
 
     return (
         <Flex
@@ -86,6 +89,9 @@ export const BottomMenu = ({ avatar }: { avatar: string }) => {
                     }
                 >
                     <VStack
+                        data-test-id={
+                            it.path === ApplicationRoute.PROFILE ? 'footer-profile-button' : ''
+                        }
                         as={ReactRouterLink}
                         to={it.path}
                         spacing={0}

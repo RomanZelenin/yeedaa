@@ -2,11 +2,13 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Link as ReactRouterLink, useParams } from 'react-router';
 
-import { useCurrentCategory } from '~/common/hooks/useCurrentCategory';
+import { useGetCategoryAndSubcategoryByName } from '~/common/hooks/useGetCategoryAndSubcategoryByName';
 import { getJWTPayload } from '~/common/utils/getJWTPayload';
-import { BloggerInfoResponse, useGetBloggerQuery } from '~/query/create-bloggers-api';
-import { useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import { useGetBloggerQuery, useGetRecipeByIdQuery } from '~/query/create-recipe-api';
+import { BloggerInfoResponse } from '~/query/types';
 import { ApplicationRoute } from '~/router';
+import { myProfile } from '~/store/app-slice';
+import { useAppSelector } from '~/store/hooks';
 
 import { useResource } from '../ResourceContext/ResourceContext';
 
@@ -20,10 +22,13 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
     const { category: categoryName, subcategory: subcategoryName, id: recipeId } = useParams();
 
-    const { category, subcategory } = useCurrentCategory({ categoryName, subcategoryName });
+    const { category, subcategory } = useGetCategoryAndSubcategoryByName({
+        categoryName,
+        subcategoryName,
+    });
     const { data: recipe } = useGetRecipeByIdQuery(recipeId!, { skip: !recipeId });
-
-    const { userId } = useParams();
+    const profile = useAppSelector(myProfile);
+    const { userId, id } = useParams();
     const currentUserId = getJWTPayload().userId;
     const { data: blogger, isSuccess: isSuccessBloggerInfo } = useGetBloggerQuery(
         { bloggerId: userId!, currentUserId: currentUserId },
@@ -52,7 +57,7 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                 }
             }
         } else {
-            if (location.pathname.startsWith(ApplicationRoute.JUICIEST)) {
+            if (location.pathname.includes(ApplicationRoute.JUICIEST)) {
                 breadcrumbs.push({ title: getString('juiciest'), path: ApplicationRoute.JUICIEST });
                 if (recipeId && recipe) {
                     breadcrumbs.push({
@@ -60,12 +65,12 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: `/the-juiciest/${recipeId}#`,
                     });
                 }
-            } else if (location.pathname.startsWith(ApplicationRoute.NEW_RECIPE)) {
+            } else if (location.pathname.includes(ApplicationRoute.NEW_RECIPE)) {
                 breadcrumbs.push({
                     title: getString('new-recipe'),
                     path: ApplicationRoute.NEW_RECIPE,
                 });
-            } else if (location.pathname.startsWith(ApplicationRoute.BLOGS)) {
+            } else if (location.pathname.includes(ApplicationRoute.BLOGS)) {
                 breadcrumbs.push({ title: getString('blogs'), path: ApplicationRoute.BLOGS });
                 if (userId && isSuccessBloggerInfo) {
                     const bloggerInfo = (blogger as BloggerInfoResponse).bloggerInfo;
@@ -74,10 +79,35 @@ export const NavigationBreadcrumb = ({ onClickBreadcrumb }: { onClickBreadcrumb:
                         path: '#',
                     });
                 }
+            } else if (location.pathname.includes(ApplicationRoute.PROFILE)) {
+                breadcrumbs.push({
+                    title: getString('my-profile'),
+                    path: ApplicationRoute.PROFILE,
+                });
+                if (location.pathname.includes(ApplicationRoute.PROFILE_SETTINGS)) {
+                    breadcrumbs.push({
+                        title: 'Настройки',
+                        path: ApplicationRoute.PROFILE_SETTINGS,
+                    });
+                }
+            } else if (location.pathname.includes('/edit-draft') && id) {
+                breadcrumbs.push({
+                    title: profile.profileInfo?.drafts.find((it) => it._id === id!)?.title ?? '',
+                    path: ApplicationRoute.PROFILE_SETTINGS,
+                });
             }
         }
         setBreadcrumbs(breadcrumbs);
-    }, [category, subcategory, recipe, recipeId, userId, blogger, location.pathname]);
+    }, [
+        category,
+        subcategory,
+        recipe,
+        recipeId,
+        userId,
+        blogger,
+        location.pathname,
+        profile.profileInfo,
+    ]);
 
     return (
         <Breadcrumb
